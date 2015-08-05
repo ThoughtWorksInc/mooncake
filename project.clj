@@ -3,6 +3,6 @@
   :url "TODO"
   :license "The MIT License"
   :dependencies [[org.clojure/clojure "1.6.0"]]
-  :main ^:skip-aot mooncake.core
+  :main mooncake.handler
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
