@@ -7,6 +7,7 @@
                  [ring/ring-defaults "0.1.5"]
                  [ring/ring-jetty-adapter "1.4.0"]
                  [scenic "0.2.3"]
+                 [enlive "1.1.6"]
                  [org.clojure/tools.logging "0.3.1"]
                  [traduki "0.1.1-SNAPSHOT"]
                  [clj-yaml "0.4.0"]
