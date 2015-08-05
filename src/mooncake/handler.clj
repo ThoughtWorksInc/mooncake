@@ -13,7 +13,7 @@
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
 (defn index [request]
-  (-> (r/response "test 2")
+  (-> (r/response "test")
       (r/content-type "text/plain")))
 
 (defn not-found [request]
