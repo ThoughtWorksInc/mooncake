@@ -1,11 +1,12 @@
 (ns mooncake.handler
   (:require [scenic.routes :as scenic]
             [ring.adapter.jetty :as ring-jetty]
+            [ring.util.response :as r]
             [mooncake.routes :as routes]
             [mooncake.config :as config]))
 
 (defn index [request]
-  "test")
+  (r/response "test"))
 
 (def site-handlers
   {:index index})
