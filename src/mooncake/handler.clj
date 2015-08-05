@@ -5,14 +5,25 @@
             [ring.middleware.defaults :as ring-mw]
             [mooncake.routes :as routes]
             [mooncake.config :as config]
+            [mooncake.translation :as t]
+            [mooncake.view.error :as error]
+            [mooncake.helper :as mh]
             [mooncake.middleware :as m]))
+
+(def default-context {:translator (t/translations-fn t/translation-map)})
 
 (defn index [request]
   (-> (r/response "test 2")
       (r/content-type "text/plain")))
 
+(defn not-found [request]
+  (-> (error/not-found-error)
+      (mh/enlive-response default-context)
+      (r/status 404)))
+
 (def site-handlers
-  {:index index})
+  (-> {:index index}
+      (m/wrap-handlers #(m/wrap-handle-404 % not-found) #{})))
 
 (defn wrap-defaults-config [secure?]
   (-> (if secure? (assoc ring-mw/secure-site-defaults :proxy true) ring-mw/site-defaults)
