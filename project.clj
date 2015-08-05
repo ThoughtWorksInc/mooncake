@@ -1,6 +1,7 @@
 (defproject mooncake "0.1.0-SNAPSHOT"
   :description "A D-CENT project: Secure notifications combined with w3 activity streams"
   :url "TODO"
+  :min-lein-version "2.0.0"
   :license "The MIT License"
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
