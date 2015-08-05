@@ -16,5 +16,6 @@
                    :plugins        [[lein-environ "1.0.0"]
                                     [lein-midje "3.1.3"]
                                     [lein-ancient "0.6.7"]]
-                   :jvm-opts ["-Dlog4j.configuration=log4j.dev"]}
+                   :jvm-opts ["-Dlog4j.configuration=log4j.dev"]
+                   :env {:secure "false"}}
              :uberjar {:aot :all}})
