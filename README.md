@@ -1,5 +1,7 @@
  A D-CENT project: Secure notifications combined with w3 activity streams
 
+["Mooncake"](https://en.wikipedia.org/wiki/Mooncake#Ming_revolution)
+
 ## Running the static frontend
 
 ### Getting started
