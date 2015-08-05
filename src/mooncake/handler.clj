@@ -4,6 +4,9 @@
             [mooncake.routes :as routes]
             [mooncake.config :as config]))
 
+(defn index [request]
+  "test")
+
 (def site-handlers
   {:index index})
 
@@ -13,4 +16,6 @@
 (def app (create-app (config/create-config)))
 
 (defn -main [& args]
-  (ring-jetty/run-jetty app {:port (config/port config-m) :host (config/host config-m)}))
+  (let [config-m (config/create-config)]
+    (ring-jetty/run-jetty app {:port (config/port config-m)
+                               :host (config/host config-m)})))
