@@ -6,7 +6,7 @@
             [mooncake.config :as config]))
 
 (defn index [request]
-  (r/response "test"))
+  (r/response "test 2"))
 
 (def site-handlers
   {:index index})
