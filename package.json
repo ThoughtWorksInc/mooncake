@@ -29,6 +29,8 @@
   "author": "Chris Cheshire",
   "license": "MIT",
   "scripts": {
-    "build": ""
+    "postinstall": "gulp build",
+    "start": "",
+    "node": ""
   }
 }
