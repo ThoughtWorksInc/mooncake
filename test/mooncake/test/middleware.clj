@@ -31,3 +31,8 @@
             wrapped-handler (m/wrap-handle-404 handler-that-always-404s stub-error-404-handler)]
         (wrapped-handler ...request...) => ...error-404-response...))
 
+(fact "renders 403 error page when response status is 403"
+      (let [handler-that-always-403s (fn [req] {:status 403})
+            stub-error-403-handler (fn [req] ...error-403-response...)
+            wrapped-handler (m/wrap-handle-403 handler-that-always-403s stub-error-403-handler)]
+        (wrapped-handler ...request...) => ...error-403-response...))

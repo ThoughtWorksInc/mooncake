@@ -21,8 +21,14 @@
       (mh/enlive-response default-context)
       (r/status 404)))
 
+(defn forbidden-err-handler [req]
+  (-> (error/forbidden-error)
+      (mh/enlive-response default-context)
+      (r/status 403)))
+
 (def site-handlers
   (-> {:index index}
+      (m/wrap-handlers #(m/wrap-handle-403 % forbidden-err-handler) #{})
       (m/wrap-handlers #(m/wrap-handle-404 % not-found) #{})))
 
 (defn wrap-defaults-config [secure?]

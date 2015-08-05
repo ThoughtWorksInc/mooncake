@@ -15,8 +15,5 @@
 (defn not-found-error []
   (-> (internal-server-error) (modify-error-translation-keys "error-404")))
 
-(defn csrf-error []
-  (-> (internal-server-error) (modify-error-translation-keys "error-csrf")))
-
 (defn forbidden-error []
   (-> (internal-server-error) (modify-error-translation-keys "error-forbidden")))
