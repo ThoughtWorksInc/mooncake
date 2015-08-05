@@ -1,0 +1,17 @@
+.header {
+  height: 50px;
+  background: $purple;
+  padding: 0 20px;
+}
+.header__logo {
+  font-size: 22px;
+  line-height: 45px;
+  color: $white;
+  letter-spacing: 0.1em;
+}
+.logo__activity {
+  font-weight: bold;
+}
+.logo__stream {
+  font-weight: 300;
+}

@@ -1,0 +1,34 @@
+include ../mixins/_helpers
+include ../mixins/_view_helpers
+
+- var bodyClass = ""
+block vars
+
+doctype
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title
+      block title
+    meta(name="viewport", content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no")
+    meta(name="format-detection", content="telephone=no")
+    link(rel="icon" type="image/png" href="favicon.png")
+    block headerMeta
+
+    +stylesheetLinkTag("application","screen")
+    link(href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700", rel="stylesheet", type="text/css")
+
+    block headerScripts
+
+  body(class="#{bodyClass}")
+
+    header.header
+      .header__logo
+        span.logo__activity Activity
+        span.logo__stream Stream
+
+    main.main-content(role="main")
+      block content
+
+    block footerScripts
