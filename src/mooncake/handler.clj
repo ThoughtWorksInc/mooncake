@@ -4,7 +4,8 @@
             [ring.util.response :as r]
             [ring.middleware.defaults :as ring-mw]
             [mooncake.routes :as routes]
-            [mooncake.config :as config]))
+            [mooncake.config :as config]
+            [mooncake.middleware :as m]))
 
 (defn index [request]
   (-> (r/response "test 2")
@@ -20,7 +21,8 @@
 
 (defn create-app [config-m]
   (-> (scenic/scenic-handler routes/routes site-handlers)
-      (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))))
+      (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
+      m/wrap-translator))
 
 (def app (create-app (config/create-config)))
 

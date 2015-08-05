@@ -8,6 +8,8 @@
                  [ring/ring-jetty-adapter "1.4.0"]
                  [scenic "0.2.3"]
                  [org.clojure/tools.logging "0.3.1"]
+                 [traduki "0.1.1-SNAPSHOT"]
+                 [clj-yaml "0.4.0"]
                  [environ "1.0.0"]]
   :main mooncake.handler
   :target-path "target/%s"
