@@ -12,6 +12,7 @@
                  [traduki "0.1.1-SNAPSHOT"]
                  [clj-yaml "0.4.0"]
                  [cheshire "5.5.0"]
+                 [bilus/clojure-humanize "0.1.0"]
                  [clj-http "2.0.0"]
                  [environ "1.0.0"]]
   :main mooncake.handler
