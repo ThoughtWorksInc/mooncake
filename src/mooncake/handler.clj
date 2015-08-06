@@ -4,9 +4,11 @@
             [ring.util.response :as r]
             [ring.middleware.defaults :as ring-mw]
             [clj-http.client :as http]
+            [cheshire.core :as json]
             [mooncake.routes :as routes]
             [mooncake.config :as config]
             [mooncake.translation :as t]
+            [mooncake.view.index :as i]
             [mooncake.view.error :as error]
             [mooncake.helper :as mh]
             [mooncake.middleware :as m]))
@@ -14,8 +16,10 @@
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
 (defn index [request]
-  (-> (r/response (:body (http/get "https://objective8.dcentproject.eu/activities" {:accept :json})))
-      (r/content-type "application/json")))
+  (let [activities (-> (http/get "https://objective8.dcentproject.eu/activities" {:accept :json})
+                       :body
+                       json/parse-string)]
+    (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
 
 (defn not-found [request]
   (-> (error/not-found-error)

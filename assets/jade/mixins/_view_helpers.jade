@@ -1,8 +1,8 @@
 mixin streamItem(title)
-  li.activity-item
-    a.activity-item__link(href="#")
+  li.activity-item.clj--activity-item
+    a.activity-item__link.clj--activity-item__link(href="#")
       .activity-item__avatar
         span.avatar__initials JB
-      time.activity-item__time(datetime="10:32") 10:32am
-      h2.activity-item__action JOANNAB added an Objective
-      h3.activity-item__title #{title}
+      time.activity-item__time.clj--activity-item__time(datetime="10:32") 10:32am
+      h2.activity-item__action.clj--activity-item__action !JOANNAB - Objective - Create
+      h3.activity-item__title.clj--activity-item__title #{title}

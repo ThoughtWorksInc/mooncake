@@ -18,7 +18,7 @@
   state)
 
 
-(future-facts "Go to /"
+(facts "Go to /"
        (-> (k/session h/app)
            (k/visit "/")
            (kh/page-uri-is "/")

@@ -1,6 +1,5 @@
 (ns mooncake.integration.kerodon-helpers
   (:require [midje.sweet :refer :all]
-            [cheshire.core :as json]
             [net.cgrand.enlive-html :as html]
             [kerodon.core :as k]
             [clojure.string :as string]))
@@ -73,32 +72,4 @@
 (defn location-contains [state path]
   (fact {:midje/name "Checking location in header:"}
         (-> state :response (get-in [:headers "Location"])) => (contains path))
-  state)
-
-(defn response-has-access-token [state]
-  (fact {:midje/name "Checking if response has access bearer token"}
-        (let [response-body (-> state
-                                :response
-                                :body
-                                (json/parse-string keyword))]
-          (:access_token response-body) => (just #"[A-Z0-9]{32}")
-          (:token_type response-body) => "bearer"))
-  state)
-
-(defn response-has-user-email [state email]
-  (fact {:midje/name "Checking if response has user email"}
-        (let [response-body (-> state
-                                :response
-                                :body
-                                (json/parse-string keyword))]
-          (:user-email response-body) => email))
-  state)
-
-(defn response-has-id [state]
-  (fact {:midje/name "Checking if response has user id"}
-        (let [response-body (-> state
-                                :response
-                                :body
-                                (json/parse-string keyword))]
-          (:user-id response-body) =not=> string/blank?))
   state)

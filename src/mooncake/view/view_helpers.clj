@@ -1,5 +1,6 @@
 (ns mooncake.view.view-helpers
   (:require [net.cgrand.enlive-html :as html]
+            [net.cgrand.jsoup :as jsoup]
             [clojure.tools.logging :as log]))
 
 (def template-caching? (atom true))
@@ -8,7 +9,7 @@
 
 (defn html-resource-with-log [path]
   (log/debug (format "Loading template %s from file" path))
-  (html/html-resource path))
+  (html/html-resource path {:parser jsoup/parser}))
 
 (defn load-template [path]
   (if @template-caching?
