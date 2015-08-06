@@ -11,11 +11,13 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [traduki "0.1.1-SNAPSHOT"]
                  [clj-yaml "0.4.0"]
+                 [cheshire "5.5.0"]
                  [environ "1.0.0"]]
   :main mooncake.handler
   :target-path "target/%s"
   :profiles {:dev {:dependencies   [[ring-mock "0.1.5"]
-                                    [midje "1.7.0"]]
+                                    [midje "1.7.0"]
+                                    [kerodon "0.6.1"]]
                    :plugins        [[lein-environ "1.0.0"]
                                     [lein-midje "3.1.3"]
                                     [lein-ancient "0.6.7"]]

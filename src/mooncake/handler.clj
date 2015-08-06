@@ -28,8 +28,7 @@
 
 (def site-handlers
   (-> {:index index}
-      (m/wrap-handlers #(m/wrap-handle-403 % forbidden-err-handler) #{})
-      (m/wrap-handlers #(m/wrap-handle-404 % not-found) #{})))
+      (m/wrap-handlers #(m/wrap-handle-403 % forbidden-err-handler) #{})))
 
 (defn wrap-defaults-config [secure?]
   (-> (if secure? (assoc ring-mw/secure-site-defaults :proxy true) ring-mw/site-defaults)
@@ -37,7 +36,7 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-app [config-m]
-  (-> (scenic/scenic-handler routes/routes site-handlers)
+  (-> (scenic/scenic-handler routes/routes site-handlers not-found)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
       m/wrap-translator))
 
