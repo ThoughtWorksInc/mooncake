@@ -22,8 +22,6 @@
   display: block;
   color: inherit;
   text-decoration: none;
-
-  pointer-events: none; // until we link them turn them off...
 }
 
 .activity-item__action {
@@ -43,12 +41,6 @@
 }
 
 .activity-item__time {
-  position: absolute;
-  top: 15px;
-  left: 12px;
-  width: 64px;
-  line-height: 1;
-  text-align: center;
   color: $grey_2;
   font-size: 12px;
   font-weight: 400;
@@ -58,7 +50,7 @@
   $size: 48px;
   @include circle($size);
   position: absolute;
-  top: 33px;
+  top: 25px;
   left: 17px;
   background-color: currentColor;
   text-align: center;
