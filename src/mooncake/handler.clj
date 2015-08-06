@@ -3,6 +3,7 @@
             [ring.adapter.jetty :as ring-jetty]
             [ring.util.response :as r]
             [ring.middleware.defaults :as ring-mw]
+            [clj-http.client :as http]
             [mooncake.routes :as routes]
             [mooncake.config :as config]
             [mooncake.translation :as t]
@@ -13,8 +14,8 @@
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
 (defn index [request]
-  (-> (r/response "test")
-      (r/content-type "text/plain")))
+  (-> (r/response (:body (http/get "https://objective8.dcentproject.eu/activities" {:accept :json})))
+      (r/content-type "application/json")))
 
 (defn not-found [request]
   (-> (error/not-found-error)
