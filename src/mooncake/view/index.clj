@@ -14,6 +14,8 @@
                              [:.clj--activity-item] (html/do->
                                                       (html/add-class (str "activity-src-"
                                                                            ((:activity-src activity) activity-source-indexes))))
+                             [:.clj--avatar__initials] (html/content (-> (get-in activity ["actor" "displayName"])
+                                                                         first str clojure.string/upper-case))
                              [:.clj--activity-item__link] (html/set-attr :href (get-in activity ["object" "url"]))
                              [:.clj--activity-item__time] (let [activity-time (get activity "published")]
                                                             (html/do->

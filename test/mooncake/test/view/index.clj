@@ -59,7 +59,23 @@
         (-> (html/select second-activity-item [:.clj--activity-item__title])
             first html/text) => "OBJECTIVE 6 TITLE"))
 
-(fact "activity item avatars are assigned the correct classes so they can be colour-coded by activity source"
+(fact "activity item avatars are given the initial of the actor (the name of the person)"
+      (let [page (i/index {:context {:activities
+                                     [{:activity-src :an-activity-src
+                                       "actor"  {"@type" "Person"
+                                                 "displayName" "abby"}}
+                                      {:activity-src :an-activity-src
+                                       "actor"  {"@type" "Person"
+                                                 "displayName" "Bobby"}}
+                                      {:activity-src :an-activity-src
+                                       "actor"  {"@type" "Person"
+                                                 "displayName" "2k12carlos"}}]}})
+            initials-elements (-> (html/select page [:.clj--avatar__initials]))]
+        (html/text (first initials-elements)) => "A"
+        (html/text (second initials-elements)) => "B"
+        (html/text (nth initials-elements 2 nil)) => "2"))
+
+(fact  "activity item avatars are assigned the correct classes so they can be colour-coded by activity source"
       (let [page (i/index {:context {:activities
                                      [{:activity-src :an-activity-src}
                                       {:activity-src :another-activity-src}
@@ -69,7 +85,7 @@
             second-activity-item-class (-> (html/select page [:.clj--activity-item])
                                            second :attrs :class)
             third-activity-item-class (-> (html/select page [:.clj--activity-item])
-                                          (nth 2) :attrs :class)]
+                                          (nth 2 nil) :attrs :class)]
         first-activity-item-class =>      (contains "activity-src-0")
         first-activity-item-class =not=>  (contains "activity-src-1")
         (count (re-seq #"activity-src-" first-activity-item-class))  => 1
