@@ -56,6 +56,7 @@
 (defn create-app [config-m]
   (-> (scenic/scenic-handler routes/routes site-handlers not-found)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
+      (m/wrap-config (assoc config-m :activity-sources {:objective8 "https://objective8.dcentproject.eu/activities"}))
       m/wrap-translator))
 
 (def app (create-app (config/create-config)))

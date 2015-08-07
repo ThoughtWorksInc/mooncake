@@ -7,6 +7,12 @@
         (assoc-in [:context :translator] (translation/translations-fn translation/translation-map))
         handler)))
 
+(defn wrap-config [handler config-m]
+  (fn [request]
+    (-> request
+        (assoc-in [:context :config-m] config-m)
+        handler)))
+
 (defn wrap-handle-403 [handler error-403-handler]
   (fn [request]
     (let [response (handler request)]
