@@ -1,5 +1,5 @@
-mixin streamItem(title)
-  li.activity-item.clj--activity-item
+mixin streamItem(title, sourceClass)
+  li.activity-item.clj--activity-item(class=sourceClass)
     a.activity-item__link.clj--activity-item__link(href="#")
       .activity-item__avatar
         span.avatar__initials JB

@@ -11,8 +11,9 @@
         activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])]
     (html/at activity-stream-item [html/root]
              (html/clone-for [activity activities]
-                             [:.clj--activity-item] (html/add-class (str "activity-src-"
-                                                                         ((:activity-src activity) activity-source-indexes)))
+                             [:.clj--activity-item] (html/do->
+                                                      (html/add-class (str "activity-src-"
+                                                                           ((:activity-src activity) activity-source-indexes))))
                              [:.clj--activity-item__link] (html/set-attr :href (get-in activity ["object" "url"]))
                              [:.clj--activity-item__time] (let [activity-time (get activity "published")]
                                                             (html/do->

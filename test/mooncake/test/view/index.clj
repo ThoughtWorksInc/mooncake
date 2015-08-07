@@ -72,7 +72,10 @@
                                           (nth 2) :attrs :class)]
         first-activity-item-class =>      (contains "activity-src-0")
         first-activity-item-class =not=>  (contains "activity-src-1")
+        (count (re-seq #"activity-src-" first-activity-item-class))  => 1
         second-activity-item-class =>     (contains "activity-src-1")
         second-activity-item-class =not=> (contains "activity-src-0")
+        (count (re-seq #"activity-src-" second-activity-item-class))  => 1
         third-activity-item-class =>      (contains "activity-src-0")
-        third-activity-item-class =not=>  (contains "activity-src-1")))
+        third-activity-item-class =not=>  (contains "activity-src-1")
+        (count (re-seq #"activity-src-" third-activity-item-class))  => 1))
