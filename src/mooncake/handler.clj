@@ -30,7 +30,7 @@
        (sort-by published-time mh/after?))))
 
 (defn index [request]
-  (let [activity-sources (get-in request [:config-m :activity-sources])
+  (let [activity-sources (get-in request [:context :config-m :activity-sources])
         activities (retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
 

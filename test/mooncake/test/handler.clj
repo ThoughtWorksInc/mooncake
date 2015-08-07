@@ -32,12 +32,14 @@
 (fact "index handler displays activities retrieved from activity sources"
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]
-        (index {:config-m {:activity-sources
-                           {:an-activity-src an-activity-src-url
-                            :another-activity-src another-activity-src-url}}}) => (every-checker
-                                                                                    (contains {:status 200})
-                                                                                    (contains {:body (contains "JDog")})
-                                                                                    (contains {:body (contains "KCat")}))
+        (index {:context
+                {:config-m
+                 {:activity-sources
+                  {:an-activity-src an-activity-src-url
+                   :another-activity-src another-activity-src-url}}}}) => (every-checker
+                                                                            (contains {:status 200})
+                                                                            (contains {:body (contains "JDog")})
+                                                                            (contains {:body (contains "KCat")}))
         (provided
           (http/get an-activity-src-url {:accept :json})       => {:body (str "[{\"actor\": {\"@type\": \"Person\",
                                                                                              \"displayName\": \"JDog\"},
