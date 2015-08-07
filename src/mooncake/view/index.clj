@@ -3,11 +3,16 @@
             [mooncake.helper :as h]
             [mooncake.view.view-helpers :as vh]))
 
+(defn index-activity-sources [activities]
+  (zipmap (distinct (map :activity-src activities)) (range)))
 
 (defn generate-activity-stream-items [enlive-m activities]
-  (let [activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])]
+  (let [activity-source-indexes (index-activity-sources activities)
+        activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])]
     (html/at activity-stream-item [html/root]
              (html/clone-for [activity activities]
+                             [:.clj--activity-item] (html/add-class (str "activity-src-"
+                                                                         ((:activity-src activity) activity-source-indexes)))
                              [:.clj--activity-item__link] (html/set-attr :href (get-in activity ["object" "url"]))
                              [:.clj--activity-item__time] (let [activity-time (get activity "published")]
                                                             (html/do->

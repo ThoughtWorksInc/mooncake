@@ -14,7 +14,8 @@
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
             ten-minutes-ago-str (f/unparse (f/formatters :date-time) ten-minutes-ago)
             page (i/index {:context {:activities
-                                     [{"@context" "http://www.w3.org/ns/activitystreams"
+                                     [{:activity-src :an-activity-src
+                                       "@context" "http://www.w3.org/ns/activitystreams"
                                        "@type" "Create"
                                        "published" ten-minutes-ago-str
                                        "actor"  {"@type" "Person"
@@ -23,7 +24,8 @@
                                                   "displayName" "OBJECTIVE 7 TITLE"
                                                   "content" "We want to establish Activity Types for Objective8"
                                                   "url" "http://objective8.dcentproject.eu/objectives/7"}}
-                                      {"@context" "http://www.w3.org/ns/activitystreams"
+                                      {:activity-src :another-activity-src
+                                       "@context" "http://www.w3.org/ns/activitystreams"
                                        "@type" "Create"
                                        "published" "2015-08-04T14:49:38.407Z"
                                        "actor"  {"@type" "Person"
@@ -56,3 +58,21 @@
             first html/text) => "Lala - Objective - Create"
         (-> (html/select second-activity-item [:.clj--activity-item__title])
             first html/text) => "OBJECTIVE 6 TITLE"))
+
+(fact "activity item avatars are assigned the correct classes so they can be colour-coded by activity source"
+      (let [page (i/index {:context {:activities
+                                     [{:activity-src :an-activity-src}
+                                      {:activity-src :another-activity-src}
+                                      {:activity-src :an-activity-src}]}})
+            first-activity-item-class (-> (html/select page [:.clj--activity-item])
+                                          first :attrs :class)
+            second-activity-item-class (-> (html/select page [:.clj--activity-item])
+                                           second :attrs :class)
+            third-activity-item-class (-> (html/select page [:.clj--activity-item])
+                                          (nth 2) :attrs :class)]
+        first-activity-item-class =>      (contains "activity-src-0")
+        first-activity-item-class =not=>  (contains "activity-src-1")
+        second-activity-item-class =>     (contains "activity-src-1")
+        second-activity-item-class =not=> (contains "activity-src-0")
+        third-activity-item-class =>      (contains "activity-src-0")
+        third-activity-item-class =not=>  (contains "activity-src-1")))
