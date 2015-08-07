@@ -15,10 +15,23 @@
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
-(defn index [request]
-  (let [activities (-> (http/get "https://objective8.dcentproject.eu/activities" {:accept :json})
+(defn retrieve-activities-from-source [source-k-v-pair]
+  (let [[source-key source-url] source-k-v-pair
+        activities (-> (http/get source-url {:accept :json})
                        :body
                        json/parse-string)]
+    (map #(assoc % :activity-src source-key) activities)))
+
+(defn retrieve-activities [activity-sources]
+  (let [published-time (fn [activity]
+                         (mh/datetime-str->datetime (get activity "published")))]
+  (->> (map retrieve-activities-from-source activity-sources)
+       flatten
+       (sort-by published-time mh/after?))))
+
+(defn index [request]
+  (let [activity-sources (get-in request [:config-m :activity-sources])
+        activities (retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
 
 (defn not-found [request]

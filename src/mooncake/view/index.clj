@@ -1,13 +1,8 @@
 (ns mooncake.view.index
   (:require [net.cgrand.enlive-html :as html]
-            [clojure.contrib.humanize :as h]
-            [clj-time.core :as c]
-            [clj-time.format :as f]
+            [mooncake.helper :as h]
             [mooncake.view.view-helpers :as vh]))
 
-(defn humanise-time [datetime-str]
-  (-> (f/parse (f/formatters :date-time) datetime-str)
-      h/datetime))
 
 (defn generate-activity-stream-items [enlive-m activities]
   (let [activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])]
@@ -18,7 +13,7 @@
                                                             (html/do->
                                                               (html/set-attr :datetime activity-time)
                                                               (html/content (when activity-time
-                                                                              (humanise-time activity-time)))))
+                                                                              (h/humanise-time activity-time)))))
                              [:.clj--activity-item__action] (html/content (str (get-in activity ["actor" "displayName"]) " - "
                                                                                (get-in activity ["object" "@type"])      " - "
                                                                                (get activity "@type")))
