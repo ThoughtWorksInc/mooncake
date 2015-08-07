@@ -4,16 +4,19 @@
   padding: 15px 18px 15px 80px;
   border-bottom: 1px solid $grey;
   color: $purple;
-  &:nth-child(2n) {
+}
+
+.activity-src- {
+  &0 {
     color: $green;
   }
-  &:nth-child(3n) {
+  &1 {
     color: $yellow;
   }
-  &:nth-child(4n) {
+  &2 {
     color: $blue;
   }
-  &:nth-child(5n) {
+  &3 {
     color: $red;
   }
 }
