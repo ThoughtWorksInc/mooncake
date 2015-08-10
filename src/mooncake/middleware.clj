@@ -13,6 +13,12 @@
         (assoc-in [:context :config-m] config-m)
         handler)))
 
+(defn wrap-activity-sources [handler activity-sources]
+  (fn [request]
+    (-> request
+        (assoc-in [:context :activity-sources] activity-sources)
+        handler)))
+
 (defn wrap-handle-403 [handler error-403-handler]
   (fn [request]
     (let [response (handler request)]

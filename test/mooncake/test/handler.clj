@@ -1,7 +1,7 @@
 (ns mooncake.test.handler
   (:require [midje.sweet :refer :all]
             [clj-http.client :as http]
-            [mooncake.handler :refer [index retrieve-activities]]))
+            [mooncake.handler :refer [index retrieve-activities load-activities]]))
 
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
@@ -33,10 +33,9 @@
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]
         (index {:context
-                {:config-m
                  {:activity-sources
                   {:an-activity-src an-activity-src-url
-                   :another-activity-src another-activity-src-url}}}}) => (every-checker
+                   :another-activity-src another-activity-src-url}}}) => (every-checker
                                                                             (contains {:status 200})
                                                                             (contains {:body (contains "JDog")})
                                                                             (contains {:body (contains "KCat")}))
@@ -47,3 +46,6 @@
           (http/get another-activity-src-url {:accept :json})  => {:body (str "[{\"actor\": {\"@type\": \"Person\",
                                                                                              \"displayName\": \"KCat\"},
                                                                                  \"published\": \"" twelve-oclock "\"}]")})))
+(fact "can load activity sources from a resource"
+      (load-activities "test-activity-sources.yml") => {:test-activity-source-1 "https://test-activity.src/activities"
+                                                        :test-activity-source-2 "https://another-test-activity.src"})

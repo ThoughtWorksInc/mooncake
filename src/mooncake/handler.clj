@@ -5,6 +5,8 @@
             [ring.middleware.defaults :as ring-mw]
             [clj-http.client :as http]
             [cheshire.core :as json]
+            [clj-yaml.core :as yaml]
+            [clojure.java.io :as io]
             [mooncake.routes :as routes]
             [mooncake.config :as config]
             [mooncake.translation :as t]
@@ -14,6 +16,15 @@
             [mooncake.middleware :as m]))
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
+
+(defn load-activities [activity-resource-name]
+  (-> activity-resource-name
+      io/resource
+      slurp
+      yaml/parse-string))
+
+(def activity-sources
+  (load-activities "activity-sources.yml"))
 
 (defn retrieve-activities-from-source [source-k-v-pair]
   (let [[source-key source-url] source-k-v-pair
@@ -30,7 +41,7 @@
        (sort-by published-time mh/after?))))
 
 (defn index [request]
-  (let [activity-sources (get-in request [:context :config-m :activity-sources])
+  (let [activity-sources (get-in request [:context :activity-sources])
         activities (retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
 
@@ -53,13 +64,14 @@
       (assoc-in [:session :cookie-attrs :max-age] 3600)
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
-(defn create-app [config-m]
+(defn create-app [config-m activity-sources]
   (-> (scenic/scenic-handler routes/routes site-handlers not-found)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
-      (m/wrap-config (assoc config-m :activity-sources {:objective8 "https://objective8.dcentproject.eu/activities"}))
+      (m/wrap-config config-m)
+      (m/wrap-activity-sources activity-sources)
       m/wrap-translator))
 
-(def app (create-app (config/create-config)))
+(def app (create-app (config/create-config) activity-sources))
 
 (defn -main [& args]
   (let [config-m (config/create-config)]
