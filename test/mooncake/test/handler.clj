@@ -33,9 +33,9 @@
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]
         (index {:context
-                 {:activity-sources
-                  {:an-activity-src an-activity-src-url
-                   :another-activity-src another-activity-src-url}}}) => (every-checker
+                {:activity-sources
+                 {:an-activity-src an-activity-src-url
+                  :another-activity-src another-activity-src-url}}}) => (every-checker
                                                                             (contains {:status 200})
                                                                             (contains {:body (contains "JDog")})
                                                                             (contains {:body (contains "KCat")}))
