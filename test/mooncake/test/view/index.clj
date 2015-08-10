@@ -4,11 +4,12 @@
             [clojure.contrib.humanize :as h]
             [clj-time.core :as c]
             [clj-time.format :as f]
+            [mooncake.test.test-helpers :as th]
             [mooncake.view.index :as i]))
 
 (fact "index page should return index template"
       (let [page (i/index :request)]
-        (-> (html/select page [:body]) first :attrs :class) => "func--index-page"))
+        page => (th/has-attr? [:body] :class "func--index-page")))
 
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
