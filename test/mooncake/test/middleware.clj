@@ -1,5 +1,6 @@
 (ns mooncake.test.middleware
   (:require [midje.sweet :refer :all]
+            [mooncake.test.test-helpers :as th]
             [mooncake.middleware :as m]))
 
 (defn example-handler [request]
@@ -30,3 +31,13 @@
             stub-error-403-handler (fn [req] ...error-403-response...)
             wrapped-handler (m/wrap-handle-403 handler-that-always-403s stub-error-403-handler)]
         (wrapped-handler ...request...) => ...error-403-response...))
+
+(facts "about wrap-signed-in"
+       (let [handler (fn [request] ...handled...)
+             wrapped-handler (m/wrap-signed-in handler "/sign-in")]
+
+         (fact "calls wrapped handler when user is signed in"
+               (wrapped-handler {:session {:user-login ...user-login...}}) => ...handled...)
+
+         (fact "redirects to provided route when user is not signed in"
+               (wrapped-handler {}) => (th/check-redirects-to "/sign-in"))))

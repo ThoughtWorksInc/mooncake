@@ -1,5 +1,6 @@
 (ns mooncake.middleware
-  (:require [mooncake.translation :as translation]))
+  (:require [ring.util.response :as r]
+            [mooncake.translation :as translation]))
 
 (defn wrap-translator [handler]
   (fn [request]
@@ -25,6 +26,12 @@
       (if (= (:status response) 403)
         (error-403-handler request)
         response))))
+
+(defn wrap-signed-in [handler sign-in-route]
+  (fn [request]
+    (if (get-in request [:session :user-login])
+      (handler request)
+      (r/redirect sign-in-route))))
 
 (defn wrap-handlers [handlers wrap-function exclusions]
   (into {} (for [[k v] handlers]
