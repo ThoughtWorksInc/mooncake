@@ -54,5 +54,8 @@
       (h/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 "https://test-activity.src/activities"
                                                                 :test-activity-source-2 "https://another-test-activity.src"})
 
-(fact "get-json-from-activity-source gracefully handles bad/missing responses"
-      (h/get-json-from-activity-source "http://localhost:6666/not-an-activity-source") => nil)
+(fact "get-json-from-activity-source gracefully handles exceptions caused by bad/missing responses"
+      (h/get-json-from-activity-source ...invalid-activity-src-url...) => nil
+      (provided
+        (http/get ...invalid-activity-src-url...
+                  {:accept :json :as :json-string-keys}) =throws=> (java.net.ConnectException.)))

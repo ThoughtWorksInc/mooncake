@@ -37,6 +37,12 @@
              (kh/selector-includes-content [ks/index-page-activity-item-action] "Barry - STUB_ACTIVITY - Create")
              (kh/selector-has-attribute-with-content [ks/index-page-activity-item-link] :href "http://stub-activity.url"))))
 
+(facts "Invalid activity source responses are handled gracefully"
+       (-> (k/session (h/create-app (c/create-config) {:invalid-activity-src  "http://localhost:6666/not-an-activity-source"}))
+           (k/visit "/")
+           (kh/page-uri-is "/")
+           (kh/response-status-is 200)))
+
 (facts "Going to an unknown uri renders the 404 page"
        (-> (k/session h/app)
            (k/visit "/not-a-valid-uri")
