@@ -40,25 +40,16 @@
 
         (count (html/select page [:.clj--activity-item])) => 2
 
-        (-> (html/select first-activity-item [:.clj--activity-item__link])
-            first :attrs :href) => "http://objective8.dcentproject.eu/objectives/7"
-        (-> (html/select first-activity-item [:.clj--activity-item__time])
-            first :attrs :datetime) => ten-minutes-ago-str
-        (-> (html/select first-activity-item [:.clj--activity-item__time])
-            first html/text) => "10 minutes ago"
-        (-> (html/select first-activity-item [:.clj--activity-item__action])
-            first html/text) => "JDog - Objective - Create"
-        (-> (html/select first-activity-item [:.clj--activity-item__title])
-            first html/text) => "OBJECTIVE 7 TITLE"
+        first-activity-item => (th/has-attr? [:.clj--activity-item__link] :href "http://objective8.dcentproject.eu/objectives/7")
+        first-activity-item => (th/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
+        first-activity-item => (th/text-is? [:.clj--activity-item__time] "10 minutes ago")
+        first-activity-item => (th/text-is? [:.clj--activity-item__action] "JDog - Objective - Create")
+        first-activity-item => (th/text-is? [:.clj--activity-item__title]  "OBJECTIVE 7 TITLE")
 
-        (-> (html/select second-activity-item [:.clj--activity-item__link])
-            first :attrs :href) => "http://objective8.dcentproject.eu/objectives/6"
-        (-> (html/select second-activity-item [:.clj--activity-item__time])
-            first :attrs :datetime) => "2015-08-04T14:49:38.407Z"
-        (-> (html/select second-activity-item [:.clj--activity-item__action])
-            first html/text) => "Lala - Objective - Create"
-        (-> (html/select second-activity-item [:.clj--activity-item__title])
-            first html/text) => "OBJECTIVE 6 TITLE"))
+        second-activity-item => (th/has-attr? [:.clj--activity-item__link] :href "http://objective8.dcentproject.eu/objectives/6")
+        second-activity-item => (th/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
+        second-activity-item => (th/text-is? [:.clj--activity-item__action]  "Lala - Objective - Create")
+        second-activity-item => (th/text-is? [:.clj--activity-item__title]  "OBJECTIVE 6 TITLE")))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (i/index {:context {:activities
