@@ -17,20 +17,20 @@
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
-(defn load-activities [activity-resource-name]
+(defn load-activity-sources [activity-resource-name]
   (-> activity-resource-name
       io/resource
       slurp
       yaml/parse-string))
 
 (def activity-sources
-  (load-activities "activity-sources.yml"))
+  (load-activity-sources "activity-sources.yml"))
 
-(defn get-json-from-url [url]
+(defn get-json-from-activity-source [url]
   (try
     (:body (http/get url {:accept :json :as :json-string-keys}))
     (catch Exception e
-      (log/warn (str "Unable to retrieve json from " url " --- " e))
+      (log/warn (str "Unable to retrieve activities from " url " --- " e))
       nil)))
 
 (defn retrieve-activities-from-source [source-k-v-pair]
