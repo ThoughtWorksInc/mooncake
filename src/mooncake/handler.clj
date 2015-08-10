@@ -20,6 +20,8 @@
         activities (a/retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
 
+(defn stonecutter-sign-in [stonecutter-config request])
+
 (defn stub-activities [request]
   (-> "stub-activities.json"
       io/resource

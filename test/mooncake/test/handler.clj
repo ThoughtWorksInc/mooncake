@@ -1,6 +1,7 @@
 (ns mooncake.test.handler
   (:require [midje.sweet :refer :all]
             [clj-http.client :as http]
+            [stonecutter-oauth.client :as soc]
             [mooncake.handler :as h]))
 
 
@@ -27,3 +28,8 @@
                                               :as :json-string-keys})  => {:body [{"actor" {"@type" "Person"
                                                                                             "displayName" "KCat"}
                                                                                    "published" twelve-oclock}]})))
+
+(future-fact "stonecutter-sign-in handler delegates to the stonecutter client library"
+      (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
+      (provided
+        (soc/authorisation-redirect-response ...stonecutter-config...) => ...stonecutter-sign-in-redirect...))
