@@ -45,6 +45,13 @@
         activities (retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
 
+(defn stub-activities [request]
+  (-> "stub-activities.json"
+      io/resource
+      slurp
+      r/response
+      (r/content-type "application/json")))
+
 (defn not-found [request]
   (-> (error/not-found-error)
       (mh/enlive-response default-context)
@@ -56,7 +63,8 @@
       (r/status 403)))
 
 (def site-handlers
-  (-> {:index index}
+  (-> {:index index
+       :stub-activities stub-activities}
       (m/wrap-handlers #(m/wrap-handle-403 % forbidden-err-handler) #{})))
 
 (defn wrap-defaults-config [secure?]

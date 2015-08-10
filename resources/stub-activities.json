@@ -1,0 +1,9 @@
+[{"@context": "http://www.w3.org/ns/activitystreams",
+  "@type": "Create",
+  "published": "2015-08-04T14:49:38.407Z",
+  "actor": {"@type": "Person",
+            "displayName": "Barry"},
+  "object":  {"@type": "STUB_ACTIVITY",
+              "displayName": "Stub activity title",
+              "content": "Stub activity content",
+              "url": "http://stub-activity.url"}}]

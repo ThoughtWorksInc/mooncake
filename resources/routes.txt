@@ -1,1 +1,2 @@
-GET  /  index
+GET  /                 index
+GET  /stub-activities  stub-activities
