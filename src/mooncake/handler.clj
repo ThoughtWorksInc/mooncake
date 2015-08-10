@@ -3,51 +3,21 @@
             [ring.adapter.jetty :as ring-jetty]
             [ring.util.response :as r]
             [ring.middleware.defaults :as ring-mw]
-            [clj-http.client :as http]
-            [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
-            [clojure.tools.logging :as log]
             [mooncake.routes :as routes]
             [mooncake.config :as config]
             [mooncake.translation :as t]
             [mooncake.view.index :as i]
             [mooncake.view.error :as error]
             [mooncake.helper :as mh]
+            [mooncake.activity :as a]
             [mooncake.middleware :as m]))
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
-(defn load-activity-sources [activity-resource-name]
-  (-> activity-resource-name
-      io/resource
-      slurp
-      yaml/parse-string))
-
-(def activity-sources
-  (load-activity-sources "activity-sources.yml"))
-
-(defn get-json-from-activity-source [url]
-  (try
-    (:body (http/get url {:accept :json :as :json-string-keys}))
-    (catch Exception e
-      (log/warn (str "Unable to retrieve activities from " url " --- " e))
-      nil)))
-
-(defn retrieve-activities-from-source [source-k-v-pair]
-  (let [[source-key source-url] source-k-v-pair
-        activities (get-json-from-activity-source source-url)]
-    (map #(assoc % :activity-src source-key) activities)))
-
-(defn retrieve-activities [activity-sources]
-  (let [published-time (fn [activity]
-                         (mh/datetime-str->datetime (get activity "published")))]
-    (->> (map retrieve-activities-from-source activity-sources)
-         flatten
-         (sort-by published-time mh/after?))))
-
 (defn index [request]
   (let [activity-sources (get-in request [:context :activity-sources])
-        activities (retrieve-activities activity-sources)]
+        activities (a/retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
 
 (defn stub-activities [request]
@@ -84,7 +54,7 @@
       (m/wrap-activity-sources activity-sources)
       m/wrap-translator))
 
-(def app (create-app (config/create-config) activity-sources))
+(def app (create-app (config/create-config) a/activity-sources))
 
 (defn -main [& args]
   (let [config-m (config/create-config)]
