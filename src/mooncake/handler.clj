@@ -4,9 +4,9 @@
             [ring.util.response :as r]
             [ring.middleware.defaults :as ring-mw]
             [clj-http.client :as http]
-            [cheshire.core :as json]
             [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
+            [clojure.tools.logging :as log]
             [mooncake.routes :as routes]
             [mooncake.config :as config]
             [mooncake.translation :as t]
@@ -26,19 +26,24 @@
 (def activity-sources
   (load-activities "activity-sources.yml"))
 
+(defn get-json-from-url [url]
+  (try
+    (:body (http/get url {:accept :json :as :json-string-keys}))
+    (catch Exception e
+      (log/warn (str "Unable to retrieve json from " url " --- " e))
+      nil)))
+
 (defn retrieve-activities-from-source [source-k-v-pair]
   (let [[source-key source-url] source-k-v-pair
-        activities (-> (http/get source-url {:accept :json})
-                       :body
-                       json/parse-string)]
+        activities (get-json-from-url source-url)]
     (map #(assoc % :activity-src source-key) activities)))
 
 (defn retrieve-activities [activity-sources]
   (let [published-time (fn [activity]
                          (mh/datetime-str->datetime (get activity "published")))]
-  (->> (map retrieve-activities-from-source activity-sources)
-       flatten
-       (sort-by published-time mh/after?))))
+    (->> (map retrieve-activities-from-source activity-sources)
+         flatten
+         (sort-by published-time mh/after?))))
 
 (defn index [request]
   (let [activity-sources (get-in request [:context :activity-sources])
