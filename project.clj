@@ -27,7 +27,6 @@
                    :jvm-opts ["-Dlog4j.configuration=log4j.dev"]
                    :resource-paths ["resources" "test-resources"]
                    :env {:secure "false"
-                         :scheme "http"
                          :client-id "fake stonecutter client id"
                          :client-secret "fake stonecutter client secret"
                          :auth-url "fake stonecutter auth url"}}
