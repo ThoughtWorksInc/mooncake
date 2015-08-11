@@ -53,10 +53,12 @@
   (soc/configure (config/auth-url config-m)
                  (config/client-id config-m)
                  (config/client-secret config-m)
-                 (str (config/base-url config-m) "/d-cent-callback")))
+                 (routes/absolute-path config-m :stonecutter-callback)))
 
 (defn site-handlers [config-m]
   (let [stonecutter-config (create-stonecutter-config config-m)]
+    (when (= :invalid-configuration stonecutter-config)
+      (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
     (-> {:index index
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)

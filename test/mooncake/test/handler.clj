@@ -10,6 +10,12 @@
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 
+(facts "about site-handlers"
+       (fact "throws an exception when stonecutter oauth configuration is invalid"
+             (h/site-handlers {}) => (throws anything)
+             (provided
+               (h/create-stonecutter-config anything) => :invalid-configuration)))
+
 (fact "index handler displays activities retrieved from activity sources"
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]

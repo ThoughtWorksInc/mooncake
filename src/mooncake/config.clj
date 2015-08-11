@@ -2,7 +2,9 @@
   (:require [environ.core :as env]
             [clojure.tools.logging :as log]))
 
-(def env-vars #{:port :host :secure})
+(def env-vars #{:port :host :scheme
+                :client-id :client-secret :auth-url
+                :secure})
 
 (defn create-config []
   (select-keys env/env env-vars))

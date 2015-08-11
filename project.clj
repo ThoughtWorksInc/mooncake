@@ -26,5 +26,8 @@
                                     [lein-ancient "0.6.7"]]
                    :jvm-opts ["-Dlog4j.configuration=log4j.dev"]
                    :resource-paths ["resources" "test-resources"]
-                   :env {:secure "false"}}
+                   :env {:secure "false"
+                         :client-id "fake stonecutter client id"
+                         :client-secret "fake stonecutter client secret"
+                         :auth-url "fake stonecutter auth url"}}
              :uberjar {:aot :all}})
