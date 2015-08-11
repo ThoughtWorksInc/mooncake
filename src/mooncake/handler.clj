@@ -12,7 +12,8 @@
             [mooncake.view.error :as error]
             [mooncake.helper :as mh]
             [mooncake.activity :as a]
-            [mooncake.middleware :as m]))
+            [mooncake.middleware :as m])
+  (:gen-class))
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
 

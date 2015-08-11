@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "ubuntu/trusty64"  
+
+  config.vm.define "default", primary: true do |dev|
+    dev.vm.network "private_network", ip: "192.168.50.70"
+    dev.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", auto_correct: false
+
+    dev.vm.synced_folder "../", "/var/mooncake"
+
+    dev.vm.provider :virtualbox do |vbox|
+      vbox.customize ["modifyvm", :id, "--memory", 2048]
+    end
+
+    dev.vm.provision "ansible" do |ansible|
+      ansible.playbook = "dob_vm_playbook.yml"
+      ansible.inventory_path = "dob_vm.inventory"
+      ansible.sudo = true
+    end
+  end
+end

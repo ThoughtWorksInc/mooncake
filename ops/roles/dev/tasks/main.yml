@@ -1,0 +1,41 @@
+---
+ - name: install git
+   apt: name=git state=present
+   
+ - name: add nodesource apt-key
+   apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
+
+ - name: add nodesource deb repo
+   apt_repository: repo='deb https://deb.nodesource.com/node_0.12 trusty main' state=present
+
+ - name: add nodesource deb-src repo
+   apt_repository: repo='deb-src https://deb.nodesource.com/node_0.12 trusty main' state=present
+
+ - name: install node.js
+   apt: pkg=nodejs state=latest
+
+ - name: install latest openssl
+   apt: pkg=openssl state=latest
+
+ - name: Node.js | Update npm
+   command: npm install npm -g
+
+ - name: symlink node->nodejs
+   file: src=/usr/bin/nodejs dest=/usr/bin/node state=link
+
+ - name: Node.js | Install packages
+   npm: name={{item}} global=yes
+   with_items:
+     - npm
+     - gulp
+
+ - name: Rebuild node-sass
+   args:
+     chdir: /var/stonecutter
+   command: npm rebuild node-sass
+
+ - name: install firefox
+   apt: name=firefox state=present
+
+ - name: install xvfb
+   apt: name=xvfb state=present
