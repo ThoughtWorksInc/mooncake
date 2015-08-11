@@ -29,7 +29,7 @@
 
 (defn wrap-signed-in [handler sign-in-route]
   (fn [request]
-    (if (get-in request [:session :user-login])
+    (if (get-in request [:session :user-id])
       (handler request)
       (r/redirect sign-in-route))))
 

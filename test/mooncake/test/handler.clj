@@ -2,6 +2,7 @@
   (:require [midje.sweet :refer :all]
             [clj-http.client :as http]
             [stonecutter-oauth.client :as soc]
+            [mooncake.routes :as routes]
             [mooncake.handler :as h]))
 
 
@@ -29,7 +30,17 @@
                                                                                             "displayName" "KCat"}
                                                                                    "published" twelve-oclock}]})))
 
-(future-fact "stonecutter-sign-in handler delegates to the stonecutter client library"
+(fact "stonecutter-sign-in handler delegates to the stonecutter client library"
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
       (provided
         (soc/authorisation-redirect-response ...stonecutter-config...) => ...stonecutter-sign-in-redirect...))
+
+(facts "about stonecutter-callback"
+       (fact "redirects to / with the user-id set in the session"
+             (h/stonecutter-callback ...stonecutter-config... {:params {:code ...auth-code...}})
+             => (contains {:status 302
+                           :headers {"Location" (routes/absolute-path {} :index)}
+                           :session {:user-id ...stonecutter-user-id...}})
+             (provided
+               (soc/request-access-token! ...stonecutter-config... ...auth-code...)
+               => {:user-id ...stonecutter-user-id...})))

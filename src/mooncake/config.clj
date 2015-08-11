@@ -20,6 +20,21 @@
 (defn host [config-m]
   (get-env config-m :host "127.0.0.1"))
 
+(defn scheme [config-m]
+  (get-env config-m :scheme "https"))
+
+(defn base-url [config-m]
+  (str (scheme config-m) "://" (host config-m) ":" (port config-m)))
+
+(defn client-id [config-m]
+  (get-env config-m :client-id))
+
+(defn client-secret [config-m]
+  (get-env config-m :client-secret))
+
+(defn auth-url [config-m]
+  (get-env config-m :auth-url))
+
 (defn secure?
   "Returns true unless 'secure' environment variable set to 'false'"
   [config-m]

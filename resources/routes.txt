@@ -1,2 +1,4 @@
 GET  /                 index
 GET  /stub-activities  stub-activities
+GET  /d-cent-sign-in   stonecutter-sign-in
+GET  /d-cent-callback  stonecutter-callback
