@@ -3,6 +3,7 @@
             [kerodon.core :as k]
             [ring.adapter.jetty :as ring-jetty]
             [stonecutter-oauth.client :as soc]
+            [ring.util.response :as r]
             [mooncake.routes :as routes]
             [mooncake.handler :as h]
             [mooncake.config :as c]
@@ -29,19 +30,24 @@
 (background
   (soc/request-access-token! anything anything) => {:user-id "test-stonecutter-user-uuid"})
 
-(future-facts "The index page redirects to /sign-in when user is not signed in"
+(facts "The index page redirects to /sign-in when user is not signed in"
        (-> (k/session h/app)
            (k/visit "/")
            (kh/check-and-follow-redirect "sign-in")
            (kh/page-uri-is "/sign-in")
            (kh/response-status-is 200)))
 
-(facts "Signing in redirects to the index page"
-       (-> (k/session h/app)
-           (k/visit (routes/absolute-path (c/create-config) :stonecutter-callback))
-           (kh/check-and-follow-redirect)
-           (kh/page-uri-is "/")
-           (kh/response-status-is 200)))
+(facts "Can sign in and be redirected to the index page"
+       (against-background
+         (soc/authorisation-redirect-response anything) => (r/redirect
+                                                             (routes/absolute-path (c/create-config) :stonecutter-callback)))
+         (-> (k/session h/app)
+             (k/visit "/sign-in")
+             (k/follow ks/sign-in-page-sign-in-with-d-cent-link)
+             (kh/check-and-follow-redirect "to stonecutter")
+             (kh/check-and-follow-redirect "to /")
+             (kh/page-uri-is "/")
+             (kh/response-status-is 200)))
 
 (against-background
   [(before :contents (start-server))

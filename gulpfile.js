@@ -138,7 +138,7 @@ gulp.task('watch', function () {
 gulp.task('server', function (callback) {
   isDev = true;
   runSequence('clean-build',
-      ['sass', 'js', 'images', 'favicons', 'fonts', 'browser-sync', 'watch'],
+      ['jade', 'sass', 'js', 'images', 'favicons', 'fonts', 'browser-sync', 'watch'],
       callback);
 });
 

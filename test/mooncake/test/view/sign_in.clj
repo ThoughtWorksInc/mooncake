@@ -8,7 +8,8 @@
       (let [page (si/sign-in ...request...)]
         page => (th/has-attr? [:body] :class "func--sign-in-page")))
 
-(fact "form has correct action and method"
+(th/test-translations "Sign-in page" si/sign-in)
+
+(fact "sign-in links to the correct location"
       (let [page (si/sign-in ...request...)]
-        page => (th/has-form-action? "d-cent-sign-in")
-        page => (th/has-form-method? "get")))
+        page => (th/has-attr? [:.clj--sign-in-with-d-cent] :href "/d-cent-sign-in")))

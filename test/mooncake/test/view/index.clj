@@ -11,6 +11,8 @@
       (let [page (i/index :request)]
         page => (th/has-attr? [:body] :class "func--index-page")))
 
+(th/test-translations "Index page" i/index)
+
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
             ten-minutes-ago-str (f/unparse (f/formatters :date-time) ten-minutes-ago)

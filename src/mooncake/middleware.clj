@@ -33,7 +33,7 @@
       (handler request)
       (r/redirect sign-in-route))))
 
-(defn wrap-handlers [handlers wrap-function exclusions]
+(defn wrap-handlers-excluding [handlers wrap-function exclusions]
   (into {} (for [[k v] handlers]
              [k (if (k exclusions) v (wrap-function v))])))
 

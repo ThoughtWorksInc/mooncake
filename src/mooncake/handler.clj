@@ -9,6 +9,7 @@
             [mooncake.config :as config]
             [mooncake.translation :as t]
             [mooncake.view.index :as i]
+            [mooncake.view.sign-in :as si]
             [mooncake.view.error :as error]
             [mooncake.helper :as mh]
             [mooncake.activity :as a]
@@ -20,10 +21,10 @@
 (defn index [request]
   (let [activity-sources (get-in request [:context :activity-sources])
         activities (a/retrieve-activities activity-sources)]
-    (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
+    (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) (:context request))))
 
 (defn sign-in [request]
-  (r/response "sign in page"))
+  (mh/enlive-response (si/sign-in request) (:context request)))
 
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
@@ -68,10 +69,9 @@
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config)}
-        (m/wrap-handlers #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
-                         #{:index :sign-in :stonecutter-sign-in :stonecutter-callback
-                           :stub-activities})
-        (m/wrap-handlers #(m/wrap-handle-403 % forbidden-err-handler) #{}))))
+        (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
+                                   #{:sign-in :stonecutter-sign-in :stonecutter-callback :stub-activities})
+        (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-err-handler) #{}))))
 
 (defn wrap-defaults-config [secure?]
   (-> (if secure? (assoc ring-mw/secure-site-defaults :proxy true) ring-mw/site-defaults)

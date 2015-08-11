@@ -9,7 +9,7 @@
                  [scenic "0.2.3"]
                  [enlive "1.1.6"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [traduki "0.1.1-SNAPSHOT"]
+                 [traduki "0.1.2-SNAPSHOT"]
                  [clj-yaml "0.4.0"]
                  [cheshire "5.5.0"]
                  [bilus/clojure-humanize "0.1.0"]
@@ -27,6 +27,7 @@
                    :jvm-opts ["-Dlog4j.configuration=log4j.dev"]
                    :resource-paths ["resources" "test-resources"]
                    :env {:secure "false"
+                         :scheme "http"
                          :client-id "fake stonecutter client id"
                          :client-secret "fake stonecutter client secret"
                          :auth-url "fake stonecutter auth url"}}

@@ -20,7 +20,8 @@
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]
         (h/index {:context
-                  {:activity-sources
+                  {:translator (constantly "")
+                   :activity-sources
                    {:an-activity-src an-activity-src-url
                     :another-activity-src another-activity-src-url}}}) => (every-checker
                                                                             (contains {:status 200})

@@ -1,11 +1,51 @@
 .icon-d-cent {
-  background-image: url('/static/d-cent-sign-in-icon.png');
+  background-image: url('/images/d-cent-sign-in-icon.png');
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.sign-in-form {
-  display: inline-block;
-  max-width: 15.5em;
-  margin-bottom: 0.5em;
+.button--sign-in :first-child {
+  line-height: 45px;
+  width: 45px;
+  font-size: 1.8em;
+}
+
+.button--sign-in > :first-child {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  text-align: center;
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.button--sign-in {
+  font-weight: normal;
+  vertical-align: middle;
+  cursor: pointer;
+  -moz-user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  display: block;
+  width: 100%;
+  position: relative;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #000;
+  background-color: #FFF;
+  border-color: rgba(0, 0, 0, 0.2);
+  padding: 10px 16px 10px 61px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 6px;
+  max-width: 12.5em;
+  margin: 2em auto;
+  text-decoration: none;
+
+
+  &:hover {
+    background-color: #E6E6E6;
+  }
 }
