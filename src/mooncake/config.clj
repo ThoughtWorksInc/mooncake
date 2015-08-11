@@ -20,7 +20,7 @@
   (Integer. (get-env config-m :port "3000")))
 
 (defn host [config-m]
-  (get-env config-m :host "127.0.0.1"))
+  (get-env config-m :host "localhost"))
 
 (defn scheme [config-m]
   (get-env config-m :scheme "https"))

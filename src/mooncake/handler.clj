@@ -21,6 +21,9 @@
         activities (a/retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) default-context)))
 
+(defn sign-in [request]
+  (r/response "sign in page"))
+
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
 
@@ -60,9 +63,13 @@
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
     (-> {:index index
+         :sign-in sign-in
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config)}
+        (m/wrap-handlers #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
+                         #{:index :sign-in :stonecutter-sign-in :stonecutter-callback
+                           :stub-activities})
         (m/wrap-handlers #(m/wrap-handle-403 % forbidden-err-handler) #{}))))
 
 (defn wrap-defaults-config [secure?]
