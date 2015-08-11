@@ -31,7 +31,7 @@
 
  - name: Rebuild node-sass
    args:
-     chdir: /var/stonecutter
+     chdir: /var/mooncake
    command: npm rebuild node-sass
 
  - name: install firefox
