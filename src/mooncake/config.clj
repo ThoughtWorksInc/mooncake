@@ -2,7 +2,7 @@
   (:require [environ.core :as env]
             [clojure.tools.logging :as log]))
 
-(def env-vars #{:port :host :domain :scheme
+(def env-vars #{:port :host :base-url
                 :client-id :client-secret :auth-url
                 :secure})
 
@@ -22,14 +22,8 @@
 (defn host [config-m]
   (get-env config-m :host "localhost"))
 
-(defn domain [config-m]
-  (get-env config-m :domain "localhost"))
-
-(defn scheme [config-m]
-  (get-env config-m :scheme "https"))
-
 (defn base-url [config-m]
-  (str (scheme config-m) "://" (domain config-m) ":" (port config-m)))
+  (get-env config-m :base-url "http://localhost:3000"))
 
 (defn client-id [config-m]
   (get-env config-m :client-id))
