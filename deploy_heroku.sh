@@ -7,7 +7,7 @@ heroku maintenance:on
 heroku buildpacks:clear
 heroku buildpacks:set https://github.com/heroku/heroku-buildpack-clojure
 heroku buildpacks:add --index 1 https://github.com/heroku/heroku-buildpack-nodejs
-cat mooncake-staging.env | xargs heroku config:set
+cat mooncake-staging.env | xargs heroku config:set > /dev/null 2> /dev/null
 git push heroku master
 heroku maintenance:off
 
