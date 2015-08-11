@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 heroku git:remote --app mooncake-staging
 heroku maintenance:on
 heroku buildpacks:clear
