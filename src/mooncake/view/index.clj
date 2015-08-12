@@ -33,11 +33,15 @@
     (html/at enlive-m [:.clj--activity-stream]
              (html/content activity-stream-items))))
 
-(defn set-sign-out-link [enlive-m]
-  (html/at enlive-m [:.clj--sign-out__link] (html/set-attr :href (routes/path :sign-out))))
+(defn render-sign-out-link [enlive-m signed-in?]
+  (if signed-in?
+    (html/at enlive-m [:.clj--sign-out__link] (html/do->
+                                                (html/remove-class "clj--STRIP")
+                                                (html/set-attr :href (routes/path :sign-out))))
+    enlive-m))
 
 (defn index [request]
   (let [activities (get-in request [:context :activities])]
     (-> (vh/load-template "public/index.html")
-        set-sign-out-link
+        (render-sign-out-link (h/signed-in? request))
         (add-activities activities))))

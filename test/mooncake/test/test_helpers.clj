@@ -51,3 +51,7 @@
 
 (defn links-to? [selector path]
   (has-attr? selector :href path))
+
+(defn has-class? [selector css-class]
+  (fn [enlive-m]
+    ((midje/contains css-class) (enlive-m->attr enlive-m selector :class))))

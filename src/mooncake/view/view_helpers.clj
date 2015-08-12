@@ -24,3 +24,6 @@
   (->> nodes
        html/emit*
        (apply str)))
+
+(defn remove-elements [enlive-m selector]
+  (html/at enlive-m selector nil))

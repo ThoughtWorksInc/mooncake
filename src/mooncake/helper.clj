@@ -7,8 +7,12 @@
             [mooncake.translation :as t]
             [mooncake.view.view-helpers :as vh]))
 
+(defn signed-in? [request]
+  (boolean (get-in request [:session :user-id])))
+
 (defn enlive-response [enlive-m context]
   (-> enlive-m
+      (vh/remove-elements [:.clj--STRIP])
       (t/context-translate context)
       vh/enlive-to-str
       r/response

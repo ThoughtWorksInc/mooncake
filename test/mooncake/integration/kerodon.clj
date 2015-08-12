@@ -56,7 +56,7 @@
              (kh/page-uri-is "/")
              (kh/response-status-is 200)))
 
-(future-facts "A signed in user can sign out"
+(facts "A signed in user can sign out"
       (-> (k/session app)
           sign-in-against-stub
           (k/visit "/")

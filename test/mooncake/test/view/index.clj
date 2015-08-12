@@ -14,8 +14,10 @@
 
 (th/test-translations "Index page" i/index)
 
-(fact "sign-out link directs to /sign-out"
-      (i/index :request) => (th/links-to? [:.clj--sign-out__link] (routes/path :sign-out)))
+(fact "sign-out link is rendered and directs to /sign-out when user is signed in"
+      (let [page (i/index {:session {:user-id ...user-id...}})]
+        page => (th/links-to? [:.clj--sign-out__link] (routes/path :sign-out))
+        page =not=> (th/has-class? [:.clj--sign-out__link] "clj--STRIP")))
 
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
