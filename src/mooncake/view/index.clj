@@ -1,7 +1,7 @@
 (ns mooncake.view.index
   (:require [net.cgrand.enlive-html :as html]
             [mooncake.routes :as routes]
-            [mooncake.helper :as h]
+            [mooncake.helper :as mh]
             [mooncake.view.view-helpers :as vh]))
 
 (defn index-activity-sources [activities]
@@ -22,7 +22,7 @@
                                                             (html/do->
                                                               (html/set-attr :datetime activity-time)
                                                               (html/content (when activity-time
-                                                                              (h/humanise-time activity-time)))))
+                                                                              (mh/humanise-time activity-time)))))
                              [:.clj--activity-item__action] (html/content (str (get-in activity ["actor" "displayName"]) " - "
                                                                                (get-in activity ["object" "@type"])      " - "
                                                                                (get activity "@type")))
@@ -43,5 +43,5 @@
 (defn index [request]
   (let [activities (get-in request [:context :activities])]
     (-> (vh/load-template "public/index.html")
-        (render-sign-out-link (h/signed-in? request))
+        (render-sign-out-link (mh/signed-in? request))
         (add-activities activities))))

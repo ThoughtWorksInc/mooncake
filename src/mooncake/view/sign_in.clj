@@ -1,6 +1,5 @@
 (ns mooncake.view.sign-in
   (:require [net.cgrand.enlive-html :as html]
-            [mooncake.helper :as h]
             [mooncake.routes :as routes]
             [mooncake.view.view-helpers :as vh]))
 

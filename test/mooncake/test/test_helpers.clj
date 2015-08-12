@@ -1,7 +1,7 @@
 (ns mooncake.test.test-helpers
   (:require [midje.sweet :as midje]
             [net.cgrand.enlive-html :as html]
-            [mooncake.helper :as h]
+            [mooncake.helper :as mh]
             [mooncake.translation :as t]))
 
 (defn check-redirects-to [path]
@@ -18,7 +18,7 @@
               (let [translator (t/translations-fn t/translation-map)
                     page (-> {:context {:translator translator}}
                              view-fn
-                             (h/enlive-response {:translator translator}) :body)]
+                             (mh/enlive-response {:translator translator}) :body)]
                 page => no-untranslated-strings)))
 
 (defn enlive-m->attr [enlive-m selector attr]

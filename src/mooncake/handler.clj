@@ -27,7 +27,9 @@
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) (:context request))))
 
 (defn sign-in [request]
-  (mh/enlive-response (si/sign-in request) (:context request)))
+  (if (mh/signed-in? request)
+    (r/redirect (routes/absolute-path (request->config-m request) :index))
+    (mh/enlive-response (si/sign-in request) (:context request))))
 
 (defn sign-out [request]
   (let [config-m (request->config-m request)]

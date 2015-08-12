@@ -1,6 +1,6 @@
 (ns mooncake.middleware
   (:require [ring.util.response :as r]
-            [mooncake.helper :as h]
+            [mooncake.helper :as mh]
             [mooncake.translation :as translation]))
 
 (defn wrap-translator [handler]
@@ -30,7 +30,7 @@
 
 (defn wrap-signed-in [handler sign-in-route]
   (fn [request]
-    (if (h/signed-in? request)
+    (if (mh/signed-in? request)
       (handler request)
       (r/redirect sign-in-route))))
 

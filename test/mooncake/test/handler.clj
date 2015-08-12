@@ -38,6 +38,9 @@
                                                                                             "displayName" "KCat"}
                                                                                    "published" twelve-oclock}]})))
 
+(fact "sign-in handler redirects to / when user is signed in"
+      (h/sign-in {:session {:user-id ...user-id...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
+
 (fact "stonecutter-sign-in handler delegates to the stonecutter client library"
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
       (provided
