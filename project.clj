@@ -17,7 +17,6 @@
                  [org.clojars.d-cent/stonecutter-oauth "0.1.3-SNAPSHOT"]
                  [environ "1.0.0"]]
   :main mooncake.handler
-  :target-path "target/%s"
   :profiles {:dev {:dependencies   [[ring-mock "0.1.5"]
                                     [midje "1.7.0"]
                                     [kerodon "0.6.1"]]
