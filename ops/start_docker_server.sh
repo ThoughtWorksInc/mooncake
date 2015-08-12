@@ -1,7 +1,6 @@
-sudo docker run 
+sudo docker run \
     -v /var/mooncake/target:/var/mooncake \
     -p 5000:3000 \
-    -e "SECURE=false" \
     -e "CLIENT_ID=FOO" \
     -e "CLIENT_SECRET=SHHHH" \
     -e "AUTH_URL=https://some.auth.provider.com" \
