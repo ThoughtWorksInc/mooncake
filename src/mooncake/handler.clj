@@ -85,9 +85,8 @@
       (m/wrap-activity-sources activity-sources)
       m/wrap-translator))
 
-(def app (create-app (config/create-config) a/activity-sources))
-
 (defn -main [& args]
   (let [config-m (config/create-config)]
-    (ring-jetty/run-jetty app {:port (config/port config-m)
-                               :host (config/host config-m)})))
+    (ring-jetty/run-jetty (create-app config-m a/activity-sources)
+                          {:port (config/port config-m)
+                           :host (config/host config-m)})))

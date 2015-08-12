@@ -24,14 +24,18 @@
 
 
 (def server (atom nil))
-(defn start-server [] (swap! server (fn [_] (ring-jetty/run-jetty h/app {:host "127.0.0.1" :port 3000 :join? false}))))
+(defn start-server [] (swap! server (fn [_] (ring-jetty/run-jetty 
+                                              (h/create-app (c/create-config) {})
+                                              {:host "127.0.0.1" :port 3000 :join? false}))))
 (defn stop-server [] (.stop @server))
 
 (background
   (soc/request-access-token! anything anything) => {:user-id "test-stonecutter-user-uuid"})
 
+(def app (h/create-app (c/create-config) {}))
+
 (facts "The index page redirects to /sign-in when user is not signed in"
-       (-> (k/session h/app)
+       (-> (k/session app)
            (k/visit "/")
            (kh/check-and-follow-redirect "sign-in")
            (kh/page-uri-is "/sign-in")
@@ -41,7 +45,7 @@
        (against-background
          (soc/authorisation-redirect-response anything) => (r/redirect
                                                              (routes/absolute-path (c/create-config) :stonecutter-callback)))
-         (-> (k/session h/app)
+         (-> (k/session app)
              (k/visit "/sign-in")
              (k/follow ks/sign-in-page-sign-in-with-d-cent-link)
              (kh/check-and-follow-redirect "to stonecutter")
@@ -71,7 +75,7 @@
            (kh/response-status-is 200)))
 
 (facts "Going to an unknown uri renders the 404 page"
-       (-> (k/session h/app)
+       (-> (k/session app)
            (k/visit "/not-a-valid-uri")
            (kh/page-uri-is "/not-a-valid-uri")
            (kh/response-status-is 404)
