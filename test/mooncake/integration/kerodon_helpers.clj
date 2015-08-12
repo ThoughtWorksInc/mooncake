@@ -32,6 +32,12 @@
         (-> state :response :body) => (contains content))
   state)
 
+(defn check-and-follow [state kerodon-selector]
+  (fact {:midje/name (format "Attempting to follow link with selector: %s" kerodon-selector)}
+        (let [enlive-selector [kerodon-selector]]
+          (-> state :enlive (html/select enlive-selector) first :attrs) => (contains {:href anything})))
+  (try (k/follow state kerodon-selector)
+       (catch Exception state)))
 
 (defn check-and-follow-redirect
   ([state description]
@@ -44,29 +50,29 @@
    (check-and-follow-redirect state "")))
 
 
-(defn selector-exists [state selector]
-  (fact {:midje/name (str "Check element exists with " selector)}
-        (-> state :enlive (html/select selector)) =not=> empty?)
+(defn selector-exists [state kerodon-selector]
+  (fact {:midje/name (str "Check element exists with " kerodon-selector)}
+        (-> state :enlive (html/select [kerodon-selector])) =not=> empty?)
   state)
 
-(defn selector-not-present [state selector]
-  (fact {:midje/name (str "Check element does not exist with " selector)}
-        (-> state :enlive (html/select selector)) => empty?)
+(defn selector-not-present [state kerodon-selector]
+  (fact {:midje/name (str "Check element does not exist with " kerodon-selector)}
+        (-> state :enlive (html/select [kerodon-selector])) => empty?)
   state)
 
-(defn selector-includes-content [state selector content]
+(defn selector-includes-content [state kerodon-selector content]
   (fact {:midje/name "Check if element contains string"}
-        (-> state :enlive (html/select selector) first html/text) => (contains content))
+        (-> state :enlive (html/select [kerodon-selector]) first html/text) => (contains content))
   state)
 
-(defn selector-has-attribute-with-content [state selector attr content]
+(defn selector-has-attribute-with-content [state kerodon-selector attr content]
   (fact {:midje/name "Check if element contains attribute with string"}
-        (-> state :enlive (html/select selector) first :attrs attr) => content)
+        (-> state :enlive (html/select [kerodon-selector]) first :attrs attr) => content)
   state)
 
-(defn selector-does-not-include-content [state selector content]
+(defn selector-does-not-include-content [state kerodon-selector content]
   (fact {:midje/name "Check if element does not contain string"}
-        (-> state :enlive (html/select selector) first html/text) =not=> (contains content))
+        (-> state :enlive (html/select [kerodon-selector]) first html/text) =not=> (contains content))
   state)
 
 (defn location-contains [state path]
