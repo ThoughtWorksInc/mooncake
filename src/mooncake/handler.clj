@@ -16,6 +16,9 @@
             [mooncake.middleware :as m])
   (:gen-class))
 
+(defn request->config-m [request]
+  (get-in request [:context :config-m]))
+
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
 (defn index [request]
@@ -26,11 +29,16 @@
 (defn sign-in [request]
   (mh/enlive-response (si/sign-in request) (:context request)))
 
+(defn sign-out [request]
+  (let [config-m (request->config-m request)]
+    (-> (r/redirect (routes/absolute-path config-m :sign-in))
+        (assoc :session {}))))
+
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
 
 (defn stonecutter-callback [stonecutter-config request]
-  (let [config-m (get-in request [:context :config-m])
+  (let [config-m (request->config-m request)
         auth-code (get-in request [:params :code])
         token-response (soc/request-access-token! stonecutter-config auth-code)
         auth-provider-user-id (:user-id token-response)]

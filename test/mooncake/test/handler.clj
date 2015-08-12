@@ -3,6 +3,7 @@
             [clj-http.client :as http]
             [stonecutter-oauth.client :as soc]
             [mooncake.routes :as routes]
+            [mooncake.test.test-helpers :as th]
             [mooncake.handler :as h]))
 
 
@@ -45,9 +46,15 @@
 (facts "about stonecutter-callback"
        (fact "redirects to / with the user-id set in the session"
              (h/stonecutter-callback ...stonecutter-config... {:params {:code ...auth-code...}})
-             => (contains {:status 302
-                           :headers {"Location" (routes/absolute-path {} :index)}
-                           :session {:user-id ...stonecutter-user-id...}})
+             => (every-checker
+                  (th/check-redirects-to (routes/absolute-path {} :index))
+                  (contains {:session {:user-id ...stonecutter-user-id...}}))
              (provided
                (soc/request-access-token! ...stonecutter-config... ...auth-code...)
                => {:user-id ...stonecutter-user-id...})))
+
+(fact "sign-out handler clears the session and redirects to /sign-in"
+      (let [response (h/sign-out {:session {:user-id ...some-user-id...
+                                            :some-other-key ...some-other-value...}})]
+        (:session response) => {}
+        response => (th/check-redirects-to (routes/absolute-path {} :sign-in))))
