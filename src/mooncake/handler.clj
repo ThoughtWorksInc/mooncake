@@ -74,6 +74,7 @@
       (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
     (-> {:index index
          :sign-in sign-in
+         :sign-out sign-out
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config)}

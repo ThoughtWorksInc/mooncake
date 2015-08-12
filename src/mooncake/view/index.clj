@@ -1,5 +1,6 @@
 (ns mooncake.view.index
   (:require [net.cgrand.enlive-html :as html]
+            [mooncake.routes :as routes]
             [mooncake.helper :as h]
             [mooncake.view.view-helpers :as vh]))
 
@@ -32,8 +33,11 @@
     (html/at enlive-m [:.clj--activity-stream]
              (html/content activity-stream-items))))
 
+(defn set-sign-out-link [enlive-m]
+  (html/at enlive-m [:.clj--sign-out__link] (html/set-attr :href (routes/path :sign-out))))
+
 (defn index [request]
   (let [activities (get-in request [:context :activities])]
-    (->
-      (vh/load-template "public/index.html")
-      (add-activities activities))))
+    (-> (vh/load-template "public/index.html")
+        set-sign-out-link
+        (add-activities activities))))

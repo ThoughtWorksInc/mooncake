@@ -13,3 +13,28 @@
   font-weight: bold;
   padding-right: 0.5em;
 }
+
+.header__actions {
+  position: absolute;
+  right: 1em;
+  top: 0.8em;
+  color: $white;
+  i {
+    font-size: 1.5em;
+  }
+  span {
+    display: inline;
+    position: relative;
+    top: -4px;
+    margin-left: 0.25em;
+  }
+  a {
+    color: inherit;
+    &, &:hover {
+      text-decoration: none;
+    }
+    &:hover span {
+      text-decoration: underline;
+    }
+  }
+}

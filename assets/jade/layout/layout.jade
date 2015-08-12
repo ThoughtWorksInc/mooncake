@@ -19,7 +19,7 @@ html
 
     +stylesheetLinkTag("application","screen")
     link(href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700", rel="stylesheet", type="text/css")
-
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css", type="text/css")
     block headerScripts
 
   body(class="#{bodyClass}")
@@ -28,6 +28,11 @@ html
       .header__logo
         span.logo__emphasis Mooncake
         span(data-l8n="content:default/logo-ending") !Activity Stream
+
+      .header__actions
+        a.actions__link.clj--sign-out__link.func--sign-out__link(href="./sign-out")
+          i.fa.fa-sign-out
+          span(data-l8n="content:default/sign-out-link") !Sign out
 
     main.main-content(role="main")
       block content

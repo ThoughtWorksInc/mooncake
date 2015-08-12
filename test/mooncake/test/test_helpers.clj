@@ -48,3 +48,6 @@
 
   ([form-selector method]
    (has-attr? form-selector :method method)))
+
+(defn links-to? [selector path]
+  (has-attr? selector :href path))

@@ -1,6 +1,6 @@
 (ns mooncake.integration.kerodon-selectors)
 
-(def header-sign-out-link :.func--sign-out-link)
+(def header-sign-out-link :.func--sign-out__link)
 (def index-page-body :.func--index-page)
 (def index-page-activity-item-title :.func--activity-item__title)
 (def index-page-activity-item-action :.func--activity-item__action)

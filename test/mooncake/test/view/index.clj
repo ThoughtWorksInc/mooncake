@@ -4,6 +4,7 @@
             [clojure.contrib.humanize :as h]
             [clj-time.core :as c]
             [clj-time.format :as f]
+            [mooncake.routes :as routes]
             [mooncake.test.test-helpers :as th]
             [mooncake.view.index :as i]))
 
@@ -12,6 +13,9 @@
         page => (th/has-attr? [:body] :class "func--index-page")))
 
 (th/test-translations "Index page" i/index)
+
+(fact "sign-out link directs to /sign-out"
+      (i/index :request) => (th/links-to? [:.clj--sign-out__link] (routes/path :sign-out)))
 
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
