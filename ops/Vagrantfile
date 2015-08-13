@@ -32,8 +32,8 @@ Vagrant.configure(2) do |config|
     end
 
     dev.vm.provision "ansible" do |ansible|
-      ansible.playbook = "dob_vm_playbook.yml"
-      ansible.inventory_path = "local_vm.inventory"
+      ansible.playbook = "production_playbook.yml"
+      ansible.inventory_path = "local.inventory"
       ansible.sudo = true
     end
   end
