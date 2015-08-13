@@ -1,5 +1,6 @@
 (ns mooncake.middleware
   (:require [ring.util.response :as r]
+            [clojure.tools.logging :as log]
             [mooncake.helper :as mh]
             [mooncake.translation :as translation]))
 
@@ -20,6 +21,14 @@
     (-> request
         (assoc-in [:context :activity-sources] activity-sources)
         handler)))
+
+(defn wrap-error-handling [handler err-handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception e
+        (log/error e e)
+        (err-handler request)))))
 
 (defn wrap-handle-403 [handler error-403-handler]
   (fn [request]

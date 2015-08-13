@@ -54,7 +54,13 @@
                   (contains {:session {:user-id ...stonecutter-user-id...}}))
              (provided
                (soc/request-access-token! ...stonecutter-config... ...auth-code...)
-               => {:user-id ...stonecutter-user-id...})))
+               => {:user-info {:sub ...stonecutter-user-id...}}))
+
+       (fact "passes on stonecutter oauth client exception"
+             (h/stonecutter-callback ...stonecutter-config... {:params {:code ...auth-code...}})
+             => (throws Exception)
+             (provided
+               (soc/request-access-token! anything anything) =throws=> (ex-info "Invalid token response" {:token-response-keys []}))))
 
 (fact "sign-out handler clears the session and redirects to /sign-in"
       (let [response (h/sign-out {:session {:user-id ...some-user-id...

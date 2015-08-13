@@ -22,7 +22,6 @@
   (prn state)
   state)
 
-
 (def server (atom nil))
 (defn start-server [] (swap! server (fn [_] (ring-jetty/run-jetty
                                               (h/create-app (c/create-config) {})
@@ -30,7 +29,7 @@
 (defn stop-server [] (.stop @server))
 
 (background
-  (soc/request-access-token! anything anything) => {:user-id "test-stonecutter-user-uuid"})
+  (soc/request-access-token! anything anything) => {:user-info {:sub "test-stonecutter-user-uuid"}})
 
 (def app (h/create-app (c/create-config) {}))
 
@@ -86,6 +85,14 @@
            (k/visit "/")
            (kh/page-uri-is "/")
            (kh/response-status-is 200)))
+
+(facts "Error page is shown if an exception is thrown"
+       (against-background
+         (h/sign-in anything) =throws=> (Exception.))
+       (-> (k/session (h/create-app (c/create-config) {}))
+           (k/visit "/sign-in")
+           (kh/response-status-is 500)
+           (kh/selector-exists ks/error-500-page-body)))
 
 (facts "Going to an unknown uri renders the 404 page"
        (-> (k/session app)

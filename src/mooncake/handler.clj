@@ -43,7 +43,7 @@
   (let [config-m (request->config-m request)
         auth-code (get-in request [:params :code])
         token-response (soc/request-access-token! stonecutter-config auth-code)
-        auth-provider-user-id (:user-id token-response)]
+        auth-provider-user-id (get-in token-response [:user-info :sub])]
     (-> (r/redirect (routes/absolute-path config-m :index))
         (assoc-in [:session :user-id] auth-provider-user-id))))
 
@@ -54,12 +54,17 @@
       r/response
       (r/content-type "application/json")))
 
-(defn not-found [request]
+(defn internal-server-error-handler [request]
+  (-> (error/internal-server-error)
+      (mh/enlive-response default-context)
+      (r/status 500)))
+
+(defn not-found-handler [request]
   (-> (error/not-found-error)
       (mh/enlive-response default-context)
       (r/status 404)))
 
-(defn forbidden-err-handler [req]
+(defn forbidden-error-handler [request]
   (-> (error/forbidden-error)
       (mh/enlive-response default-context)
       (r/status 403)))
@@ -82,7 +87,7 @@
          :stonecutter-callback (partial stonecutter-callback stonecutter-config)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback :stub-activities})
-        (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-err-handler) #{}))))
+        (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-error-handler) #{}))))
 
 (defn wrap-defaults-config [secure?]
   (-> (if secure? (assoc ring-mw/secure-site-defaults :proxy true) ring-mw/site-defaults)
@@ -90,9 +95,10 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-app [config-m activity-sources]
-  (-> (scenic/scenic-handler routes/routes (site-handlers config-m) not-found)
+  (-> (scenic/scenic-handler routes/routes (site-handlers config-m) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
       (m/wrap-config config-m)
+      (m/wrap-error-handling internal-server-error-handler)
       (m/wrap-activity-sources activity-sources)
       m/wrap-translator))
 

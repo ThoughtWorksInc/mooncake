@@ -6,4 +6,5 @@
 (def index-page-activity-item-action :.func--activity-item__action)
 (def index-page-activity-item-link :.func--activity-item__link)
 (def sign-in-page-sign-in-with-d-cent-link :.func--sign-in-with-d-cent)
+(def error-500-page-body :.func--error-500-page)
 (def error-404-page-body :.func--error-404-page)
