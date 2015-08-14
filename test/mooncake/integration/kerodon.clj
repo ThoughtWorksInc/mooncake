@@ -43,17 +43,26 @@
            (kh/page-uri-is "/sign-in")
            (kh/response-status-is 200)))
 
-(facts "Can sign in and be redirected to the index page"
+(facts "about signing-in after signed in"
        (against-background
-         (soc/authorisation-redirect-response anything) => (r/redirect
-                                                             (routes/absolute-path (c/create-config) :stonecutter-callback)))
-         (-> (k/session app)
-             (k/visit "/sign-in")
-             (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
-             (kh/check-and-follow-redirect "to stonecutter")
-             (kh/check-and-follow-redirect "to /")
-             (kh/page-uri-is "/")
-             (kh/response-status-is 200)))
+               (soc/authorisation-redirect-response anything) => (r/redirect
+                                                                   (routes/absolute-path (c/create-config) :stonecutter-callback)))
+       (fact "when user has a username will redirect to the index page"
+             (-> (k/session app)
+                 (k/visit "/sign-in")
+                 (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
+                 (kh/check-and-follow-redirect "to stonecutter")
+                 (kh/check-and-follow-redirect "to /")
+                 (kh/page-uri-is "/")
+                 (kh/response-status-is 200)))
+       (future-fact "when user does not have a user name will redirect to create account page"
+             (-> (k/session app)
+                 (k/visit "/sign-in")
+                 (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
+                 (kh/check-and-follow-redirect "to stonecutter")
+                 (kh/check-and-follow-redirect "to /create-account")
+                 (kh/page-uri-is "/create-account")
+                 (kh/response-status-is 200))))
 
 (facts "A signed in user can sign out"
       (-> (k/session app)
