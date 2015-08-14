@@ -28,7 +28,7 @@ Vagrant.configure(2) do |config|
     dev.vm.synced_folder "../", "/var/mooncake"
 
     dev.vm.provider :virtualbox do |vbox|
-      vbox.customize ["modifyvm", :id, "--memory", 2048]
+      vbox.customize ["modifyvm", :id, "--memory", 512]
     end
 
     dev.vm.provision "ansible" do |ansible|
