@@ -26,20 +26,6 @@
  - name: restart docker service
    service: name=docker state=restarted
 
-# - name: make db directory
-#   file: path=/data/db state=directory
-#
-# - name: make backup directory
-#   file: path=/data/backup state=directory
-#
-# - name: docker mongo
-#   docker:
-#     name: mongo
-#     image: mongo:3
-#     volumes:
-#       - /data/db:/data/db
-#       - /data/backup:/data/backup
-
  - name: docker java
    docker:
      image: java:8
