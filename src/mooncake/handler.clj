@@ -12,6 +12,7 @@
             [mooncake.middleware :as m]
             [mooncake.routes :as routes]
             [mooncake.translation :as t]
+            [mooncake.view.create-account :as ca]
             [mooncake.view.error :as error]
             [mooncake.view.index :as i]
             [mooncake.view.sign-in :as si]
@@ -40,13 +41,16 @@
 (defn sign-in [db request]
   (if (mh/signed-in? request)
     (let [user-name (:name (get-user-by-user-id db (get-user-id-from request)))] 
-      (redirect-to request (if user-name :index :create-account)))
+      (redirect-to request (if user-name :index :show-create-account)))
     (mh/enlive-response (si/sign-in request) (:context request))))
 
 (defn sign-out [request]
   (let [config-m (request->config-m request)]
     (-> (r/redirect (routes/absolute-path config-m :sign-in))
         (assoc :session {}))))
+
+(defn create-account [request]
+  (mh/enlive-response (ca/create-account request) (:context request))) 
 
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
@@ -94,6 +98,7 @@
     (-> {:index index
          :sign-in (partial sign-in db)
          :sign-out sign-out
+         :show-create-account create-account
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config)}

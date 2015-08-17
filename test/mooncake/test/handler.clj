@@ -1,6 +1,8 @@
 (ns mooncake.test.handler
   (:require [midje.sweet :refer :all]
             [clj-http.client :as http]
+            [net.cgrand.enlive-html :as html]
+            [ring.mock.request :as mock]
             [stonecutter-oauth.client :as soc]
             [mooncake.db.mongo :as mongo]
             [mooncake.handler :as h]
@@ -54,11 +56,11 @@
 
 (fact "sign-in handler redirects to create-account when user is signed in but there is no document for the user in the db"
       (h/sign-in (NoUserStoreTestHelper.) {:session {:user-id ...user-id...}}) 
-          => (th/check-redirects-to (routes/absolute-path {} :create-account)))
+          => (th/check-redirects-to (routes/absolute-path {} :show-create-account)))
 
 (fact "sign-in handler redirects to create-account when user is signed in but has no user name"
       (h/sign-in (UserStoreTestHelper. nil) {:session {:user-id ...user-id...}}) 
-          => (th/check-redirects-to (routes/absolute-path {} :create-account)))
+          => (th/check-redirects-to (routes/absolute-path {} :show-create-account)))
 
 (fact "stonecutter-sign-in handler delegates to the stonecutter client library"
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
@@ -87,8 +89,12 @@
         (:session response) => {}
         response => (th/check-redirects-to (routes/absolute-path {} :sign-in))))
 
-(future-facts "about create-account"
-       (fact "when navigating to create-account should render the page"
-             
-             )
-       )
+(facts "about create-account"
+       (let [request (-> (mock/request :get (routes/absolute-path {} :show-create-account))
+                          (assoc :context {:translator {}})
+                          (h/create-account)
+                          )]
+         (fact "when navigating to create-account should render the page"
+               (:status request) => 200)
+         (fact "user-name form is not empty"
+               (html/select (html/html-snippet (:body request)) [:.clj--user-name]) =not=> empty?)))

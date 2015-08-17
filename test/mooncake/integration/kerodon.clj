@@ -64,6 +64,19 @@
                  (kh/page-uri-is "/create-account")
                  (kh/response-status-is 200))))
 
+(facts "About change-account"
+       (against-background
+               (soc/authorisation-redirect-response anything) => 
+               (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
+       (-> (k/session app)
+           (k/visit "/sign-in")
+           (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
+           (kh/check-and-follow-redirect "to stonecutter")
+           (kh/check-and-follow-redirect "to /")
+           (k/visit "/create-account")
+           (kh/page-uri-is "/create-account")
+           (kh/response-status-is 200)))
+
 (facts "A signed in user can sign out"
       (-> (k/session app)
           sign-in-against-stub
