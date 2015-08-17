@@ -25,8 +25,7 @@
     "gulp-nodemon": "^1.0.4",
     "gulp-gh-pages": "^0.5.0",
     "gulp-express": "^0.1.0",
-    "express": "^4.10.1",
-    "gulp-open": "^0.3.0"
+    "express": "^4.10.1"
   },
   "author": "Chris Cheshire",
   "license": "MIT",

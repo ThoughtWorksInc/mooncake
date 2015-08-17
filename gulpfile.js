@@ -5,12 +5,11 @@ var gulp = require('gulp'),
     autoprefixer = require('gulp-autoprefixer'),
     minifyCSS = require('gulp-minify-css'),
     imagemin = require('gulp-imagemin'),
-    browsersync = require('browser-sync'),
-    open = require("gulp-open"),
     del = require('del'),
     runSequence = require('run-sequence'),
-    nodemon = require('gulp-nodemon'),
-    ghPages = require('gulp-gh-pages');
+    browsersync = '',
+    nodemon = '',
+    ghPages = '';
 
 var isDev = false;
 var output_path = 'resources/public';
@@ -50,8 +49,7 @@ gulp.task('jade', function () {
         console.log(err);
         this.emit('end');
       })
-      .pipe(gulp.dest(build_path.html))
-      .pipe(browsersync.stream());
+      .pipe(gulp.dest(build_path.html));
 });
 
 gulp.task('sass', function () {
@@ -63,8 +61,7 @@ gulp.task('sass', function () {
       })
       .pipe(autoprefixer())
       .pipe(gulpif(!isDev, minifyCSS({noAdvanced: true}))) // minify if Prod
-      .pipe(gulp.dest(build_path.css))
-      .pipe(browsersync.stream());
+      .pipe(gulp.dest(build_path.css));
 });
 
 gulp.task('js', function () {
@@ -73,22 +70,19 @@ gulp.task('js', function () {
         console.log(err);
         this.emit('end');
       })
-      .pipe(gulp.dest(build_path.js))
-      .pipe(browsersync.stream());
+      .pipe(gulp.dest(build_path.js));
 });
 
 gulp.task('images', function () {
   return gulp.src(dev_path.images)
       .pipe(imagemin({optimizationLevel: 3}))
-      .pipe(gulp.dest(build_path.images))
-      .pipe(browsersync.stream());
+      .pipe(gulp.dest(build_path.images));
 });
 
 gulp.task('favicons', function () {
   return gulp.src(dev_path.favicons)
       .pipe(imagemin({optimizationLevel: 3}))
-      .pipe(gulp.dest(build_path.html))
-      .pipe(browsersync.stream());
+      .pipe(gulp.dest(build_path.html));
 });
 
 gulp.task('fonts', function () {
@@ -106,17 +100,13 @@ gulp.task('browser-sync', ['nodemon'], function () {
     proxy: "localhost:7070",  // local node app address
     port: dev_path.port,  // use *different* port than above
     notify: true,
-    open: false
+    open: false,
+    files: [build_path.images,
+      dev_path.jade,
+      dev_path.favicons,
+      dev_path.js,
+      build_path.css]
   })
-});
-
-gulp.task('url', function () {
-  var options = {
-    url: 'http://localhost:' + dev_path.port + '/',
-    app: 'safari'
-  };
-  gulp.src('./resources/public/index.html') // An actual file must be specified or gulp will overlook the task.
-      .pipe(open('<%file.path%>', options));
 });
 
 gulp.task('clean-build', function (cb) {
@@ -135,6 +125,10 @@ gulp.task('watch', function () {
 
 gulp.task('server', function (callback) {
   isDev = true;
+  browsersync = require('browser-sync');
+  nodemon = require('gulp-nodemon');
+  ghPages = require('gulp-gh-pages');
+
   runSequence('clean-build',
       ['jade', 'sass', 'js', 'images', 'favicons', 'fonts', 'browser-sync', 'watch'],
       callback);
