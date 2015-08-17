@@ -2,9 +2,10 @@
   (:require [midje.sweet :refer :all]
             [clj-http.client :as http]
             [stonecutter-oauth.client :as soc]
+            [mooncake.db.mongo :as mongo]
+            [mooncake.handler :as h]
             [mooncake.routes :as routes]
-            [mooncake.test.test-helpers :as th]
-            [mooncake.handler :as h]))
+            [mooncake.test.test-helpers :as th]))
 
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
@@ -13,7 +14,7 @@
 
 (facts "about site-handlers"
        (fact "throws an exception when stonecutter oauth configuration is invalid"
-             (h/site-handlers {}) => (throws anything)
+             (h/site-handlers {} nil) => (throws anything)
              (provided
                (h/create-stonecutter-config anything) => :invalid-configuration)))
 
@@ -38,8 +39,26 @@
                                                                                             "displayName" "KCat"}
                                                                                    "published" twelve-oclock}]})))
 
-(fact "sign-in handler redirects to / when user is signed in"
-      (h/sign-in {:session {:user-id ...user-id...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
+(defrecord NoUserStoreTestHelper []
+  mongo/database
+  (fetch [this user-id]
+    nil))
+
+(defrecord UserStoreTestHelper [name]
+  mongo/database
+  (fetch [this user-id]
+    {:id user-id :name name}))
+
+(fact "sign-in handler redirects to / when user is signed in and has a user name"
+      (h/sign-in (UserStoreTestHelper. "Bob") {:session {:user-id ...user-id...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
+
+(fact "sign-in handler redirects to create-account when user is signed in but there is no document for the user in the db"
+      (h/sign-in (NoUserStoreTestHelper.) {:session {:user-id ...user-id...}}) 
+          => (th/check-redirects-to (routes/absolute-path {} :create-account)))
+
+(fact "sign-in handler redirects to create-account when user is signed in but has no user name"
+      (h/sign-in (UserStoreTestHelper. nil) {:session {:user-id ...user-id...}}) 
+          => (th/check-redirects-to (routes/absolute-path {} :create-account)))
 
 (fact "stonecutter-sign-in handler delegates to the stonecutter client library"
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
@@ -67,3 +86,9 @@
                                             :some-other-key ...some-other-value...}})]
         (:session response) => {}
         response => (th/check-redirects-to (routes/absolute-path {} :sign-in))))
+
+(future-facts "about create-account"
+       (fact "when navigating to create-account should render the page"
+             
+             )
+       )

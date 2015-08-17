@@ -16,7 +16,11 @@
                  [clj-http "2.0.0"]
                  [org.clojars.d-cent/stonecutter-oauth "0.1.5-SNAPSHOT"]
                  [environ "1.0.0"]
-                 [com.novemberain/monger "2.1.0"]]
+                 [com.novemberain/monger "2.1.0"]
+                 [log4j/log4j "1.2.17" :exclusions  [javax.mail/mail
+                                                     javax.jms/jms
+                                                     com.sun.jdmk/jmxtools
+                                                     com.sun.jmx/jmxri]]]
   :main mooncake.handler
   :profiles {:dev {:dependencies   [[ring-mock "0.1.5"]
                                     [midje "1.7.0"]
@@ -24,7 +28,6 @@
                    :plugins        [[lein-environ "1.0.0"]
                                     [lein-midje "3.1.3"]
                                     [lein-ancient "0.6.7"]]
-                   :jvm-opts ["-Dlog4j.configuration=log4j.dev"]
                    :resource-paths ["resources" "test-resources"]
                    :env {:secure "false"
                          :client-id "fake stonecutter client id"

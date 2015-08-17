@@ -39,3 +39,12 @@
   [config-m]
   (not (= "false" (get-env config-m :secure "true"))))
 
+(defn- get-docker-mongo-uri [config-m]
+  (when-let [mongo-ip (:mongo-port-27017-tcp-addr config-m)]
+    (format "mongodb://%s:27017/mooncake" mongo-ip)))
+
+(defn mongo-uri [config-m]
+  (or
+    (get-docker-mongo-uri config-m)
+    (get-env config-m :mongo-uri)
+    "mongodb://localhost:27017/mooncake"))

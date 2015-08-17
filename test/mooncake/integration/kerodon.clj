@@ -97,7 +97,7 @@
 
 (facts "Error page is shown if an exception is thrown"
        (against-background
-         (h/sign-in anything) =throws=> (Exception.))
+         (h/sign-in anything anything) =throws=> (Exception.))
        (-> (k/session (h/create-app (c/create-config) {}))
            (k/visit "/sign-in")
            (kh/response-status-is 500)

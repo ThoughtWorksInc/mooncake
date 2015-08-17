@@ -5,15 +5,17 @@
             [ring.middleware.defaults :as ring-mw]
             [clojure.java.io :as io]
             [stonecutter-oauth.client :as soc]
-            [mooncake.routes :as routes]
+            [mooncake.activity :as a]
             [mooncake.config :as config]
+            [mooncake.db.mongo :as mongo]
+            [mooncake.helper :as mh]
+            [mooncake.middleware :as m]
+            [mooncake.routes :as routes]
             [mooncake.translation :as t]
+            [mooncake.view.error :as error]
             [mooncake.view.index :as i]
             [mooncake.view.sign-in :as si]
-            [mooncake.view.error :as error]
-            [mooncake.helper :as mh]
-            [mooncake.activity :as a]
-            [mooncake.middleware :as m])
+            )
   (:gen-class))
 
 (defn request->config-m [request]
@@ -26,9 +28,19 @@
         activities (a/retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) (:context request))))
 
-(defn sign-in [request]
+(defn get-user-by-user-id [db user-id]
+  (mongo/fetch db user-id))
+
+(defn get-user-id-from [request]
+  (get-in request [:session :user-id]))
+
+(defn redirect-to [request route-key]
+  (r/redirect (routes/absolute-path (request->config-m request) route-key)))
+
+(defn sign-in [db request]
   (if (mh/signed-in? request)
-    (r/redirect (routes/absolute-path (request->config-m request) :index))
+    (let [user-name (:name (get-user-by-user-id db (get-user-id-from request)))] 
+      (redirect-to request (if user-name :index :create-account)))
     (mh/enlive-response (si/sign-in request) (:context request))))
 
 (defn sign-out [request]
@@ -75,12 +87,12 @@
                  (config/client-secret config-m)
                  (routes/absolute-path config-m :stonecutter-callback)))
 
-(defn site-handlers [config-m]
+(defn site-handlers [config-m db]
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
     (-> {:index index
-         :sign-in sign-in
+         :sign-in (partial sign-in db)
          :sign-out sign-out
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
@@ -95,12 +107,13 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-app [config-m activity-sources]
-  (-> (scenic/scenic-handler routes/routes (site-handlers config-m) not-found-handler)
+  (let [db (mongo/get-mongo-db (config/mongo-uri config-m))]
+  (-> (scenic/scenic-handler routes/routes (site-handlers config-m db) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
       (m/wrap-config config-m)
       (m/wrap-error-handling internal-server-error-handler)
       (m/wrap-activity-sources activity-sources)
-      m/wrap-translator))
+      m/wrap-translator)))
 
 (defn -main [& args]
   (let [config-m (config/create-config)]
