@@ -12,15 +12,13 @@
             [mooncake.middleware :as m]
             [mooncake.routes :as routes]
             [mooncake.translation :as t]
-            [mooncake.view.create-account :as ca]
+            [mooncake.controller.create-account :as cac]
             [mooncake.view.error :as error]
             [mooncake.view.index :as i]
-            [mooncake.view.sign-in :as si]
-            )
+            [mooncake.view.sign-in :as si])
   (:gen-class))
 
-(defn request->config-m [request]
-  (get-in request [:context :config-m]))
+
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
@@ -35,32 +33,25 @@
 (defn get-user-id-from [request]
   (get-in request [:session :user-id]))
 
-(defn redirect-to [request route-key]
-  (r/redirect (routes/absolute-path (request->config-m request) route-key)))
-
 (defn sign-in [db request]
   (if (mh/signed-in? request)
-    (let [user-name (:name (get-user-by-user-id db (get-user-id-from request)))] 
-      (redirect-to request (if user-name :index :show-create-account)))
+    #_(let [user-name (:name (get-user-by-user-id db (get-user-id-from request)))] 
+      (mh/redirect-to request (if user-name :index :show-create-account)))
+    (mh/redirect-to request :index)
     (mh/enlive-response (si/sign-in request) (:context request))))
 
 (defn sign-out [request]
-  (let [config-m (request->config-m request)]
-    (-> (r/redirect (routes/absolute-path config-m :sign-in))
-        (assoc :session {}))))
-
-(defn create-account [request]
-  (mh/enlive-response (ca/create-account request) (:context request))) 
+  (-> (mh/redirect-to request :sign-in)
+      (assoc :session {})))
 
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
 
 (defn stonecutter-callback [stonecutter-config request]
-  (let [config-m (request->config-m request)
-        auth-code (get-in request [:params :code])
+  (let [auth-code (get-in request [:params :code])
         token-response (soc/request-access-token! stonecutter-config auth-code)
         auth-provider-user-id (get-in token-response [:user-info :sub])]
-    (-> (r/redirect (routes/absolute-path config-m :index))
+    (-> (mh/redirect-to request :index)
         (assoc-in [:session :user-id] auth-provider-user-id))))
 
 (defn stub-activities [request]
@@ -98,7 +89,7 @@
     (-> {:index index
          :sign-in (partial sign-in db)
          :sign-out sign-out
-         :show-create-account create-account
+         :show-create-account cac/show-create-account
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config)}

@@ -42,24 +42,24 @@
                                                                                    "published" twelve-oclock}]})))
 
 (defrecord NoUserStoreTestHelper []
-  mongo/database
+  mongo/Database
   (fetch [this user-id]
     nil))
 
 (defrecord UserStoreTestHelper [name]
-  mongo/database
+  mongo/Database
   (fetch [this user-id]
     {:id user-id :name name}))
 
 (fact "sign-in handler redirects to / when user is signed in and has a user name"
       (h/sign-in (UserStoreTestHelper. "Bob") {:session {:user-id ...user-id...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
 
-(fact "sign-in handler redirects to create-account when user is signed in but there is no document for the user in the db"
-      (h/sign-in (NoUserStoreTestHelper.) {:session {:user-id ...user-id...}}) 
+(future-fact "sign-in handler redirects to create-account when user is signed in but has no user name"
+      (h/sign-in (UserStoreTestHelper. nil) {:session {:user-id ...user-id...}}) 
           => (th/check-redirects-to (routes/absolute-path {} :show-create-account)))
 
-(fact "sign-in handler redirects to create-account when user is signed in but has no user name"
-      (h/sign-in (UserStoreTestHelper. nil) {:session {:user-id ...user-id...}}) 
+(future-fact "sign-in handler redirects to create-account when user is signed in but there is no document for the user in the db"
+      (h/sign-in (NoUserStoreTestHelper.) {:session {:user-id ...user-id...}}) 
           => (th/check-redirects-to (routes/absolute-path {} :show-create-account)))
 
 (fact "stonecutter-sign-in handler delegates to the stonecutter client library"
@@ -89,12 +89,3 @@
         (:session response) => {}
         response => (th/check-redirects-to (routes/absolute-path {} :sign-in))))
 
-(facts "about create-account"
-       (let [request (-> (mock/request :get (routes/absolute-path {} :show-create-account))
-                          (assoc :context {:translator {}})
-                          (h/create-account)
-                          )]
-         (fact "when navigating to create-account should render the page"
-               (:status request) => 200)
-         (fact "user-name form is not empty"
-               (html/select (html/html-snippet (:body request)) [:.clj--user-name]) =not=> empty?)))

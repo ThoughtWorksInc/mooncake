@@ -9,7 +9,7 @@
                  [scenic "0.2.3"]
                  [enlive "1.1.6"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [traduki "0.1.2-SNAPSHOT"]
+                 [traduki "0.1.3-SNAPSHOT"]
                  [clj-yaml "0.4.0"]
                  [cheshire "5.5.0"]
                  [bilus/clojure-humanize "0.1.0"]

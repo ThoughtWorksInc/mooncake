@@ -45,8 +45,8 @@
 
 (facts "about signing-in after signed in"
        (against-background
-               (soc/authorisation-redirect-response anything) => (r/redirect
-                                                                   (routes/absolute-path (c/create-config) :stonecutter-callback)))
+         (soc/authorisation-redirect-response anything) =>
+         (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
        (fact "when user has a username will redirect to the index page"
              (-> (k/session app)
                  (k/visit "/sign-in")
@@ -64,10 +64,10 @@
                  (kh/page-uri-is "/create-account")
                  (kh/response-status-is 200))))
 
-(facts "About change-account"
+(future-facts "About create-account"
        (against-background
-               (soc/authorisation-redirect-response anything) => 
-               (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
+         (soc/authorisation-redirect-response anything) => 
+         (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
        (-> (k/session app)
            (k/visit "/sign-in")
            (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
