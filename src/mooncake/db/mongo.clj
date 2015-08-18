@@ -1,5 +1,6 @@
 (ns mooncake.db.mongo
   (:require [monger.core :as mcore]
+            [monger.collection :as mcoll]
             [clojure.tools.logging :as log]))
 
 (defprotocol Database
@@ -8,6 +9,18 @@
   (store! [this key-param item]
           "Store the given map using the value of the kw key-param and return it."))
    
+(defrecord MongoDatabase [mongo-db coll]
+  Database
+  (fetch [this k]
+    (when k
+      (-> (mcoll/find-map-by-id mongo-db coll k)
+          (dissoc :_id))))
+  (store! [this key-param item]
+    (-> (mcoll/insert-and-return mongo-db coll (assoc item :_id (key-param item)))
+        (dissoc :_id))))
+
+(defn create-mongo-store [mongodb collection-name]
+  (MongoDatabase. mongodb collection-name))
 
 (defn get-mongo-db [mongo-uri]
   (log/debug "Connecting to mongo")
