@@ -10,14 +10,12 @@
 (facts "about show-create-account"
        (let [show-create-account-request (-> (mock/request :get (routes/absolute-path {} :show-create-account))
                                              (assoc :context {:translator {}}))]
-         (facts "when auth-provider-user-id is in the session"
+         (fact "when auth-provider-user-id is in the session it should render the create-account page"
                 (let [response (-> (assoc show-create-account-request :session {:auth-provider-user-id 
                                                                                 ...user-id...})
                                    cac/show-create-account)]
-                  (fact "navigating to create-account should render the page"
-                        (:status response) => 200)
-                  (fact "user-name form is not empty"
-                        (html/select (html/html-snippet (:body response)) [:.clj--user-name]) =not=> empty?)) )
+                  response => (th/check-renders-page :.func--create-account-page)))
+
          (fact "when auth-provider-user-id is not in the session navigating to create-account should redirect to /sign-in"
                (cac/show-create-account show-create-account-request) => 
                (th/check-redirects-to (routes/absolute-path {} :sign-in)))))

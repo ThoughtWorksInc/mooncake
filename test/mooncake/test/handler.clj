@@ -28,7 +28,7 @@
                    :activity-sources
                    {:an-activity-src an-activity-src-url
                     :another-activity-src another-activity-src-url}}}) => (every-checker
-                                                                            (contains {:status 200})
+                                                                            (th/check-renders-page :.func--index-page)
                                                                             (contains {:body (contains "JDog")})
                                                                             (contains {:body (contains "KCat")}))
         (provided
@@ -41,26 +41,11 @@
                                                                                             "displayName" "KCat"}
                                                                                    "published" twelve-oclock}]})))
 
-(defrecord NoUserStoreTestHelper []
-  mongo/Database
-  (fetch [this user-id]
-    nil))
+(fact "sign-in handler renders the sign-in view when the user is not signed in"
+      (h/sign-in {:context {:translator {}}}) => (th/check-renders-page :.func--sign-in-page))
 
-(defrecord UserStoreTestHelper [name]
-  mongo/Database
-  (fetch [this user-id]
-    {:id user-id :name name}))
-
-(fact "sign-in handler redirects to / when user is signed in and has a user name"
-      (h/sign-in (UserStoreTestHelper. "Bob") {:session {:user-id ...user-id...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
-
-(future-fact "sign-in handler redirects to create-account when user is signed in but has no user name"
-      (h/sign-in (UserStoreTestHelper. nil) {:session {:user-id ...user-id...}}) 
-          => (th/check-redirects-to (routes/absolute-path {} :show-create-account)))
-
-(future-fact "sign-in handler redirects to create-account when user is signed in but there is no document for the user in the db"
-      (h/sign-in (NoUserStoreTestHelper.) {:session {:user-id ...user-id...}}) 
-          => (th/check-redirects-to (routes/absolute-path {} :show-create-account)))
+(fact "sign-in handler redirects to / when user is signed in"
+      (h/sign-in {:session {:user-id ...user-id...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
 
 (fact "stonecutter-sign-in handler delegates to the stonecutter client library"
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...

@@ -33,10 +33,8 @@
 (defn get-user-id-from [request]
   (get-in request [:session :user-id]))
 
-(defn sign-in [db request]
+(defn sign-in [request]
   (if (mh/signed-in? request)
-    #_(let [user-name (:name (get-user-by-user-id db (get-user-id-from request)))] 
-      (mh/redirect-to request (if user-name :index :show-create-account)))
     (mh/redirect-to request :index)
     (mh/enlive-response (si/sign-in request) (:context request))))
 
@@ -87,7 +85,7 @@
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
     (-> {:index index
-         :sign-in (partial sign-in db)
+         :sign-in sign-in 
          :sign-out sign-out
          :show-create-account cac/show-create-account
          :stub-activities stub-activities

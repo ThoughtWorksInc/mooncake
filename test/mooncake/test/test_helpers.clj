@@ -9,6 +9,12 @@
                               (= (:status response) 302)
                               (= (get-in response [:headers "Location"]) path))))
 
+(defn check-renders-page [body-class-enlive-selector]
+  (midje/checker [response] (and 
+                              (= (:status response) 200)
+                              (not-empty (-> (html/html-snippet (:body response))
+                                             (html/select [body-class-enlive-selector]))))))
+
 (def no-untranslated-strings
   (let [untranslated-string-regex #"(?!!DOCTYPE|!IEMobile)!\w+"]
     (midje/chatty-checker [response-body] (empty? (re-seq untranslated-string-regex response-body)))))
