@@ -9,8 +9,14 @@ index:
   title: Mooncake Activity Stream
 
 sign-in:
-  title: Sign in
+  title: Sign In
   sign-in-with-d-cent: Sign in with D-Cent
+
+create-account:
+  title: Create Account 
+  username-label: Username
+  username-invalid-validation-message: Enter a username
+  create-account-submit: Create account
 
 error-404:
   title: Error-404

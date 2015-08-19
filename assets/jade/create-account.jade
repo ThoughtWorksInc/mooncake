@@ -8,14 +8,14 @@ block vars
 block headerScripts
 
 block content
-  form.create-account-form(action="./create-account", method="post", role="form")
-    p.form-row.clj--user-name
+  form.create-account-form.clj--create-account__form(action="./create-account", method="post", role="form")
+    p.form-row.clj--username
       label.form-row__label
-        span.form-row__title(data-l8n="content:create-account-form/user-name")
-          | !User Name
-        span.form-row__validation.clj--user-name__validation(data-l8n="content:create-account-form/user-name-invalid-validation-message")
-          | !Enter a valid email address
-        input.form-row__input.user-name-input.func--user-name__input(type="text", id="user-name", name="user-name")
-      button.button.button--full-width.func--create-account__button(type="submit" data-l8n="content:create-account-form/create-account")
-        | !Create Account
+        span.form-row__title(data-l8n="content:create-account/username-label")
+          | !Username
+        span.form-row__validation.clj--username__validation(data-l8n="content:create-account/username-invalid-validation-message")
+          | !Enter a username
+        input.form-row__input.username-input.func--username__input(type="text", id="username", name="username")
+      button.button.button--full-width.func--create-account__button(type="submit" data-l8n="content:create-account/create-account-submit")
+        | !Create account
             

@@ -41,9 +41,10 @@
            (k/visit "/")
            (kh/check-and-follow-redirect "sign-in")
            (kh/page-uri-is "/sign-in")
+           (kh/selector-exists ks/sign-in-page-body)
            (kh/response-status-is 200)))
 
-(facts "A user can authenticate and create an account"
+(future-facts "A user can authenticate and create an account"
        (against-background
          (soc/authorisation-redirect-response anything) =>
          (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
@@ -53,7 +54,13 @@
            (kh/check-and-follow-redirect "to stonecutter")
            (kh/check-and-follow-redirect "to /create-account")
            (kh/page-uri-is "/create-account")
-           (kh/response-status-is 200)))
+           (kh/response-status-is 200)
+           (kh/check-and-fill-in ks/create-account-page-username-input "Barry")
+           (kh/check-and-press ks/create-account-page-submit-button)
+           (kh/check-and-follow-redirect "to /")
+           (kh/page-uri-is "/")
+           (kh/response-status-is 200)
+           (kh/selector-exists ks/index-page-body)))
 
 (facts "A signed in user can sign out"
       (-> (k/session app)

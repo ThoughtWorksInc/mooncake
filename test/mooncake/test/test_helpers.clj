@@ -20,7 +20,7 @@
     (midje/chatty-checker [response-body] (empty? (re-seq untranslated-string-regex response-body)))))
 
 (defn test-translations [page-name view-fn]
-  (midje/fact {:midje/name (format "there are no missing translations for page: %s" page-name)}
+  (midje/fact {:midje/name (format "Checking all translations exist for %s" page-name)}
               (let [translator (t/translations-fn t/translation-map)
                     page (-> {:context {:translator translator}}
                              view-fn

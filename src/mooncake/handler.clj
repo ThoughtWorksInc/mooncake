@@ -88,6 +88,7 @@
          :sign-in sign-in 
          :sign-out sign-out
          :show-create-account cac/show-create-account
+         :create-account cac/create-account
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config)}

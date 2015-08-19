@@ -55,8 +55,7 @@
              (let [create-account-request {:params nil
                                            :session {:auth-provider-user-id ...user-id...}
                                            :context {:translator {}}}
-                   response (cac/create-account ...store... create-account-request)
-                   username-form-element (html/select (html/html-snippet (:body response)) [:.clj--user-name])]
-               username-form-element =not=> empty?    
+                   response (cac/create-account ...store... create-account-request)]
+               response => (th/check-renders-page :.func--create-account-page)  
                (provided 
                  (mongo/create-user! anything anything anything) => ...never-called... :times 0))))
