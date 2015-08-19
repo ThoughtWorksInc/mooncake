@@ -49,8 +49,8 @@
   (let [auth-code (get-in request [:params :code])
         token-response (soc/request-access-token! stonecutter-config auth-code)
         auth-provider-user-id (get-in token-response [:user-info :sub])]
-    (-> (mh/redirect-to request :index)
-        (assoc-in [:session :user-id] auth-provider-user-id))))
+    (-> (mh/redirect-to request :show-create-account)
+        (assoc-in [:session :auth-provider-user-id] auth-provider-user-id))))
 
 (defn stub-activities [request]
   (-> "stub-activities.json"

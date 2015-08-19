@@ -45,7 +45,7 @@
       (h/sign-in {:context {:translator {}}}) => (th/check-renders-page :.func--sign-in-page))
 
 (fact "sign-in handler redirects to / when user is signed in"
-      (h/sign-in {:session {:user-id ...user-id...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
+      (h/sign-in {:session {:auth-provider-user-id ...user-id...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
 
 (fact "stonecutter-sign-in handler delegates to the stonecutter client library"
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
@@ -56,8 +56,8 @@
        (fact "redirects to / with the user-id set in the session"
              (h/stonecutter-callback ...stonecutter-config... {:params {:code ...auth-code...}})
              => (every-checker
-                  (th/check-redirects-to (routes/absolute-path {} :index))
-                  (contains {:session {:user-id ...stonecutter-user-id...}}))
+                  (th/check-redirects-to (routes/absolute-path {} :show-create-account))
+                  (contains {:session {:auth-provider-user-id ...stonecutter-user-id...}}))
              (provided
                (soc/request-access-token! ...stonecutter-config... ...auth-code...)
                => {:user-info {:sub ...stonecutter-user-id...}}))

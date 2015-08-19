@@ -9,7 +9,7 @@
             [mooncake.view.view-helpers :as vh]))
 
 (defn signed-in? [request]
-  (boolean (get-in request [:session :user-id])))
+  (boolean (get-in request [:session :auth-provider-user-id])))
 
 (defn authenticated? [request]
   (boolean (get-in request [:session :auth-provider-user-id])))

@@ -43,37 +43,15 @@
            (kh/page-uri-is "/sign-in")
            (kh/response-status-is 200)))
 
-(facts "about signing-in after signed in"
+(facts "A user can authenticate and create an account"
        (against-background
          (soc/authorisation-redirect-response anything) =>
-         (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
-       (fact "when user has a username will redirect to the index page"
-             (-> (k/session app)
-                 (k/visit "/sign-in")
-                 (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
-                 (kh/check-and-follow-redirect "to stonecutter")
-                 (kh/check-and-follow-redirect "to /")
-                 (kh/page-uri-is "/")
-                 (kh/response-status-is 200)))
-       (future-fact "when user does not have a user name will redirect to create account page"
-             (-> (k/session app)
-                 (k/visit "/sign-in")
-                 (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
-                 (kh/check-and-follow-redirect "to stonecutter")
-                 (kh/check-and-follow-redirect "to /create-account")
-                 (kh/page-uri-is "/create-account")
-                 (kh/response-status-is 200))))
-
-(future-facts "About create-account"
-       (against-background
-         (soc/authorisation-redirect-response anything) => 
          (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
        (-> (k/session app)
            (k/visit "/sign-in")
            (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
            (kh/check-and-follow-redirect "to stonecutter")
-           (kh/check-and-follow-redirect "to /")
-           (k/visit "/create-account")
+           (kh/check-and-follow-redirect "to /create-account")
            (kh/page-uri-is "/create-account")
            (kh/response-status-is 200)))
 
@@ -102,7 +80,7 @@
              (kh/selector-has-attribute-with-content ks/index-page-activity-item-link :href "http://stub-activity.url"))))
 
 (facts "Invalid activity source responses are handled gracefully"
-       (-> (k/session (h/create-app (c/create-config) {:invalid-activity-src  "http://localhost:6666/not-an-activity-source"}))
+       (-> (k/session (h/create-app (c/create-config) {:invalid-activity-src "http://localhost:6666/not-an-activity-source"}))
            sign-in-against-stub
            (k/visit "/")
            (kh/page-uri-is "/")

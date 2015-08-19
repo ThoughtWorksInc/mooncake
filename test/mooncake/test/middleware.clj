@@ -37,7 +37,7 @@
              wrapped-handler (m/wrap-signed-in handler "/sign-in")]
 
          (fact "calls wrapped handler when user is signed in"
-               (wrapped-handler {:session {:user-id ...user-id...}}) => ...handled...)
+               (wrapped-handler {:session {:auth-provider-user-id ...user-id...}}) => ...handled...)
 
          (fact "redirects to provided route when user is not signed in"
                (wrapped-handler {}) => (th/check-redirects-to "/sign-in"))))
