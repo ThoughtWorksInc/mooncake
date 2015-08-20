@@ -42,12 +42,15 @@
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
 
-(defn stonecutter-callback [stonecutter-config request]
+(defn stonecutter-callback [stonecutter-config user-store request]
   (let [auth-code (get-in request [:params :code])
         token-response (soc/request-access-token! stonecutter-config auth-code)
         auth-provider-user-id (get-in token-response [:user-info :sub])]
-    (-> (mh/redirect-to request :show-create-account)
-        (assoc-in [:session :auth-provider-user-id] auth-provider-user-id))))
+    (if-let [user (mongo/fetch user-store auth-provider-user-id)]
+      (-> (mh/redirect-to request :index)
+          (assoc-in [:session :username] (:username user)))
+      (-> (mh/redirect-to request :show-create-account)
+          (assoc-in [:session :auth-provider-user-id] auth-provider-user-id)))))
 
 (defn stub-activities [request]
   (-> "stub-activities.json"
@@ -88,7 +91,7 @@
          :create-account (partial cac/create-account user-store)
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
-         :stonecutter-callback (partial stonecutter-callback stonecutter-config)}
+         :stonecutter-callback (partial stonecutter-callback stonecutter-config user-store)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback 
                                      :stub-activities :show-create-account :create-account})

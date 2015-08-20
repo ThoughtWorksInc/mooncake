@@ -53,17 +53,32 @@
         (soc/authorisation-redirect-response ...stonecutter-config...) => ...stonecutter-sign-in-redirect...))
 
 (facts "about stonecutter-callback"
-       (fact "redirects to / with the user-id set in the session"
-             (h/stonecutter-callback ...stonecutter-config... {:params {:code ...auth-code...}})
-             => (every-checker
-                  (th/check-redirects-to (routes/absolute-path {} :show-create-account))
-                  (contains {:session {:auth-provider-user-id ...stonecutter-user-id...}}))
-             (provided
-               (soc/request-access-token! ...stonecutter-config... ...auth-code...)
-               => {:user-info {:sub ...stonecutter-user-id...}}))
+       (facts "when successfully authenticated"
+              (fact "when new user, redirects to /create-account with the auth-provider-user-id set in the session"
+                    (h/stonecutter-callback ...stonecutter-config... ...user-store... 
+                                            {:params {:code ...auth-code...}})
+                    => (every-checker
+                         (th/check-redirects-to (routes/absolute-path {} :show-create-account))
+                         (contains {:session {:auth-provider-user-id ...stonecutter-user-id...}}))
+                    (provided
+                      (soc/request-access-token! ...stonecutter-config... ...auth-code...)
+                      => {:user-info {:sub ...stonecutter-user-id...}}
+                      (mongo/fetch ...user-store... ...stonecutter-user-id...) => nil))
+
+              (fact "when existing user, redirects to / with the username set in the session and auth-provider-user-id removed"
+                    (h/stonecutter-callback ...stonecutter-config...  ...user-store... 
+                                            {:params {:code ...auth-code...}})
+                    => (every-checker
+                         (th/check-redirects-to (routes/absolute-path {} :index))
+                         (contains {:session {:username ...username...}}))
+                    (provided
+                      (soc/request-access-token! ...stonecutter-config... ...auth-code...)
+                      => {:user-info {:sub ...stonecutter-user-id...}}
+                      (mongo/fetch ...user-store... ...stonecutter-user-id...) 
+                      => {:username ...username... :auth-provider-user-id ...stonecutter-user-id...})))
 
        (fact "passes on stonecutter oauth client exception"
-             (h/stonecutter-callback ...stonecutter-config... {:params {:code ...auth-code...}})
+             (h/stonecutter-callback ...stonecutter-config... ...user-store... {:params {:code ...auth-code...}})
              => (throws Exception)
              (provided
                (soc/request-access-token! anything anything) =throws=> (ex-info "Invalid token response" {:token-response-keys []}))))
