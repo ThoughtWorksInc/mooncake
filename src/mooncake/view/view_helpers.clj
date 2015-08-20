@@ -1,7 +1,15 @@
 (ns mooncake.view.view-helpers
-  (:require [net.cgrand.enlive-html :as html]
+  (:require [ring.util.anti-forgery :refer [anti-forgery-field]]
+            [net.cgrand.enlive-html :as html]
             [net.cgrand.jsoup :as jsoup]
             [clojure.tools.logging :as log]))
+
+(defn anti-forgery-snippet []
+  (html/html-snippet (anti-forgery-field)))
+
+(defn add-anti-forgery [enlive-m]
+  (html/at enlive-m
+           [:form] (html/prepend (anti-forgery-snippet))))
 
 (def template-caching? (atom true))
 

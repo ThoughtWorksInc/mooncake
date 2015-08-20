@@ -34,14 +34,20 @@
   ([data] (MemoryStore. (atom data))))
 
 (facts "about create-account"
-       (fact "should store username and redirect to sign-in"
-             (let [create-account-request {:params {:username ...username...}
-                                           :session {:auth-provider-user-id ...user-id...}}
-                   store (create-memory-store)
-                   response (cac/create-account store create-account-request)]
-               (mongo/fetch store ...user-id...) => {:auth-provider-user-id ...user-id...
-                                                     :username ...username...}
-               response => (th/check-redirects-to (routes/absolute-path {} :sign-in))))
+       (facts "when successful"
+              (let [create-account-request {:params {:username ...username...}
+                                            :session {:auth-provider-user-id ...user-id...}}
+                    store (create-memory-store)
+                    response (cac/create-account store create-account-request)]
+                (fact "it should create the user"
+                      (mongo/fetch store ...user-id...) => {:auth-provider-user-id ...user-id...
+                                                            :username ...username...})
+                (fact "it should redirect to /" 
+                      response => (th/check-redirects-to (routes/absolute-path {} :index)))
+                (fact "it should set the username in the session"
+                      (get-in response [:session :username]) => ...username...)
+                (fact "it should remove the auth-provider-user-id from the session"
+                      (get-in response [:session :auth-provider-user-id]) => nil?)))
 
        (fact "missing auth-provider-user-id in session redirects to /sign-in and nothing is stored"
              (let [create-account-request {:params {:username ...username...}} 

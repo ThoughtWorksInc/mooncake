@@ -27,9 +27,6 @@
         activities (a/retrieve-activities activity-sources)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) (:context request))))
 
-(defn get-user-by-user-id [db user-id]
-  (mongo/fetch db user-id))
-
 (defn get-user-id-from [request]
   (get-in request [:session :user-id]))
 
@@ -80,7 +77,7 @@
                  (config/client-secret config-m)
                  (routes/absolute-path config-m :stonecutter-callback)))
 
-(defn site-handlers [config-m db]
+(defn site-handlers [config-m user-store]
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
@@ -88,12 +85,13 @@
          :sign-in sign-in 
          :sign-out sign-out
          :show-create-account cac/show-create-account
-         :create-account cac/create-account
+         :create-account (partial cac/create-account user-store)
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
-                                   #{:sign-in :stonecutter-sign-in :stonecutter-callback :stub-activities})
+                                   #{:sign-in :stonecutter-sign-in :stonecutter-callback 
+                                     :stub-activities :show-create-account :create-account})
         (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-error-handler) #{}))))
 
 (defn wrap-defaults-config [secure?]
@@ -102,13 +100,13 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-app [config-m activity-sources]
-  (let [db (mongo/get-mongo-db (config/mongo-uri config-m))]
-  (-> (scenic/scenic-handler routes/routes (site-handlers config-m db) not-found-handler)
-      (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
-      (m/wrap-config config-m)
-      (m/wrap-error-handling internal-server-error-handler)
-      (m/wrap-activity-sources activity-sources)
-      m/wrap-translator)))
+  (let [user-store (mongo/create-mongo-store (mongo/get-mongo-db (config/mongo-uri config-m)) "user")]
+    (-> (scenic/scenic-handler routes/routes (site-handlers config-m user-store) not-found-handler)
+        (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
+        (m/wrap-config config-m)
+        (m/wrap-error-handling internal-server-error-handler)
+        (m/wrap-activity-sources activity-sources)
+        m/wrap-translator)))
 
 (defn -main [& args]
   (let [config-m (config/create-config)]

@@ -32,5 +32,6 @@
                    :env {:secure "false"
                          :client-id "fake stonecutter client id"
                          :client-secret "fake stonecutter client secret"
-                         :auth-url "fake stonecutter auth url"}}
+                         :auth-url "fake stonecutter auth url"
+                         :mongo-uri "mongodb://localhost:27017/mooncake-dev"}}
              :uberjar {:aot :all}})

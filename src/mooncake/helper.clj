@@ -9,7 +9,7 @@
             [mooncake.view.view-helpers :as vh]))
 
 (defn signed-in? [request]
-  (boolean (get-in request [:session :auth-provider-user-id])))
+  (boolean (get-in request [:session :username])))
 
 (defn authenticated? [request]
   (boolean (get-in request [:session :auth-provider-user-id])))
@@ -17,6 +17,7 @@
 (defn enlive-response [enlive-m context]
   (-> enlive-m
       (vh/remove-elements [:.clj--STRIP])
+      vh/add-anti-forgery
       (t/context-translate context)
       vh/enlive-to-str
       r/response
