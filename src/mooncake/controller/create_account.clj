@@ -7,7 +7,7 @@
 
 (defn show-create-account [request]
   (if (mh/authenticated? request)
-    (mh/enlive-response (cav/create-account request) (:context request))  
+    (mh/enlive-response (cav/create-account request) (:context request))
     (mh/redirect-to request :sign-in)))
 
 (defn- account-created-response [request user]
@@ -26,12 +26,13 @@
   (boolean (mongo/find-item user-store {:username username})))
 
 (defn create-account [user-store request]
-  (if (mh/authenticated? request) 
+  (if (mh/authenticated? request)
     (let [username (get-in request [:params :username])
           duplicate-username-fn (partial is-username-duplicate? user-store)]
-      (if-let [username-validation-errors (v/validate-username username duplicate-username-fn)] 
+      (if-let [username-validation-errors (v/validate-username username duplicate-username-fn)]
         (-> request
             (assoc-in [:context :error-m] username-validation-errors)
+            (assoc-in [:context :params :username] username)
             show-create-account)
         (create-account-response user-store request username)))
     (mh/redirect-to request :sign-in)))
