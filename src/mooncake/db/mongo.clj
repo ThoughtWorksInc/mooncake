@@ -10,7 +10,7 @@
              "Find an item matching the query-map.")
   (store! [this key-param item]
           "Store the given map using the value of the kw key-param and return it."))
-   
+
 (defrecord MongoDatabase [mongo-db coll]
   Database
   (fetch [this k]
@@ -36,11 +36,6 @@
 
 (defn get-mongo-db [mongo-uri]
   (:db (get-mongo-db-and-conn mongo-uri)))
-
-(defn with-mongo-do [mongo-uri thing-to-do]
-  (let [{:keys [db conn]} (get-mongo-db-and-conn mongo-uri)] 
-    (try (thing-to-do db)
-         (finally (mcore/disconnect conn)))))
 
 (defn create-user! [db auth-provider-user-id username]
   (let [user {:auth-provider-user-id auth-provider-user-id

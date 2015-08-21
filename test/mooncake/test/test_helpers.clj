@@ -10,7 +10,7 @@
                               (= (get-in response [:headers "Location"]) path))))
 
 (defn check-renders-page [body-class-enlive-selector]
-  (midje/checker [response] (and 
+  (midje/checker [response] (and
                               (= (:status response) 200)
                               (not-empty (-> (html/html-snippet (:body response))
                                              (html/select [body-class-enlive-selector]))))))
