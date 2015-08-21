@@ -1,5 +1,5 @@
 (ns mooncake.validation
-  (:require [clojure.string :as s])) 
+  (:require [clojure.string :as s]))
 
 (def username-max-length 16)
 
@@ -15,6 +15,6 @@
              (cond
                (s/blank? username)                         :blank
                (is-too-long? username username-max-length) :too-long
-               (not (is-format-valid? username))           :invalid
+               (not (is-format-valid? username))           :invalid-format
                (duplicate-username-fn username)            :duplicate)]
     {:username validation-issue}))
