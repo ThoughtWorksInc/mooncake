@@ -4,6 +4,9 @@
             [net.cgrand.jsoup :as jsoup]
             [clojure.tools.logging :as log]))
 
+(defn remove-element [enlive-m selector]
+  (html/at enlive-m selector nil))
+
 (defn anti-forgery-snippet []
   (html/html-snippet (anti-forgery-field)))
 

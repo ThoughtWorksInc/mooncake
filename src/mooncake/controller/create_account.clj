@@ -1,6 +1,7 @@
 (ns mooncake.controller.create-account
   (:require
     [mooncake.helper :as mh]
+    [mooncake.validation :as v]
     [mooncake.db.mongo :as mongo]
     [mooncake.view.create-account :as cav]))
 
@@ -16,11 +17,21 @@
     (-> (mh/redirect-to request :index)
         (assoc :session updated-session))))
 
+(defn- create-account-response [user-store request username]
+  (let [auth-provider-user-id (get-in request [:session :auth-provider-user-id])
+        created-user (mongo/create-user! user-store auth-provider-user-id username)]
+    (account-created-response request created-user)))
+
+(defn is-username-duplicate? [user-store username]
+  (boolean (mongo/find-item user-store {:username username})))
+
 (defn create-account [user-store request]
   (if (mh/authenticated? request) 
-    (if-let [username (get-in request [:params :username]) ] 
-      (let [auth-provider-user-id (get-in request [:session :auth-provider-user-id])
-            created-user (mongo/create-user! user-store auth-provider-user-id username)]
-        (account-created-response request created-user))
-      (show-create-account request))
+    (let [username (get-in request [:params :username])
+          duplicate-username-fn (partial is-username-duplicate? user-store)]
+      (if-let [username-validation-errors (v/validate-username username duplicate-username-fn)] 
+        (-> request
+            (assoc-in [:context :error-m] username-validation-errors)
+            show-create-account)
+        (create-account-response user-store request username)))
     (mh/redirect-to request :sign-in)))
