@@ -23,12 +23,10 @@
  - name: install lxc-docker
    apt: name=lxc-docker state=latest
 
- - name: docker java
-   docker:
-     image: java:8
-     state: present
+ - name: restart docker service
+   service: name=docker state=restarted
 
-# All following required for Mongo
+# Mongo vv
  - name: make db directory
    file: path=/data/db state=directory
 
@@ -42,7 +40,9 @@
      volumes:
        - /data/db:/data/db
        - /data/backup:/data/backup
+# Mongo ^^
 
- - name: restart docker service
-   service: name=docker state=restarted
-
+ - name: docker java
+   docker:
+     image: java:8
+     state: present
