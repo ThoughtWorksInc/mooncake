@@ -23,9 +23,6 @@
  - name: install lxc-docker
    apt: name=lxc-docker state=latest
 
- - name: restart docker service
-   service: name=docker state=restarted
-
  - name: docker java
    docker:
      image: java:8
@@ -45,3 +42,7 @@
      volumes:
        - /data/db:/data/db
        - /data/backup:/data/backup
+
+ - name: restart docker service
+   service: name=docker state=restarted
+

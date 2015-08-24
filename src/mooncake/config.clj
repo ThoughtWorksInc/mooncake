@@ -2,7 +2,8 @@
   (:require [environ.core :as env]
             [clojure.tools.logging :as log]))
 
-(def env-vars #{:port :host :base-url :mongo-uri
+(def env-vars #{:port :host :base-url
+                :mongo-uri :mongo-port-27017-tcp-addr
                 :client-id :client-secret :auth-url
                 :secure})
 
@@ -12,8 +13,10 @@
 (defn get-env
   "Like a normal 'get' except it also ensures the key is in the env-vars set"
   ([config-m key]
-   (get config-m (env-vars key)))
+   (get-env config-m key nil))
   ([config-m key default]
+   (when-not (env-vars key)
+     (throw (Exception. (format "Trying to get-env with key '%s' which is not in the env-vars set" key))))
    (get config-m (env-vars key) default)))
 
 (defn port [config-m]
@@ -39,7 +42,12 @@
   [config-m]
   (not (= "false" (get-env config-m :secure "true"))))
 
+(defn- get-docker-mongo-uri [config-m]
+  (when-let [mongo-ip (get-env config-m :mongo-port-27017-tcp-addr)]
+    (format "mongodb://%s:27017/stonecutter" mongo-ip)))
+
 (defn mongo-uri [config-m]
   (or
+    (get-docker-mongo-uri config-m)
     (get-env config-m :mongo-uri)
     "mongodb://localhost:27017/mooncake"))
