@@ -40,6 +40,9 @@
                                               :as :json-string-keys})  => {:body [{"actor" {"@type" "Person"
                                                                                             "displayName" "KCat"}
                                                                                    "published" twelve-oclock}]})))
+(fact "index handler displays username of logged-in user"
+      (h/index {:context {:translator (constantly "")}
+                :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
 (fact "sign-in handler renders the sign-in view when the user is not signed in"
       (h/sign-in {:context {:translator {}}}) => (th/check-renders-page :.func--sign-in-page))
@@ -55,7 +58,7 @@
 (facts "about stonecutter-callback"
        (facts "when successfully authenticated"
               (fact "when new user, redirects to /create-account with the auth-provider-user-id set in the session"
-                    (h/stonecutter-callback ...stonecutter-config... ...user-store... 
+                    (h/stonecutter-callback ...stonecutter-config... ...user-store...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
                          (th/check-redirects-to (routes/absolute-path {} :show-create-account))
@@ -66,7 +69,7 @@
                       (mongo/fetch ...user-store... ...stonecutter-user-id...) => nil))
 
               (fact "when existing user, redirects to / with the username set in the session and auth-provider-user-id removed"
-                    (h/stonecutter-callback ...stonecutter-config...  ...user-store... 
+                    (h/stonecutter-callback ...stonecutter-config...  ...user-store...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
                          (th/check-redirects-to (routes/absolute-path {} :index))
@@ -74,7 +77,7 @@
                     (provided
                       (soc/request-access-token! ...stonecutter-config... ...auth-code...)
                       => {:user-info {:sub ...stonecutter-user-id...}}
-                      (mongo/fetch ...user-store... ...stonecutter-user-id...) 
+                      (mongo/fetch ...user-store... ...stonecutter-user-id...)
                       => {:username ...username... :auth-provider-user-id ...stonecutter-user-id...})))
 
        (fact "passes on stonecutter oauth client exception"

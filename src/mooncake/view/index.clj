@@ -40,8 +40,12 @@
                                                 (html/set-attr :href (routes/path :sign-out))))
     enlive-m))
 
+(defn render-username [enlive-m username]
+  (html/at enlive-m [:.clj--username] (html/content username)))
+
 (defn index [request]
   (let [activities (get-in request [:context :activities])]
     (-> (vh/load-template "public/index.html")
+        (render-username (get-in request [:session :username]))
         (render-sign-out-link (mh/signed-in? request))
         (add-activities activities))))

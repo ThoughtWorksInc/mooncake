@@ -14,6 +14,9 @@
 
 (th/test-translations "Index page" i/index)
 
+(fact "username is rendered"
+      (i/index {:session {:username "Dave"}}) => (th/text-is? [:.clj--username] "Dave"))
+
 (fact "sign-out link is rendered and directs to /sign-out when user is signed in"
       (let [page (i/index {:session {:username ...username...}})]
         page => (th/links-to? [:.clj--sign-out__link] (routes/path :sign-out))
