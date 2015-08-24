@@ -8,7 +8,9 @@ ssh $REMOTE_USER@$SERVER_IP <<EOF
   sudo docker stop mooncake || echo 'Failed to stop mooncake container'
   sudo docker rm mooncake || echo 'Failed to remove mooncake container'
   sudo docker run -d -v /var/mooncake/target:/var/mooncake \
-                     -p 127.0.0.1:5000:3000 --name mooncake \
+                     -p 127.0.0.1:5000:3000 \
+                     --name mooncake \
                      --env-file=/var/mooncake/config/mooncake.env \
+                     --link mongo:mongo \
                      java:8 bash -c 'java -Dlog4j.configuration=log4j.dev -jar /var/mooncake/mooncake-standalone.jar'
 EOF
