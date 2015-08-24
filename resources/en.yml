@@ -13,9 +13,13 @@ sign-in:
   sign-in-with-d-cent: Sign in with D-Cent
 
 create-account:
-  title: Create Account 
+  title: Create Account
   username-label: Username
-  username-invalid-validation-message: Enter a username
+  username-blank-validation-message: Enter a username
+  username-too-long-validation-message: Too long - enter a shorter username.
+  username-invalid-format-validation-message: Invalid format - please use alphanumerics only.
+  username-duplicate-validation-message: This username is already taken - please try another one.
+  username-default-validation-message: Invalid username - please try another one.
   create-account-submit: Create account
 
 error-404:

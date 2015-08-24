@@ -19,13 +19,16 @@
   (let [untranslated-string-regex #"(?!!DOCTYPE|!IEMobile)!\w+"]
     (midje/chatty-checker [response-body] (empty? (re-seq untranslated-string-regex response-body)))))
 
-(defn test-translations [page-name view-fn]
-  (midje/fact {:midje/name (format "Checking all translations exist for %s" page-name)}
+(defn test-translations
+  ([page-name view-fn]
+   (test-translations page-name view-fn {}))
+  ([page-name view-fn context]
+   (midje/fact {:midje/name (format "Checking all translations exist for %s" page-name)}
               (let [translator (t/translations-fn t/translation-map)
-                    page (-> {:context {:translator translator}}
+                    page (-> {:context (assoc context :translator translator)}
                              view-fn
                              (mh/enlive-response {:translator translator}) :body)]
-                page => no-untranslated-strings)))
+                page => no-untranslated-strings))))
 
 (defn enlive-m->attr [enlive-m selector attr]
   (-> enlive-m (html/select selector) first :attrs attr))

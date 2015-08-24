@@ -26,7 +26,8 @@
   (fact "username validation errors are displayed"
         (let [error-m {:username ?error-key}
               params {:username ?username}
-              page (ca/create-account {:context {:params params :error-m error-m}})]
+              context {:params params :error-m error-m}
+              page (ca/create-account {:context context})]
           (fact "the class for styling errors is added"
                 (html/select page [[:.clj--username :.form-row--validation-error]]) =not=> empty?)
           (fact "username validation element is present"
@@ -36,7 +37,8 @@
                 (contains {:attrs (contains {:value ?username})}))
           (fact "correct error message is displayed"
                 (first (html/select page [:.clj--username__validation]))
-                => (contains {:attrs (contains {:data-l8n ?validation-translation})}))))
+                => (contains {:attrs (contains {:data-l8n ?validation-translation})})
+                (th/test-translations "create-account validation errors" ca/create-account context))))
 
   ?error-key        ?username                     ?validation-translation
   :blank            "  "                          "content:create-account/username-blank-validation-message"
