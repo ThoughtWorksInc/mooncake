@@ -117,20 +117,20 @@ gulp.task('clean-deployed', function (cb) {
 });
 
 gulp.task('watch', function () {
-  gulp.watch('assets/jade/**/*.jade', ['jade']);
+  gulp.watch('assets/jade/**/*.jade', browsersync.reload);
   gulp.watch('assets/stylesheets/**/*.scss', ['sass']);
-  gulp.watch('assets/images/**/*.*', ['images']);
-  gulp.watch('assets/javascripts/**/*.js', ['js']);
+  gulp.watch(dev_path.images, ['images']);
+  gulp.watch(dev_path.js, ['js']);
 });
 
 gulp.task('server', function (callback) {
   isDev = true;
-  browsersync = require('browser-sync');
+  browsersync = require('browser-sync').create();
   nodemon = require('gulp-nodemon');
   ghPages = require('gulp-gh-pages');
 
   runSequence('clean-build',
-      ['jade', 'sass', 'js', 'images', 'favicons', 'fonts', 'browser-sync', 'watch'],
+      ['sass', 'js', 'images', 'favicons', 'fonts', 'browser-sync', 'watch'],
       callback);
 });
 
