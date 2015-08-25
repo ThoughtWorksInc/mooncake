@@ -5,11 +5,13 @@
 
 (defprotocol Database
   (fetch [this coll k]
-         "Find the item based on a key.")
+    "Find the item based on a key.")
   (find-item [this coll query-m]
-             "Find an item matching the query-map.")
-  (store! [this coll key-param item]
-          "Store the given map using the value of the kw key-param and return it."))
+    "Find an item matching the query-map.")
+  (store! [this coll item]
+    "Store the given map and return it.")
+  (store-with-id! [this coll key-param item]
+    "Store the given map using the value of the kw key-param and return it."))
 
 (defrecord MongoDatabase [mongo-db]
   Database
@@ -21,9 +23,12 @@
     (when query-m
       (-> (mcoll/find-one-as-map mongo-db coll query-m)
           (dissoc :_id))))
-  (store! [this coll key-param item]
-    (-> (mcoll/insert-and-return mongo-db coll (assoc item :_id (key-param item)))
-        (dissoc :_id))))
+  (store! [this coll item]
+    (-> (mcoll/insert-and-return mongo-db coll item)
+        (dissoc :_id)))
+  (store-with-id! [this coll key-param item]
+    (->> (assoc item :_id (key-param item))
+         (store! this coll))))
 
 (defn create-database [mongodb]
   (MongoDatabase. mongodb))

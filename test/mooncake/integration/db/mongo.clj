@@ -22,12 +22,12 @@
 
 (background (before :facts (drop-db!)))
 
-(fact "creating mongo store from mongo uri creates a MongoDatabase which can be used to store! and fetch"
+(fact "creating mongo store from mongo uri creates a MongoDatabase which can be used to store-with-id! and fetch"
       (with-mongo-do test-db-uri
         (fn [mongo-db]
           (let [store (mongo/create-database mongo-db)]
             (class store) => mooncake.db.mongo.MongoDatabase
-            (mongo/store! store collection-name :some-index-key {:some-index-key "barry" :some-other-key "other"})
+            (mongo/store-with-id! store collection-name :some-index-key {:some-index-key "barry" :some-other-key "other"})
             (mongo/fetch store collection-name "barry") => {:some-index-key "barry" :some-other-key "other"}))))
 
 (fact "storing an item in an empty collection results in just that item being in the collection"
@@ -36,7 +36,7 @@
           (let [store (mongo/create-database mongo-db)
                 item {:some-index-key "barry" :some-other-key "other"}]
             (c/find-maps mongo-db collection-name) => empty?
-            (mongo/store! store collection-name :some-index-key item) => item
+            (mongo/store-with-id! store collection-name :some-index-key item) => item
             (count (c/find-maps mongo-db collection-name)) => 1
             (c/find-one-as-map mongo-db collection-name {:some-index-key "barry"}) => (contains item)))))
 
@@ -45,8 +45,8 @@
         (fn [mongo-db]
           (let [store (mongo/create-database mongo-db)
                 item {:some-index-key "barry" :some-other-key "other"}]
-            (mongo/store! store collection-name :some-index-key item) => item
-            (mongo/store! store collection-name :some-index-key item) => (throws Exception)))))
+            (mongo/store-with-id! store collection-name :some-index-key item) => item
+            (mongo/store-with-id! store collection-name :some-index-key item) => (throws Exception)))))
 
 (fact "find-item queries items based on a query map and returns one if a match is found"
       (with-mongo-do test-db-uri
@@ -55,9 +55,9 @@
                 item1 {:some-index-key "barry" :some-other-key "other"}
                 item2 {:some-index-key "rebecca" :some-other-key "bsaa"}
                 item3 {:some-index-key "zane"    :some-other-key "foo" :a-third-key "bar"}
-                _ (mongo/store! store collection-name :some-index-key item1)
-                _ (mongo/store! store collection-name :some-index-key item2)
-                _ (mongo/store! store collection-name :some-index-key item3)]
+                _ (mongo/store-with-id! store collection-name :some-index-key item1)
+                _ (mongo/store-with-id! store collection-name :some-index-key item2)
+                _ (mongo/store-with-id! store collection-name :some-index-key item3)]
             (mongo/find-item store collection-name {:some-other-key "other"}) => item1
             (mongo/find-item store collection-name {:some-other-key "bsaa"}) => item2
             (mongo/find-item store collection-name {:some-other-key "foo" :a-third-key "bar"}) => item3
