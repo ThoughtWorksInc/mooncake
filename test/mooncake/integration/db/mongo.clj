@@ -51,3 +51,14 @@
             (fact "can turn off keywordisation of keys"
                   (mongo/find-item store collection-name {:some-other-key "other"} false) => {"some-index-key" "barry" "some-other-key" "other"})
             ))))
+
+(fact "can fetch all items in a collection"
+      (dbh/with-mongo-do
+        (fn [mongo-db]
+          (let [db (mongo/create-database mongo-db)
+                item1 {:a 1}
+                item2 {:b 2}]
+            (mongo/store! db collection-name item1)
+            (mongo/store! db collection-name item2)
+            (mongo/fetch-all db collection-name false) => (just [{:a 1} {:b 2}] :in-any-order)
+            ))))

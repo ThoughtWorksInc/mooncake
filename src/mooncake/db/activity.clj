@@ -5,3 +5,6 @@
 
 (defn store-activity! [db activity]
   (mongo/store! db collection activity))
+
+(defn fetch-activity [db activity]
+  )

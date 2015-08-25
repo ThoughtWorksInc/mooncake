@@ -6,6 +6,8 @@
 (defprotocol Database
   (fetch [this coll k keywordise?]
     "Find the item based on a key.")
+  (fetch-all [this coll keywordise?]
+    "Find all items based on a collection")
   (find-item [this coll query-m keywordise?]
     "Find an item matching the query-map.")
   (store! [this coll item]
@@ -25,6 +27,9 @@
     (when k
       (-> (mcoll/find-map-by-id mongo-db coll k [] keywordise?)
           (dissoc-id keywordise?))))
+  (fetch-all [this coll keywordise?]
+    (->> (mcoll/find-maps mongo-db coll)
+         (map dissoc-id)))
   (find-item [this coll query-m keywordise?]
     (when query-m
       (-> (mcoll/find-one-as-map mongo-db coll query-m [] keywordise?)

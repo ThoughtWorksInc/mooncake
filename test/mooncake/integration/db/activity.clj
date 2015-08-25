@@ -10,8 +10,14 @@
       (dbh/with-mongo-do
         (fn [db]
           (let [database (mongo/create-database db)
-                activity {"displayName" "KCat"}]
+                activity {"@displayName" "KCat"}]
             (activity/store-activity! database activity)
-            (mongo/find-item database activity/collection {"displayName" "KCat"} true) => {:displayName "KCat"}))))
+            (mongo/find-item database activity/collection {"@displayName" "KCat"} false) => {"@displayName" "KCat"}))))
 
-
+(future-fact "can fetch an activity"
+      (dbh/with-mongo-do
+        (fn [db]
+          (let [database (mongo/create-database db)
+                activity {"@displayName" "KCat"}]
+            (activity/fetch-activity database activity)
+            (mongo/find-item database activity/collection {"@displayName" "KCat"} false) => {"@displayName" "KCat"}))))

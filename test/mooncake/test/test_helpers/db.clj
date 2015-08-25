@@ -9,8 +9,10 @@
   (fetch [this coll id keywordise?]
     (-> (get-in @data [coll id])
         (dissoc :_id)))
+  (fetch-all [this coll keywordise?]
+    (vals (get @data coll)))
   (find-item [this coll query-m keywordise?]
-    (-> (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals (get @data coll)))
+    (-> (some #(when (clojure.set/subset? (set query-m) (set %)) %) (mongo/fetch-all this coll keywordise?))
         (dissoc :_id)))
   (store! [this coll item]
     (->> (assoc item :_id (UUID/randomUUID))
