@@ -1,9 +1,9 @@
 (ns mooncake.test.controller.create-account
   (:require [midje.sweet :refer :all]
-            [net.cgrand.enlive-html :as html]
             [ring.mock.request :as mock]
             [mooncake.controller.create-account :as cac]
             [mooncake.db.mongo :as mongo]
+            [mooncake.db.user :as user]
             [mooncake.routes :as routes]
             [mooncake.test.test-helpers :as th]))
 
@@ -56,7 +56,7 @@
                    response (cac/create-account ...store... create-account-request)]
                response => (th/check-redirects-to (routes/absolute-path {} :sign-in))
                (provided
-                 (mongo/create-user! anything anything anything) => ...never-called... :times 0)))
+                 (user/create-user! anything anything anything) => ...never-called... :times 0)))
 
        (fact "invalid username parameter renders show-create-account and nothing is stored"
              (let [create-account-request {:params {:username "!!*FAIL*!!"}
@@ -67,7 +67,7 @@
                (:body response) => (contains "clj--username__validation")
                (:body response) => (contains "!!*FAIL*!!")
                (provided
-                 (mongo/create-user! anything anything anything) => ...never-called... :times 0)))
+                 (user/create-user! anything anything anything) => ...never-called... :times 0)))
 
        (fact "duplicate username parameter renders show-create-account and nothing is stored"
              (let [create-account-request {:params {:username "dupe_username"}
@@ -80,7 +80,7 @@
                (:body response) => (contains "clj--username__validation")
                (:body response) => (contains "dupe_username")
                (provided
-                 (mongo/create-user! anything anything anything) => ...never-called... :times 0))))
+                 (user/create-user! anything anything anything) => ...never-called... :times 0))))
 
 (facts "about is-username-duplicate?"
       (fact "when username is unique returns false"

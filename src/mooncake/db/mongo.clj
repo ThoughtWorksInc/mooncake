@@ -36,8 +36,3 @@
 
 (defn get-mongo-db [mongo-uri]
   (:db (get-mongo-db-and-conn mongo-uri)))
-
-(defn create-user! [db auth-provider-user-id username]
-  (let [user {:auth-provider-user-id auth-provider-user-id
-              :username username}]
-    (store! db :auth-provider-user-id user)))

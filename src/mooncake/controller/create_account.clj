@@ -2,7 +2,7 @@
   (:require
     [mooncake.helper :as mh]
     [mooncake.validation :as v]
-    [mooncake.db.mongo :as mongo]
+    [mooncake.db.user :as user]
     [mooncake.view.create-account :as cav]))
 
 (defn show-create-account [request]
@@ -19,11 +19,11 @@
 
 (defn- create-account-response [user-store request username]
   (let [auth-provider-user-id (get-in request [:session :auth-provider-user-id])
-        created-user (mongo/create-user! user-store auth-provider-user-id username)]
+        created-user (user/create-user! user-store auth-provider-user-id username)]
     (account-created-response request created-user)))
 
 (defn is-username-duplicate? [user-store username]
-  (boolean (mongo/find-item user-store {:username username})))
+  (boolean (user/find-user user-store username)))
 
 (defn create-account [user-store request]
   (if (mh/authenticated? request)
