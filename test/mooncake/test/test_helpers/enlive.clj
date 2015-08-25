@@ -1,4 +1,4 @@
-(ns mooncake.test.test-helpers
+(ns mooncake.test.test-helpers.enlive
   (:require [midje.sweet :as midje]
             [net.cgrand.enlive-html :as html]
             [mooncake.helper :as mh]

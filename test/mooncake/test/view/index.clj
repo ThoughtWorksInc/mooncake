@@ -1,26 +1,25 @@
 (ns mooncake.test.view.index
   (:require [midje.sweet :refer :all]
             [net.cgrand.enlive-html :as html]
-            [clojure.contrib.humanize :as h]
             [clj-time.core :as c]
             [clj-time.format :as f]
             [mooncake.routes :as routes]
-            [mooncake.test.test-helpers :as th]
+            [mooncake.test.test-helpers.enlive :as eh]
             [mooncake.view.index :as i]))
 
 (fact "index page should return index template"
       (let [page (i/index :request)]
-        page => (th/has-class? [:body] "func--index-page")))
+        page => (eh/has-class? [:body] "func--index-page")))
 
-(th/test-translations "Index page" i/index)
+(eh/test-translations "Index page" i/index)
 
 (fact "username is rendered"
-      (i/index {:session {:username "Dave"}}) => (th/text-is? [:.clj--username] "Dave"))
+      (i/index {:session {:username "Dave"}}) => (eh/text-is? [:.clj--username] "Dave"))
 
 (fact "sign-out link is rendered and directs to /sign-out when user is signed in"
       (let [page (i/index {:session {:username ...username...}})]
-        page => (th/links-to? [:.clj--sign-out__link] (routes/path :sign-out))
-        page =not=> (th/has-class? [:.clj--sign-out__link] "clj--STRIP")))
+        page => (eh/links-to? [:.clj--sign-out__link] (routes/path :sign-out))
+        page =not=> (eh/has-class? [:.clj--sign-out__link] "clj--STRIP")))
 
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
@@ -51,16 +50,16 @@
 
         (count (html/select page [:.clj--activity-item])) => 2
 
-        first-activity-item => (th/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/7")
-        first-activity-item => (th/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
-        first-activity-item => (th/text-is? [:.clj--activity-item__time] "10 minutes ago")
-        first-activity-item => (th/text-is? [:.clj--activity-item__action] "JDog - Objective - Create")
-        first-activity-item => (th/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
+        first-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/7")
+        first-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
+        first-activity-item => (eh/text-is? [:.clj--activity-item__time] "10 minutes ago")
+        first-activity-item => (eh/text-is? [:.clj--activity-item__action] "JDog - Objective - Create")
+        first-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
 
-        second-activity-item => (th/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6")
-        second-activity-item => (th/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
-        second-activity-item => (th/text-is? [:.clj--activity-item__action] "Lala - Objective - Create")
-        second-activity-item => (th/text-is? [:.clj--activity-item__title] "OBJECTIVE 6 TITLE")))
+        second-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6")
+        second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__action] "Lala - Objective - Create")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 6 TITLE")))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (i/index {:context {:activities

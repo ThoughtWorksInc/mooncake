@@ -5,7 +5,7 @@
             [mooncake.db.mongo :as mongo]
             [mooncake.db.user :as user]
             [mooncake.routes :as routes]
-            [mooncake.test.test-helpers :as th]))
+            [mooncake.test.test-helpers.enlive :as eh]))
 
 (facts "about show-create-account"
        (let [show-create-account-request (-> (mock/request :get (routes/absolute-path {} :show-create-account))
@@ -14,11 +14,11 @@
                 (let [response (-> (assoc show-create-account-request :session {:auth-provider-user-id
                                                                                 ...user-id...})
                                    cac/show-create-account)]
-                  response => (th/check-renders-page :.func--create-account-page)))
+                  response => (eh/check-renders-page :.func--create-account-page)))
 
          (fact "when auth-provider-user-id is not in the session navigating to create-account should redirect to /sign-in"
                (cac/show-create-account show-create-account-request) =>
-               (th/check-redirects-to (routes/absolute-path {} :sign-in)))))
+               (eh/check-redirects-to (routes/absolute-path {} :sign-in)))))
 
 (defrecord MemoryDatabase [data]
   mongo/Database
@@ -45,7 +45,7 @@
                       (user/fetch-user db ...user-id...) => {:auth-provider-user-id ...user-id...
                                                             :username "username"})
                 (fact "it should redirect to /"
-                      response => (th/check-redirects-to (routes/absolute-path {} :index)))
+                      response => (eh/check-redirects-to (routes/absolute-path {} :index)))
                 (fact "it should set the username in the session"
                       (get-in response [:session :username]) => "username")
                 (fact "it should remove the auth-provider-user-id from the session"
@@ -54,7 +54,7 @@
        (fact "missing auth-provider-user-id in session redirects to /sign-in and nothing is stored"
              (let [create-account-request {:params {:username "username"}}
                    response (cac/create-account ...store... create-account-request)]
-               response => (th/check-redirects-to (routes/absolute-path {} :sign-in))
+               response => (eh/check-redirects-to (routes/absolute-path {} :sign-in))
                (provided
                  (user/create-user! anything anything anything) => ...never-called... :times 0)))
 
@@ -63,7 +63,7 @@
                                            :session {:auth-provider-user-id ...user-id...}
                                            :context {:translator {}}}
                    response (cac/create-account ...store... create-account-request)]
-               response => (th/check-renders-page :.func--create-account-page)
+               response => (eh/check-renders-page :.func--create-account-page)
                (:body response) => (contains "clj--username__validation")
                (:body response) => (contains "!!*FAIL*!!")
                (provided
@@ -76,7 +76,7 @@
                    store (create-in-memory-db {"some-id" {:auth-provider-user-id "some-id"
                                                           :username "dupe_username"}})
                    response (cac/create-account store create-account-request)]
-               response => (th/check-renders-page :.func--create-account-page)
+               response => (eh/check-renders-page :.func--create-account-page)
                (:body response) => (contains "clj--username__validation")
                (:body response) => (contains "dupe_username")
                (provided

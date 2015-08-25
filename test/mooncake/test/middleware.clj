@@ -1,6 +1,6 @@
 (ns mooncake.test.middleware
   (:require [midje.sweet :refer :all]
-            [mooncake.test.test-helpers :as th]
+            [mooncake.test.test-helpers.enlive :as eh]
             [mooncake.middleware :as m]))
 
 (defn example-handler [request]
@@ -40,4 +40,4 @@
                (wrapped-handler {:session {:username ...username...}}) => ...handled...)
 
          (fact "redirects to provided route when user is not signed in"
-               (wrapped-handler {}) => (th/check-redirects-to "/sign-in"))))
+               (wrapped-handler {}) => (eh/check-redirects-to "/sign-in"))))

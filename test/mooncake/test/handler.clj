@@ -5,7 +5,7 @@
             [mooncake.db.user :as user]
             [mooncake.handler :as h]
             [mooncake.routes :as routes]
-            [mooncake.test.test-helpers :as th]))
+            [mooncake.test.test-helpers.enlive :as eh]))
 
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
@@ -25,7 +25,7 @@
                    :activity-sources
                    {:an-activity-src an-activity-src-url
                     :another-activity-src another-activity-src-url}}}) => (every-checker
-                                                                            (th/check-renders-page :.func--index-page)
+                                                                            (eh/check-renders-page :.func--index-page)
                                                                             (contains {:body (contains "JDog")})
                                                                             (contains {:body (contains "KCat")}))
         (provided
@@ -42,10 +42,10 @@
                 :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
 (fact "sign-in handler renders the sign-in view when the user is not signed in"
-      (h/sign-in {:context {:translator {}}}) => (th/check-renders-page :.func--sign-in-page))
+      (h/sign-in {:context {:translator {}}}) => (eh/check-renders-page :.func--sign-in-page))
 
 (fact "sign-in handler redirects to / when user is signed in"
-      (h/sign-in {:session {:username ...username...}}) => (th/check-redirects-to (routes/absolute-path {} :index)))
+      (h/sign-in {:session {:username ...username...}}) => (eh/check-redirects-to (routes/absolute-path {} :index)))
 
 (fact "stonecutter-sign-in handler delegates to the stonecutter client library"
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
@@ -58,7 +58,7 @@
                     (h/stonecutter-callback ...stonecutter-config... ...db...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
-                         (th/check-redirects-to (routes/absolute-path {} :show-create-account))
+                         (eh/check-redirects-to (routes/absolute-path {} :show-create-account))
                          (contains {:session {:auth-provider-user-id ...stonecutter-user-id...}}))
                     (provided
                       (soc/request-access-token! ...stonecutter-config... ...auth-code...)
@@ -69,7 +69,7 @@
                     (h/stonecutter-callback ...stonecutter-config...  ...db...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
-                         (th/check-redirects-to (routes/absolute-path {} :index))
+                         (eh/check-redirects-to (routes/absolute-path {} :index))
                          (contains {:session {:username ...username...}}))
                     (provided
                       (soc/request-access-token! ...stonecutter-config... ...auth-code...)
@@ -87,5 +87,5 @@
       (let [response (h/sign-out {:session {:user-id ...some-user-id...
                                             :some-other-key ...some-other-value...}})]
         (:session response) => {}
-        response => (th/check-redirects-to (routes/absolute-path {} :sign-in))))
+        response => (eh/check-redirects-to (routes/absolute-path {} :sign-in))))
 
