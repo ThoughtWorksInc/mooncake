@@ -4,12 +4,12 @@
 (defrecord MemoryDatabase [data]
   mongo/Database
   (fetch [this coll k]
-    (@data k))
+    (get-in @data [coll k]))
   (find-item [this coll query-m]
-    (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals @data)))
+    (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals (get @data coll))))
   (store! [this coll key-param item]
     (do
-      (swap! data assoc (key-param item) item)
+      (swap! data assoc-in [coll (key-param item)] item)
       item)))
 
 (defn create-in-memory-db
