@@ -1,0 +1,38 @@
+extends layout/layout
+
+block vars
+  - bodyClass = ""
+  - pageTitle = "!Routes"
+
+block headerScripts
+  style.
+    .demo {
+      padding-top: 40px;
+    }
+    .demo-nav {
+      margin-bottom: 40px;
+      padding-left: 0;
+      list-style: none;
+    }
+    .demo-item {
+      margin: 0 0 15px 0;
+    }
+    .demo-item:last-child {
+      margin-bottom: 0;
+    }
+    .demo-item a {
+      color: #007E84;
+      font-size: 20px;
+      text-decoration: none;
+    }
+    .demo-item a:hover {
+      text-decoration: underline;
+    }
+
+block content
+  .demo
+    ul.demo-nav
+      li.demo-item: a(href="/create-account") Create account
+      li.demo-item: a(href="/") Home
+      li.demo-item: a(href="/sign-in") Sign in
+      li.demo-item: a(href="/error-500") Error 500

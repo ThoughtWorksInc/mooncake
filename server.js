@@ -22,21 +22,31 @@ function beforeAllFilter(req, res, next) {
 
 app.all('*', beforeAllFilter);
 
+function customRender(res, template, data) {
+  res.render(template, data, function (err, html) {
+    var cleanHTML = html.replace(/>!/g, '>');
+    res.send(cleanHTML);
+  });
+}
+
 app.get('/', function(req, res){
-  res.render('index', pageData);
+  customRender(res, 'index', pageData);
+});
+
+app.get('/routes', function(req, res){
+  customRender(res, 'routes', pageData);
 });
 
 app.get('/sign-in', function(req, res){
-  res.render('sign-in', pageData);
+  customRender(res, 'sign-in', pageData);
 });
 
 app.get('/create-account', function(req, res) {
-  res.render('create-account', pageData);
+  customRender(res, 'create-account', pageData);
 });
 
-
 app.get('/error-500', function(req, res) {
-  res.render('error-500', pageData);
+  customRender(res, 'error-500', pageData);
 });
 
 app.listen(app.get('port'), function() {
