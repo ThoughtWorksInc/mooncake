@@ -1,0 +1,96 @@
+label {
+  cursor: pointer;
+}
+
+input {
+  border-radius: 0;
+}
+
+.validation-summary {
+  display: none;
+  margin-bottom: 2rem;
+  &--show {
+    display: block;
+  }
+  &__list {
+    @include reset-list;
+    background-color: lighten($red,2%);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-bottom: 0;
+    padding: 1rem;
+    border-bottom: 4px solid $error_color;
+  }
+  &__item {
+    position: relative;
+    padding-left: 30px;
+    color: $error_color;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    &:before {
+      content: "\f06a";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-family: FontAwesome;
+    }
+  }
+}
+
+.form-row {
+  margin-bottom: 2rem;
+  &--validation-error {
+    background-color: lighten($red,2%);
+    padding: 1rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  &__label {
+
+  }
+  &__title {
+    display: block;
+    margin-bottom: 0.5rem;
+    @include font-size(18px);
+    color: #5d5d5d;
+  }
+  &__validation {
+    font-size: 80%;
+    color: $error_color;
+    padding: 0.5rem 0;
+    margin-bottom: 0.25rem;
+    &:empty, & {
+      display: none;
+    }
+    .form-row--validation-error & {
+      display: block;
+    }
+  }
+  &__input {
+    width: 100%;
+    @include font-size(20px);
+    padding: 0 0 0.75rem 0;
+    background: transparent;
+    color: $blue;
+    border: none;
+    border-bottom: 2px solid $grey_2;
+    .form-row--validation-error & {
+      border-color: $error_color;
+    }
+    &:focus {
+      outline: 0;
+      border-color: $medium_blue;
+      color: $blue;
+    }
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 1000px white inset;
+      -webkit-text-fill-color: $blue;
+    }
+  }
+}
+
+.login-form, .register-form {
+  margin-bottom: 3rem;
+}
