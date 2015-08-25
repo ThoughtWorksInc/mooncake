@@ -7,15 +7,13 @@
 
 (def collection-name "stuff")
 
-(background (before :facts (dbh/drop-db!)))
-
 (fact "creating mongo store from mongo uri creates a MongoDatabase which can be used to store-with-id! and fetch"
       (dbh/with-mongo-do
         (fn [mongo-db]
           (let [store (mongo/create-database mongo-db)]
             (class store) => mooncake.db.mongo.MongoDatabase
             (mongo/store-with-id! store collection-name :some-index-key {:some-index-key "barry" :some-other-key "other"})
-            (mongo/fetch store collection-name "barry") => {:some-index-key "barry" :some-other-key "other"}))))
+            (mongo/fetch store collection-name "barry" true) => {:some-index-key "barry" :some-other-key "other"}))))
 
 (fact "storing an item in an empty collection results in just that item being in the collection"
       (dbh/with-mongo-do
@@ -41,12 +39,15 @@
           (let [store (mongo/create-database mongo-db)
                 item1 {:some-index-key "barry" :some-other-key "other"}
                 item2 {:some-index-key "rebecca" :some-other-key "bsaa"}
-                item3 {:some-index-key "zane"    :some-other-key "foo" :a-third-key "bar"}
+                item3 {:some-index-key "zane" :some-other-key "foo" :a-third-key "bar"}
                 _ (mongo/store-with-id! store collection-name :some-index-key item1)
                 _ (mongo/store-with-id! store collection-name :some-index-key item2)
                 _ (mongo/store-with-id! store collection-name :some-index-key item3)]
-            (mongo/find-item store collection-name {:some-other-key "other"}) => item1
-            (mongo/find-item store collection-name {:some-other-key "bsaa"}) => item2
-            (mongo/find-item store collection-name {:some-other-key "foo" :a-third-key "bar"}) => item3
-            (mongo/find-item store collection-name {:some-other-key "nonExisty"}) => nil
-            (mongo/find-item store collection-name nil) => nil))))
+            (mongo/find-item store collection-name {:some-other-key "other"} true) => item1
+            (mongo/find-item store collection-name {:some-other-key "bsaa"} true) => item2
+            (mongo/find-item store collection-name {:some-other-key "foo" :a-third-key "bar"} true) => item3
+            (mongo/find-item store collection-name {:some-other-key "nonExisty"} true) => nil
+            (mongo/find-item store collection-name nil true) => nil
+            (fact "can turn off keywordisation of keys"
+                  (mongo/find-item store collection-name {:some-other-key "other"} false) => {"some-index-key" "barry" "some-other-key" "other"})
+            ))))

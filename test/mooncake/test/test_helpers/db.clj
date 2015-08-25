@@ -6,10 +6,10 @@
 
 (defrecord MemoryDatabase [data]
   mongo/Database
-  (fetch [this coll id]
+  (fetch [this coll id keywordise?]
     (-> (get-in @data [coll id])
         (dissoc :_id)))
-  (find-item [this coll query-m]
+  (find-item [this coll query-m keywordise?]
     (-> (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals (get @data coll)))
         (dissoc :_id)))
   (store! [this coll item]
@@ -27,12 +27,13 @@
 (def test-db "mooncake-test")
 (def test-db-uri (str "mongodb://localhost:27017/" test-db))
 
-(defn with-mongo-do [thing-to-do]
-  (let [{:keys [db conn]} (mongo/get-mongo-db-and-conn test-db-uri)]
-    (try (thing-to-do db)
-         (finally (m/disconnect conn)))))
-
 (defn drop-db! []
   (let [{:keys [conn db]} (m/connect-via-uri test-db-uri)]
     (mdb/drop-db db)
     (m/disconnect conn)))
+
+(defn with-mongo-do [thing-to-do]
+  (let [{:keys [db conn]} (mongo/get-mongo-db-and-conn test-db-uri)]
+    (try (mdb/drop-db db)
+         (thing-to-do db)
+         (finally (m/disconnect conn)))))
