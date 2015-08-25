@@ -22,14 +22,18 @@
       (log/warn (str "Unable to retrieve activities from " url " --- " e))
       nil)))
 
+(defn sort-by-published-time [activities]
+  (let [published-time (fn [activity]
+                         (mh/datetime-str->datetime (get activity "published")))]
+    (->> activities
+         (sort-by published-time mh/after?))))
+
 (defn retrieve-activities-from-source [source-k-v-pair]
   (let [[source-key source-url] source-k-v-pair
         activities (get-json-from-activity-source source-url)]
     (map #(assoc % :activity-src source-key) activities)))
 
 (defn retrieve-activities [activity-sources]
-  (let [published-time (fn [activity]
-                         (mh/datetime-str->datetime (get activity "published")))]
-    (->> (map retrieve-activities-from-source activity-sources)
-         flatten
-         (sort-by published-time mh/after?))))
+  (->> (map retrieve-activities-from-source activity-sources)
+       flatten
+       sort-by-published-time))
