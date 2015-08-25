@@ -2,10 +2,10 @@
   (:require [midje.sweet :refer :all]
             [ring.mock.request :as mock]
             [mooncake.controller.create-account :as cac]
-            [mooncake.db.mongo :as mongo]
             [mooncake.db.user :as user]
             [mooncake.routes :as routes]
-            [mooncake.test.test-helpers.enlive :as eh]))
+            [mooncake.test.test-helpers.enlive :as eh]
+            [mooncake.test.test-helpers.db :as dbh]))
 
 (facts "about show-create-account"
        (let [show-create-account-request (-> (mock/request :get (routes/absolute-path {} :show-create-account))
@@ -20,26 +20,11 @@
                (cac/show-create-account show-create-account-request) =>
                (eh/check-redirects-to (routes/absolute-path {} :sign-in)))))
 
-(defrecord MemoryDatabase [data]
-  mongo/Database
-  (fetch [this coll k]
-    (@data k))
-  (find-item [this coll query-m]
-    (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals @data)))
-  (store! [this coll key-param item]
-    (do
-      (swap! data assoc (key-param item) item)
-      item)))
-
-(defn create-in-memory-db
-  ([] (create-in-memory-db {}))
-  ([data] (MemoryDatabase. (atom data))))
-
 (facts "about create-account"
        (facts "when successful"
               (let [create-account-request {:params {:username "username"}
                                             :session {:auth-provider-user-id ...user-id...}}
-                    db (create-in-memory-db)
+                    db (dbh/create-in-memory-db)
                     response (cac/create-account db create-account-request)]
                 (fact "it should create the user"
                       (user/fetch-user db ...user-id...) => {:auth-provider-user-id ...user-id...
@@ -73,7 +58,7 @@
              (let [create-account-request {:params {:username "dupe_username"}
                                            :session {:auth-provider-user-id ...user-id...}
                                            :context {:translator {}}}
-                   store (create-in-memory-db {"some-id" {:auth-provider-user-id "some-id"
+                   store (dbh/create-in-memory-db {"some-id" {:auth-provider-user-id "some-id"
                                                           :username "dupe_username"}})
                    response (cac/create-account store create-account-request)]
                response => (eh/check-renders-page :.func--create-account-page)
@@ -84,10 +69,10 @@
 
 (facts "about is-username-duplicate?"
       (fact "when username is unique returns false"
-            (let [store (create-in-memory-db)]
+            (let [store (dbh/create-in-memory-db)]
               (cac/is-username-duplicate? store "unique_username")) => false)
 
       (fact "duplicate username returns true"
-            (let [store (create-in-memory-db {"some-id" {:auth-provider-user-id "some-id"
+            (let [store (dbh/create-in-memory-db {"some-id" {:auth-provider-user-id "some-id"
                                                          :username "dupe_username"}})]
               (cac/is-username-duplicate? store "dupe_username")) => true))
