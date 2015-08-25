@@ -1,10 +1,8 @@
 (ns mooncake.test.handler
   (:require [midje.sweet :refer :all]
             [clj-http.client :as http]
-            [net.cgrand.enlive-html :as html]
-            [ring.mock.request :as mock]
             [stonecutter-oauth.client :as soc]
-            [mooncake.db.mongo :as mongo]
+            [mooncake.db.user :as user]
             [mooncake.handler :as h]
             [mooncake.routes :as routes]
             [mooncake.test.test-helpers :as th]))
@@ -58,7 +56,7 @@
 (facts "about stonecutter-callback"
        (facts "when successfully authenticated"
               (fact "when new user, redirects to /create-account with the auth-provider-user-id set in the session"
-                    (h/stonecutter-callback ...stonecutter-config... ...user-store...
+                    (h/stonecutter-callback ...stonecutter-config... ...db...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
                          (th/check-redirects-to (routes/absolute-path {} :show-create-account))
@@ -66,10 +64,10 @@
                     (provided
                       (soc/request-access-token! ...stonecutter-config... ...auth-code...)
                       => {:user-info {:sub ...stonecutter-user-id...}}
-                      (mongo/fetch ...user-store... ...stonecutter-user-id...) => nil))
+                      (user/fetch-user ...db... ...stonecutter-user-id...) => nil))
 
               (fact "when existing user, redirects to / with the username set in the session and auth-provider-user-id removed"
-                    (h/stonecutter-callback ...stonecutter-config...  ...user-store...
+                    (h/stonecutter-callback ...stonecutter-config...  ...db...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
                          (th/check-redirects-to (routes/absolute-path {} :index))
@@ -77,7 +75,7 @@
                     (provided
                       (soc/request-access-token! ...stonecutter-config... ...auth-code...)
                       => {:user-info {:sub ...stonecutter-user-id...}}
-                      (mongo/fetch ...user-store... ...stonecutter-user-id...)
+                      (user/fetch-user ...db... ...stonecutter-user-id...)
                       => {:username ...username... :auth-provider-user-id ...stonecutter-user-id...})))
 
        (fact "passes on stonecutter oauth client exception"

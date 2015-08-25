@@ -15,7 +15,8 @@
             [mooncake.controller.create-account :as cac]
             [mooncake.view.error :as error]
             [mooncake.view.index :as i]
-            [mooncake.view.sign-in :as si])
+            [mooncake.view.sign-in :as si]
+            [mooncake.db.user :as user])
   (:gen-class))
 
 
@@ -42,11 +43,11 @@
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
 
-(defn stonecutter-callback [stonecutter-config user-store request]
+(defn stonecutter-callback [stonecutter-config db request]
   (let [auth-code (get-in request [:params :code])
         token-response (soc/request-access-token! stonecutter-config auth-code)
         auth-provider-user-id (get-in token-response [:user-info :sub])]
-    (if-let [user (mongo/fetch user-store auth-provider-user-id)]
+    (if-let [user (user/fetch-user db auth-provider-user-id)]
       (-> (mh/redirect-to request :index)
           (assoc-in [:session :username] (:username user)))
       (-> (mh/redirect-to request :show-create-account)
@@ -80,7 +81,7 @@
                  (config/client-secret config-m)
                  (routes/absolute-path config-m :stonecutter-callback)))
 
-(defn site-handlers [config-m user-store]
+(defn site-handlers [config-m db]
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
@@ -88,10 +89,10 @@
          :sign-in sign-in 
          :sign-out sign-out
          :show-create-account cac/show-create-account
-         :create-account (partial cac/create-account user-store)
+         :create-account (partial cac/create-account db)
          :stub-activities stub-activities
          :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
-         :stonecutter-callback (partial stonecutter-callback stonecutter-config user-store)}
+         :stonecutter-callback (partial stonecutter-callback stonecutter-config db)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback 
                                      :stub-activities :show-create-account :create-account})
@@ -103,8 +104,8 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-app [config-m activity-sources]
-  (let [user-store (mongo/create-mongo-store (mongo/get-mongo-db (config/mongo-uri config-m)) "user")]
-    (-> (scenic/scenic-handler routes/routes (site-handlers config-m user-store) not-found-handler)
+  (let [db (mongo/create-database (mongo/get-mongo-db (config/mongo-uri config-m)))]
+    (-> (scenic/scenic-handler routes/routes (site-handlers config-m db) not-found-handler)
         (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
         (m/wrap-config config-m)
         (m/wrap-error-handling internal-server-error-handler)

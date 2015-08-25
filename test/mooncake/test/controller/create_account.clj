@@ -20,29 +20,29 @@
                (cac/show-create-account show-create-account-request) =>
                (th/check-redirects-to (routes/absolute-path {} :sign-in)))))
 
-(defrecord MemoryStore [data]
+(defrecord MemoryDatabase [data]
   mongo/Database
-  (fetch [this k]
+  (fetch [this coll k]
     (@data k))
-  (find-item [this query-m]
+  (find-item [this coll query-m]
     (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals @data)))
-  (store! [this key-param item]
+  (store! [this coll key-param item]
     (do
       (swap! data assoc (key-param item) item)
       item)))
 
-(defn create-memory-store
-  ([] (create-memory-store {}))
-  ([data] (MemoryStore. (atom data))))
+(defn create-in-memory-db
+  ([] (create-in-memory-db {}))
+  ([data] (MemoryDatabase. (atom data))))
 
 (facts "about create-account"
        (facts "when successful"
               (let [create-account-request {:params {:username "username"}
                                             :session {:auth-provider-user-id ...user-id...}}
-                    store (create-memory-store)
-                    response (cac/create-account store create-account-request)]
+                    db (create-in-memory-db)
+                    response (cac/create-account db create-account-request)]
                 (fact "it should create the user"
-                      (mongo/fetch store ...user-id...) => {:auth-provider-user-id ...user-id...
+                      (user/fetch-user db ...user-id...) => {:auth-provider-user-id ...user-id...
                                                             :username "username"})
                 (fact "it should redirect to /"
                       response => (th/check-redirects-to (routes/absolute-path {} :index)))
@@ -73,7 +73,7 @@
              (let [create-account-request {:params {:username "dupe_username"}
                                            :session {:auth-provider-user-id ...user-id...}
                                            :context {:translator {}}}
-                   store (create-memory-store {"some-id" {:auth-provider-user-id "some-id"
+                   store (create-in-memory-db {"some-id" {:auth-provider-user-id "some-id"
                                                           :username "dupe_username"}})
                    response (cac/create-account store create-account-request)]
                response => (th/check-renders-page :.func--create-account-page)
@@ -84,10 +84,10 @@
 
 (facts "about is-username-duplicate?"
       (fact "when username is unique returns false"
-            (let [store (create-memory-store)]
+            (let [store (create-in-memory-db)]
               (cac/is-username-duplicate? store "unique_username")) => false)
 
       (fact "duplicate username returns true"
-            (let [store (create-memory-store {"some-id" {:auth-provider-user-id "some-id"
+            (let [store (create-in-memory-db {"some-id" {:auth-provider-user-id "some-id"
                                                          :username "dupe_username"}})]
               (cac/is-username-duplicate? store "dupe_username")) => true))
