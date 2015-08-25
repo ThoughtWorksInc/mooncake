@@ -9,7 +9,6 @@
 
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
-(def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 
 (facts "about site-handlers"
