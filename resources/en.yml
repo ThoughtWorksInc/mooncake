@@ -2,7 +2,6 @@
 
 default:
   title: Mooncake Activity Stream
-  logo-ending: Activity Stream
   sign-out-link: Sign out
 
 index:
