@@ -1,0 +1,11 @@
+$heading-font--small-device: 28px;
+$heading-font--medium-device: 32px;
+h1 {
+  line-height: 1;
+  margin-top: 0;
+  letter-spacing: -0.045rem;
+  @include font-size($heading-font--small-device);
+  @include width-from($medium_device) {
+    @include font-size($heading-font--medium-device);
+  }
+}

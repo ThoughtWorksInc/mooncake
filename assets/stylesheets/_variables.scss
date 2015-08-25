@@ -1,17 +1,23 @@
 $purple: #9B59B6;
 $white: #fff;
-$grey: #ECF0F1;
-$grey_2: #BDC3C7;
+$black: #000;
+$grey_super_light: #f8fafa;
+$grey_light: #ECF0F1;
+$grey_medium: #BDC3C7;
 $green: #2ECC71;
 $yellow: #F1C40F;
 $blue: #3498DB;
-$medium_blue: blue;
+$blue_medium: #3173df;
 $red: #E74C3C;
+
+$cyan: #1ABC9C;
+$grey_blue: #34495E;
+
 
 
 $default_text_color: rgba(black,0.8);
-$background_color: $white;
-$error_color: red;
+$background_color: $grey_light;
+$error_color: $red;
 
 $link_colour: $default_text_color;
 $link_hover_colour: $link_colour;

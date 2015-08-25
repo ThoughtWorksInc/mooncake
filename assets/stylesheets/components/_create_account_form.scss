@@ -1,5 +1,8 @@
 .create-account-form {
   background: $white;
-  padding: 2rem;
-  border: 1px solid $grey;
+  padding: 1.5rem 1.25rem;
+  border: 1px solid $grey_light;
+  @include width-from($medium_device) {
+    padding: 2.5rem 2rem;
+  }
 }

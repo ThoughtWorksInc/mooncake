@@ -2,8 +2,9 @@
   position: relative;
   min-height: 100px;
   padding: 15px 18px 15px 80px;
-  border-bottom: 1px solid $grey;
+  border-bottom: 1px solid $grey_light;
   color: $purple;
+  background-color: $white;
 }
 
 .activity-src- {
@@ -30,7 +31,7 @@
 .activity-item__action {
   margin: 0;
   padding: 0;
-  color: #1ABC9C;
+  color: $cyan;
   font-size: 12px;
   line-height: 1;
   font-weight: 400;
@@ -38,13 +39,13 @@
 .activity-item__title {
   font-size: 19px;
   line-height: 1.1;
-  color: #34495E;
+  color: $grey_blue;
   margin: 0;
   padding: 0.35em 0 0 0;
 }
 
 .activity-item__time {
-  color: $grey_2;
+  color: $grey_medium;
   font-size: 12px;
   font-weight: 400;
 }

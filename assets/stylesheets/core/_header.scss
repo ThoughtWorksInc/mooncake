@@ -1,13 +1,17 @@
 .header {
   height: 50px;
   background: $purple;
+  margin-bottom: 0.25rem;
   padding: 0 20px;
+  @include width-from($medium_device) {
+    margin-bottom: 1.5rem;
+  }
 }
 .header__logo {
   font-size: 22px;
   line-height: 45px;
   color: $white;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.1rem;
   font-weight: bold;
 }
 

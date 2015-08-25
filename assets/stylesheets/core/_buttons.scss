@@ -1,15 +1,13 @@
 .button {
   display: inline-block;
   appearance: none;
-  height: 70px;
-  line-height: 1.2;
-  border: none;
-  padding: 24px;
-  @include font-size(20px);
+  line-height: 1;
+  padding: 20px 20px;
+  @include font-size(18px);
   text-align: left;
-  background-color: $blue;
+  background-color: $cyan;
+  border: none;
   color: $white;
-  font-weight: bold;
   text-decoration: none;
   transition: background 250ms ease, color 250ms ease, box-shadow 250ms ease, transform 250ms ease, border 250ms ease;
   outline: 0;
@@ -17,13 +15,17 @@
   @include no-select;
   transform-style: preserve-3d; // Fix safari text flicker (children need backface-visibility: hidden;)
   &:focus, &:hover {
-    background-color: lighten($blue, 1%);
-    box-shadow: 0 19px 60px -10px rgba(0,0,0,.35);
+    background-color: lighten($cyan, 1%);
+  }
+  &:hover {
     transform: translateY(-2px);
+    box-shadow: 0 10px 30px -5px rgba(0,0,0,.35);
   }
   &:active {
-    background-color: darken($blue, 5%);
+    background-color: darken($cyan, 5%);
     outline: 0;
+    transform: translateY(0);
+    box-shadow: none;
   }
 
   // make it so
@@ -34,17 +36,6 @@
   // make it so
   &--full-width {
     width: 100%;
-  }
-
-  // secondary action
-  &--secondary {
-    background-color: $grey_2;
-    &:hover {
-      background-color: lighten($grey_2, 2%);
-    }
-    &:focus {
-      background-color: darken($grey_2, 5%);
-    }
   }
 
 }

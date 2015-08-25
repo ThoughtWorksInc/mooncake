@@ -14,6 +14,7 @@ sign-in:
 create-account:
   title: Create Account
   username-label: Username
+  username-help-message: Maximum of 16 letters or numbers. No spaces.
   username-blank-validation-message: Enter a username
   username-too-long-validation-message: Too long - enter a shorter username.
   username-invalid-format-validation-message: Invalid format - please use alphanumerics only.

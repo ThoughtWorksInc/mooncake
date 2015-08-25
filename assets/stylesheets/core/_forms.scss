@@ -40,15 +40,16 @@ input {
 }
 
 .form-row {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   &--validation-error {
-    background-color: lighten($red,2%);
-    padding: 1rem;
-    margin-left: -1rem;
-    margin-right: -1rem;
+    $spacing: 1rem;
+    border-left: 4px solid $red;
+    padding: $spacing;
+    margin-left: -$spacing;
+    margin-right: -$spacing;
   }
   &__label {
-
+    display: block;
   }
   &__title {
     display: block;
@@ -56,11 +57,18 @@ input {
     @include font-size(18px);
     color: #5d5d5d;
   }
+  &__help {
+    display: block;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+    @include font-size(14px);
+    color: $purple;
+  }
   &__validation {
-    font-size: 80%;
-    color: $error_color;
-    padding: 0.5rem 0;
-    margin-bottom: 0.25rem;
+    @include font-size(14px);
+    color: $purple;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
     &:empty, & {
       display: none;
     }
@@ -70,23 +78,25 @@ input {
   }
   &__input {
     width: 100%;
-    @include font-size(20px);
-    padding: 0 0 0.75rem 0;
-    background: transparent;
-    color: $blue;
-    border: none;
-    border-bottom: 2px solid $grey_2;
+    @include font-size(18px);
+    padding: 0.65rem;
+    background: $grey_super_light;
+    border: 1px solid $grey_light;
     .form-row--validation-error & {
       border-color: $error_color;
     }
     &:focus {
       outline: 0;
-      border-color: $medium_blue;
-      color: $blue;
+      border-color: $cyan;
     }
     &:-webkit-autofill {
       -webkit-box-shadow: 0 0 0 1000px white inset;
       -webkit-text-fill-color: $blue;
+    }
+    &--small {
+      @include width-from($small_device) {
+        max-width: 250px;
+      }
     }
   }
 }
