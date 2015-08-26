@@ -3,14 +3,39 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title data-l8n="content:error-500/title">!Error-500</title>
+    <title data-l8n="content:default/title">!Routes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="format-detection" content="telephone=no">
     <link rel="icon" type="image/png" href="favicon.png">
     <link href="stylesheets/application.css" media="screen" rel="stylesheet" type="text/css"/>
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" rel="stylesheet" type="text/css">
+    <style>
+      .demo {
+        padding-top: 40px;
+      }
+      .demo-nav {
+        margin-bottom: 40px;
+        padding-left: 0;
+        list-style: none;
+      }
+      .demo-item {
+        margin: 0 0 15px 0;
+      }
+      .demo-item:last-child {
+        margin-bottom: 0;
+      }
+      .demo-item a {
+        color: #007E84;
+        font-size: 20px;
+        text-decoration: none;
+      }
+      .demo-item a:hover {
+        text-decoration: underline;
+      }
+      
+    </style>
   </head>
-  <body class="func--error-500-page">
+  <body>
     <header class="header">
       <div class="middle-container middle-container--relative">
         <div class="header__logo"><a href="/" class="logo__link">Mooncake</a></div>
@@ -18,16 +43,15 @@
       </div>
     </header>
     <main role="main" class="main-content">
-      <div class="middle-container">
-        <h1 data-l8n="content:error-500/page-header" class="page-title clj--error-page-header">!Sorry something went wrong</h1>
-        <p data-l8n="content:error-500/page-intro" class="clj--error-page-intro">!An unexpected error has occured, please try again. We apologise for any inconvenience.</p>
-        <div data-l8n="html:error-500/page-content" class="clj--error-page-content">
-          <h2>!What do I do now?
-            <ul>
-              <li>!Return home</li>
-            </ul>
-          </h2>
-        </div>
+      <div class="demo">
+        <ul class="demo-nav">
+          <li class="demo-item"><a href="/library">Page furniture</a></li>
+          <li class="demo-item"><a href="/create-account">Create account</a></li>
+          <li class="demo-item"><a href="/index">Home</a></li>
+          <li class="demo-item"><a href="/sign-in">Sign in</a></li>
+          <li class="demo-item"><a href="/customise-feed">Customise feed</a></li>
+          <li class="demo-item"><a href="/error-500">Error 500</a></li>
+        </ul>
       </div>
     </main>
   </body>

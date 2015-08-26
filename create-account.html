@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title data-l8n="content:create-account/title">!Create Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link href="stylesheets/application.css" media="screen" rel="stylesheet" type="text/css"/>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" rel="stylesheet" type="text/css">
+  </head>
+  <body class="func--create-account-page">
+    <header class="header">
+      <div class="middle-container middle-container--relative">
+        <div class="header__logo"><a href="/" class="logo__link">Mooncake</a></div>
+        <div class="header__actions"><span class="clj--username"></span><a href="./sign-out" class="action-link clj--STRIP clj--sign-out__link func--sign-out__link"><span data-l8n="content:default/sign-out-link" class="action-link__title">!Sign out</span></a></div>
+      </div>
+    </header>
+    <main role="main" class="main-content">
+      <form action="./create-account" method="post" role="form" class="create-account-form clj--create-account__form">
+        <h1>Choose your username</h1>
+        <p class="form-row clj--username">
+          <label for="username" class="form-row__label"><span data-l8n="content:create-account/username-label" class="form-row__title">!Username</span><span data-l8n="content:create-account/username-default-validation-message" class="form-row__validation clj--username__validation">!Enter a username</span><span data-l8n="content:create-account/username-help-message" class="form-row__help">!Maximum of 16 letters or numbers. No spaces.</span></label>
+          <input type="text" id="username" name="username" maxlength="16" autofocus="autofocus" class="form-row__input form-row__input--small username-input clj--username__input func--username__input">
+        </p>
+        <button type="submit" data-l8n="content:create-account/create-account-submit" class="button func--create-account__button">!Create account</button>
+      </form>
+    </main>
+  </body>
+</html>
