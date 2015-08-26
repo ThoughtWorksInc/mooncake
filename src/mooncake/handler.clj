@@ -16,7 +16,8 @@
             [mooncake.view.error :as error]
             [mooncake.view.index :as i]
             [mooncake.view.sign-in :as si]
-            [mooncake.db.user :as user])
+            [mooncake.db.user :as user]
+            [mooncake.schedule :as schedule])
   (:gen-class))
 
 
@@ -103,17 +104,19 @@
       (assoc-in [:session :cookie-attrs :max-age] 3600)
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
-(defn create-app [config-m activity-sources]
-  (let [db (mongo/create-database (mongo/get-mongo-db (config/mongo-uri config-m)))]
-    (-> (scenic/scenic-handler routes/routes (site-handlers config-m db) not-found-handler)
-        (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
-        (m/wrap-config config-m)
-        (m/wrap-error-handling internal-server-error-handler)
-        (m/wrap-activity-sources activity-sources)
-        m/wrap-translator)))
+(defn create-app [config-m db activity-sources]
+  (-> (scenic/scenic-handler routes/routes (site-handlers config-m db) not-found-handler)
+      (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
+      (m/wrap-config config-m)
+      (m/wrap-error-handling internal-server-error-handler)
+      (m/wrap-activity-sources activity-sources)
+      m/wrap-translator))
 
 (defn -main [& args]
-  (let [config-m (config/create-config)]
-    (ring-jetty/run-jetty (create-app config-m a/activity-sources)
+  (let [config-m (config/create-config)
+        db (mongo/create-database (mongo/get-mongo-db (config/mongo-uri config-m)))]
+    (a/sync-activities db a/activity-sources)
+    (schedule/schedule (a/sync-activities-task db a/activity-sources) 60) ;; FIXME move this value to configuration
+    (ring-jetty/run-jetty (create-app config-m db a/activity-sources)
                           {:port (config/port config-m)
                            :host (config/host config-m)})))

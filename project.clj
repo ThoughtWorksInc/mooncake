@@ -16,6 +16,7 @@
                  [clj-http "2.0.0"]
                  [org.clojars.d-cent/stonecutter-oauth "0.1.5-SNAPSHOT"]
                  [environ "1.0.0"]
+                 [jarohen/chime "0.1.6"]
                  [com.novemberain/monger "2.1.0"]
                  [log4j/log4j "1.2.17" :exclusions  [javax.mail/mail
                                                      javax.jms/jms

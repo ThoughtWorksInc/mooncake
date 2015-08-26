@@ -10,7 +10,8 @@
             [mooncake.handler :as h]
             [mooncake.config :as c]
             [mooncake.integration.kerodon-helpers :as kh]
-            [mooncake.integration.kerodon-selectors :as ks]))
+            [mooncake.integration.kerodon-selectors :as ks]
+            [mooncake.db.mongo :as mongo]))
 
 (defn print-enlive [state]
   (prn (-> state :enlive))
@@ -28,10 +29,13 @@
 (background
   (soc/request-access-token! anything anything) => {:user-info {:sub "test-stonecutter-user-uuid"}})
 
-(def app (h/create-app (c/create-config) {}))
+(def test-db-uri "mongodb://localhost:27017/mooncake")
+(def database (mongo/create-database (mongo/get-mongo-db test-db-uri)))
+
+(def app (h/create-app (c/create-config) database {}))
 
 (defn drop-db! []
-  (let [{:keys [conn db]} (monger/connect-via-uri (c/mongo-uri (c/create-config)))]
+  (let [{:keys [conn db]} (monger/connect-via-uri test-db-uri)]
     (mdb/drop-db db)
     (monger/disconnect conn)))
 
@@ -106,7 +110,7 @@
 
 (def server (atom nil))
 (defn start-server [] (swap! server (fn [_] (ring-jetty/run-jetty
-                                              (h/create-app (c/create-config) {})
+                                              (h/create-app (c/create-config) database {})
                                               {:host "127.0.0.1" :port 3000 :join? false}))))
 (defn stop-server [] (.stop @server))
 
@@ -114,7 +118,7 @@
   [(before :contents (start-server))
    (after :contents (stop-server))]
   (facts "Stub activities are rendered"
-         (-> (h/create-app (c/create-config) {:stub-activity-source "http://127.0.0.1:3000/stub-activities"})
+         (-> (h/create-app (c/create-config) database {:stub-activity-source "http://127.0.0.1:3000/stub-activities"})
              sign-in!
              (k/visit (routes/absolute-path (c/create-config) :index))
              (kh/page-uri-is "/")
@@ -125,7 +129,7 @@
              (kh/selector-has-attribute-with-content ks/index-page-activity-item-link :href "http://stub-activity.url"))))
 
 (facts "Invalid activity source responses are handled gracefully"
-       (-> (h/create-app (c/create-config) {:invalid-activity-src "http://localhost:6666/not-an-activity-source"})
+       (-> (h/create-app (c/create-config) database {:invalid-activity-src "http://localhost:6666/not-an-activity-source"})
            sign-in!
            (k/visit (routes/absolute-path (c/create-config) :index))
            (kh/page-uri-is "/")
@@ -134,7 +138,7 @@
 (facts "Error page is shown if an exception is thrown"
        (against-background
          (h/sign-in anything) =throws=> (Exception.))
-       (-> (k/session (h/create-app (c/create-config) {}))
+       (-> (k/session (h/create-app (c/create-config) database {}))
            (k/visit (routes/absolute-path (c/create-config) :sign-in))
            (kh/response-status-is 500)
            (kh/selector-exists ks/error-500-page-body)))

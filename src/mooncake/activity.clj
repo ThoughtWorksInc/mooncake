@@ -47,3 +47,8 @@
   (let [activities (retrieve-activities activity-sources)]
     (doall (map (partial a/store-activity! db) (reverse activities)))))
 
+(defn sync-activities-task [db activity-sources]
+  (fn [time]
+    (log/debug (format "Syncing activities at %s" time))
+    (sync-activities db activity-sources)))
+
