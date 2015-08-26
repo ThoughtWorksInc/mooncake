@@ -28,10 +28,12 @@ $header--height: 50px;
 .header__actions {
   position: absolute;
   right: 0;
-  top: 0.8em;
+  top: 0;
   color: $white;
 }
 .action-link {
+  display: inline-block;
+  line-height: $header--height;
   color: inherit;
   &, &:hover {
     text-decoration: none;
@@ -39,18 +41,9 @@ $header--height: 50px;
   &:hover span {
     text-decoration: underline;
   }
-  i {
-    font-size: 1.5em;
-  }
-}
-.action-link__icon {
-  font-size: 1.5em;
 }
 .action-link__title {
-  display: inline;
-  position: relative;
-  top: -4px;
-  margin-left: 0.25em;
+
 }
 
 .header__username {
