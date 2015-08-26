@@ -1,6 +1,5 @@
 (ns mooncake.helper
   (:require [ring.util.response :as r]
-            [net.cgrand.enlive-html :as html]
             [clojure.contrib.humanize :as h]
             [clj-time.core :as c]
             [clj-time.format :as f]

@@ -3,6 +3,7 @@
             [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
+            [mooncake.db.activity :as a]
             [mooncake.helper :as mh]))
 
 
@@ -33,7 +34,16 @@
         activities (get-json-from-activity-source source-url)]
     (map #(assoc % :activity-src source-key) activities)))
 
+(defn retrieve-activities-from-multple-sources [activity-source-m]
+  (->> activity-source-m
+       (map retrieve-activities-from-source)
+       flatten))
+
 (defn retrieve-activities [activity-sources]
-  (->> (map retrieve-activities-from-source activity-sources)
-       flatten
+  (->> (retrieve-activities-from-multple-sources activity-sources)
        sort-by-published-time))
+
+(defn sync-activities [db activity-sources]
+  (let [activities (retrieve-activities activity-sources)]
+    (doall (map (partial a/store-activity! db) (reverse activities)))))
+
