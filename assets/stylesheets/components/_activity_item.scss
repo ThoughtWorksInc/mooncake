@@ -1,7 +1,7 @@
 .activity-item {
   position: relative;
   min-height: 100px;
-  padding: 15px 18px 15px 80px;
+  padding: 30px 18px 30px 80px;
   border-bottom: 1px solid $grey_light;
   color: $purple;
   background-color: $white;
@@ -29,25 +29,31 @@
 }
 
 .activity-item__action {
-  margin: 0;
+  margin: 0 0 0.2rem 0;
   padding: 0;
-  color: $cyan;
-  font-size: 12px;
+  color: $grey_blue;
+  @include font-size(13px);
   line-height: 1;
   font-weight: 400;
 }
+.activity-item__action__text {
+  padding-right: 0.15rem;
+}
 .activity-item__title {
-  font-size: 19px;
+  @include font-size(17px);
   line-height: 1.1;
   color: $grey_blue;
   margin: 0;
-  padding: 0.35em 0 0 0;
+  @include width-from($medium_device) {
+    @include font-size(19px);
+  }
 }
 
 .activity-item__time {
   color: $grey_medium;
-  font-size: 12px;
+  @include font-size(13px);
   font-weight: 400;
+  white-space: nowrap;
 }
 
 .activity-item__avatar {
