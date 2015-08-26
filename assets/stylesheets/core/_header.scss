@@ -1,5 +1,6 @@
+$header--height: 50px;
 .header {
-  height: 50px;
+  height: $header--height;
   background: $purple;
   margin-bottom: 0.25rem;
   padding: 0 20px;
@@ -8,12 +9,22 @@
   }
 }
 .header__logo {
-  font-size: 22px;
+  height: $header--height;
+}
+.logo__link {
+  display: inline-block;
+  height: $header--height;
   line-height: 45px;
-  color: $white;
+  font-size: 22px;
   letter-spacing: 0.1rem;
   font-weight: bold;
+  color: $white;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 }
+
 
 .header__actions {
   position: absolute;
