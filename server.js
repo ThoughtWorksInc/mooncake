@@ -30,10 +30,6 @@ function customRender(res, template, data) {
 }
 
 app.get('/', function(req, res){
-  customRender(res, 'routes', pageData);
-});
-
-app.get('/index', function(req, res){
   customRender(res, 'index', pageData);
 });
 
