@@ -1,13 +1,14 @@
 (ns mooncake.db.mongo
   (:require [monger.core :as mcore]
             [monger.collection :as mcoll]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clojure.walk :as walk]))
 
 (defprotocol Database
   (fetch [this coll k keywordise?]
     "Find the item based on a key.")
   (fetch-all [this coll keywordise?]
-    "Find all items based on a collection")
+    "Find all items based on a collection.")
   (find-item [this coll query-m keywordise?]
     "Find an item matching the query-map.")
   (store! [this coll item]
@@ -28,8 +29,11 @@
       (-> (mcoll/find-map-by-id mongo-db coll k [] keywordise?)
           (dissoc-id keywordise?))))
   (fetch-all [this coll keywordise?]
-    (->> (mcoll/find-maps mongo-db coll)
-         (map dissoc-id)))
+    (let [result-m (->> (mcoll/find-maps mongo-db coll)
+                        (map dissoc-id))]
+      (if keywordise?
+        result-m
+        (walk/stringify-keys result-m))))
   (find-item [this coll query-m keywordise?]
     (when query-m
       (-> (mcoll/find-one-as-map mongo-db coll query-m [] keywordise?)
@@ -45,7 +49,7 @@
   (MongoDatabase. mongodb))
 
 (defn get-mongo-db-and-conn [mongo-uri]
-  (log/debug "Connecting to mongo")
+  (log/debug "Connecting to mongo.")
   (let [db-and-conn (mcore/connect-via-uri mongo-uri)]
     (log/debug "Connected to mongo.")
     db-and-conn))

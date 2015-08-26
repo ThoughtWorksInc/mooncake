@@ -52,13 +52,22 @@
                   (mongo/find-item store collection-name {:some-other-key "other"} false) => {"some-index-key" "barry" "some-other-key" "other"})
             ))))
 
-(fact "can fetch all items in a collection"
+(fact "can fetch all items in a collection with stringified keys"
       (dbh/with-mongo-do
         (fn [mongo-db]
           (let [db (mongo/create-database mongo-db)
-                item1 {:a 1}
-                item2 {:b 2}]
-            (mongo/store! db collection-name item1)
-            (mongo/store! db collection-name item2)
-            (mongo/fetch-all db collection-name false) => (just [{:a 1} {:b 2}] :in-any-order)
-            ))))
+                not-keywordised-item1 {"@not-keywordised1" 1}
+                not-keywordised-item2 {"@not-keywordised2" 2}]
+            (mongo/store! db collection-name not-keywordised-item1)
+            (mongo/store! db collection-name not-keywordised-item2)
+            (mongo/fetch-all db collection-name false) => (just [{"@not-keywordised1" 1} {"@not-keywordised2" 2}] :in-any-order)))))
+
+(fact "can fetch all items in a collection with keywordised keys"
+      (dbh/with-mongo-do
+        (fn [mongo-db]
+          (let [db (mongo/create-database mongo-db)
+                keywordised-item1 {:keywordised1 1}
+                keywordised-item2 {:keywordised2 2}]
+            (mongo/store! db collection-name keywordised-item1)
+            (mongo/store! db collection-name keywordised-item2)
+            (mongo/fetch-all db collection-name true) => (just [{:keywordised1 1} {:keywordised2 2}] :in-any-order)))))
