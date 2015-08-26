@@ -8,6 +8,9 @@ default:
 index:
   title: Mooncake Activity Stream
 
+customise-feed:
+  title: Customise feed
+
 sign-in:
   title: Sign In
   sign-in-with-d-cent: Sign in with D-Cent

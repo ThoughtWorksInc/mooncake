@@ -1,0 +1,15 @@
+extends layout/layout
+
+block vars
+  - bodyClass = "func--customise-feed"
+  - pageTitle = "!Customise feed"
+  - pageTitleDataL8n = "content:customise-feed/title"
+
+block headerScripts
+
+block content
+  form.customise-feed-form(action="", method="post")
+    ul.customise-feed
+      +feedItem('Objective 8', true)
+      +feedItem('TFL updates')
+    button.button.button--full-width(type="submit", value="Save") Save

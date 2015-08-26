@@ -7,3 +7,8 @@ mixin streamItem(title, activityAction, sourceClass)
         span.activity-item__action__text.clj--activity-item__action.func--activity-item__action #{activityAction}
         time.activity-item__time.clj--activity-item__time(datetime="10:32") !2 minutes ago
       h3.activity-item__title.clj--activity-item__title.func--activity-item__title !#{title}
+
+mixin feedItem(feedName, isOn)
+  li.feed-item
+    label.feed-item__name(for="#{feedName}") #{feedName}
+    input.feed-item__checkbox(type="checkbox", id="#{feedName}", name="#{feedName}", value="feedname", checked=isOn)

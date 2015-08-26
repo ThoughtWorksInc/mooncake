@@ -45,6 +45,10 @@ app.get('/create-account', function(req, res) {
   customRender(res, 'create-account', pageData);
 });
 
+app.get('/customise-feed', function(req, res) {
+  customRender(res, 'customise-feed', pageData);
+});
+
 app.get('/error-500', function(req, res) {
   customRender(res, 'error-500', pageData);
 });

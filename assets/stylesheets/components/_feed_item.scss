@@ -1,0 +1,29 @@
+.customise-feed {
+  @include reset-list;
+
+}
+.feed-item {
+  position: relative;
+  border-bottom: 1px solid $grey_light;
+  color: $purple;
+  background-color: $white;
+}
+
+.feed-item__name {
+  display: block;
+  @include font-size(17px);
+  margin: 0;
+  padding: 30px 20px;
+  line-height: 1.1;
+  color: $grey_blue;
+  font-weight: bold;
+  @include width-from($medium_device) {
+    @include font-size(19px);
+  }
+}
+
+.feed-item__checkbox {
+  position: absolute;
+  right: 20px;
+  @include vertical-middle-me;
+}

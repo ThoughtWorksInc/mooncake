@@ -44,6 +44,7 @@
   line-height: 1.1;
   color: $grey_blue;
   margin: 0;
+  font-weight: bold;
   @include width-from($medium_device) {
     @include font-size(19px);
   }
