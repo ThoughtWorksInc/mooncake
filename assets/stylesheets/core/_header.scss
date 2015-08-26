@@ -14,9 +14,8 @@ $header--height: 50px;
 .logo__link {
   display: inline-block;
   height: $header--height;
-  line-height: 45px;
+  line-height: 47px;
   font-size: 22px;
-  letter-spacing: 0.1rem;
   font-weight: bold;
   color: $white;
   text-decoration: none;
@@ -49,4 +48,7 @@ $header--height: 50px;
       text-decoration: underline;
     }
   }
+}
+.header__username {
+  padding-right: 0.75rem;
 }
