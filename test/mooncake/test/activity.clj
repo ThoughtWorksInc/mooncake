@@ -43,8 +43,7 @@
         (http/get ...invalid-activity-src-url...
                   {:accept :json :as :json-string-keys}) =throws=> (java.net.ConnectException.)))
 
-;; FIXME
-(future-fact "sync activities retrieves activities from api and stores in database"
+(fact "sync activities retrieves activities from api and stores in database"
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"
             json-src1 [{"actor"     {"displayName" "JDog"}
