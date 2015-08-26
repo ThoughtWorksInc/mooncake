@@ -2,6 +2,9 @@
 .middle-container {
   max-width: $medium_device;
   margin: 0 auto 3rem auto;
+  &--relative {
+    position: relative;
+  }
 }
 
 .main-content {

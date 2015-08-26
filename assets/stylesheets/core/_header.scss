@@ -27,28 +27,32 @@ $header--height: 50px;
 
 .header__actions {
   position: absolute;
-  right: 1em;
+  right: 0;
   top: 0.8em;
   color: $white;
+}
+.action-link {
+  color: inherit;
+  &, &:hover {
+    text-decoration: none;
+  }
+  &:hover span {
+    text-decoration: underline;
+  }
   i {
     font-size: 1.5em;
   }
-  span {
-    display: inline;
-    position: relative;
-    top: -4px;
-    margin-left: 0.25em;
-  }
-  a {
-    color: inherit;
-    &, &:hover {
-      text-decoration: none;
-    }
-    &:hover span {
-      text-decoration: underline;
-    }
-  }
 }
+.action-link__icon {
+  font-size: 1.5em;
+}
+.action-link__title {
+  display: inline;
+  position: relative;
+  top: -4px;
+  margin-left: 0.25em;
+}
+
 .header__username {
   padding-right: 0.75rem;
 }

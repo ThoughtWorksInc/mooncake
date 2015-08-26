@@ -49,6 +49,10 @@ app.get('/error-500', function(req, res) {
   customRender(res, 'error-500', pageData);
 });
 
+app.get('/library', function(req, res) {
+  customRender(res, 'library', pageData);
+});
+
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });

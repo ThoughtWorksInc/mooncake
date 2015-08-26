@@ -1,5 +1,6 @@
 include ../mixins/_helpers
 include ../mixins/_view_helpers
+include ../mixins/_header
 
 - var bodyClass = ""
 - var pageTitle = "Mooncake"
@@ -24,15 +25,7 @@ html
 
   body(class="#{bodyClass}")
 
-    header.header
-      .middle-container
-        .header__logo: a.logo__link(href="/") Mooncake
-
-        .header__actions
-          span.clj--username
-          a.actions__link.clj--STRIP.clj--sign-out__link.func--sign-out__link(href="./sign-out")
-            i.fa.fa-sign-out
-            span(data-l8n="content:default/sign-out-link") !Sign out
+    +headerSignedIn
 
     main.main-content(role="main")
       block content
