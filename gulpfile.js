@@ -127,7 +127,6 @@ gulp.task('server', function (callback) {
   isDev = true;
   browsersync = require('browser-sync').create();
   nodemon = require('gulp-nodemon');
-  ghPages = require('gulp-gh-pages');
 
   runSequence('clean-build',
       ['sass', 'js', 'images', 'favicons', 'fonts', 'browser-sync', 'watch'],
@@ -146,6 +145,7 @@ gulp.task('ghpages', function() {
 });
 
 gulp.task('deploy', function (callback) {
+  ghPages = require('gulp-gh-pages');
   runSequence(['build'],
       ['ghpages'],
       ['clean-deployed'], callback);
