@@ -14,7 +14,9 @@
   (store! [this coll item]
     "Store the given map and return it.")
   (store-with-id! [this coll key-param item]
-    "Store the given map using the value of the kw key-param and return it."))
+    "Store the given map using the value of the kw key-param and return it.")
+  (upsert! [this coll query item]
+    "Update item that corresponds to query, or if none exist insert item."))
 
 (defn dissoc-id
   ([item]
@@ -33,7 +35,7 @@
                         (map dissoc-id))]
       (if keywordise?
         result-m
-        (walk/stringify-keys result-m))))
+        (map walk/stringify-keys result-m))))
   (find-item [this coll query-m keywordise?]
     (when query-m
       (-> (mcoll/find-one-as-map mongo-db coll query-m [] keywordise?)
@@ -43,7 +45,9 @@
         (dissoc :_id)))
   (store-with-id! [this coll key-param item]
     (->> (assoc item :_id (key-param item))
-         (store! this coll))))
+         (store! this coll)))
+  (upsert! [this coll query item]
+    (mcoll/upsert mongo-db coll query item)))
 
 (defn create-database [mongodb]
   (MongoDatabase. mongodb))

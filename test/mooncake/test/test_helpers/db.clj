@@ -1,8 +1,12 @@
 (ns mooncake.test.test-helpers.db
   (:require [mooncake.db.mongo :as mongo]
             [monger.db :as mdb]
-            [monger.core :as m])
+            [monger.core :as m]
+            [clojure.walk :as walk])
   (:import (java.util UUID)))
+
+(defn find-item-with-id [data-map coll query-m]
+  (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals (get data-map coll))))
 
 (defrecord MemoryDatabase [data]
   mongo/Database
@@ -10,17 +14,28 @@
     (-> (get-in @data [coll id])
         (dissoc :_id)))
   (fetch-all [this coll keywordise?]
-    (vals (get @data coll)))
+    (->> (vals (get @data coll))
+         (map #(dissoc % :_id))))
   (find-item [this coll query-m keywordise?]
-    (-> (some #(when (clojure.set/subset? (set query-m) (set %)) %) (mongo/fetch-all this coll keywordise?))
-        (dissoc :_id)))
+    (when query-m
+      (if keywordise?
+        (-> (find-item-with-id @data coll query-m)
+            (dissoc :_id))
+        (-> (mongo/find-item this coll query-m true)
+            (walk/stringify-keys)))))
   (store! [this coll item]
     (->> (assoc item :_id (UUID/randomUUID))
          (mongo/store-with-id! this coll :_id)))
   (store-with-id! [this coll key-param item]
-    (do
-      (swap! data assoc-in [coll (key-param item)] item)
-      (dissoc item :_id))))
+    (if (mongo/fetch this coll (key-param item) true)
+      (throw (Exception. "Duplicate ID!!"))
+      (do
+        (swap! data assoc-in [coll (key-param item)] item)
+        (dissoc item :_id))))
+  (upsert! [this coll query item]
+    (let [id (or (-> (find-item-with-id @data coll query) :_id) (UUID/randomUUID))]
+      (swap! data assoc-in [coll id] (assoc item :_id id)))))
+
 
 (defn create-in-memory-db
   ([] (create-in-memory-db {}))
