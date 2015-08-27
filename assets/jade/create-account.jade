@@ -8,17 +8,18 @@ block vars
 block headerScripts
 
 block content
-  form.create-account-form.clj--create-account__form(action="./create-account", method="post", role="form")
-    h1 Choose your username
-    p.form-row.clj--username
-      label.form-row__label(for="username")
-        span.form-row__title(data-l8n="content:create-account/username-label")
-          | !Username
-        span.form-row__validation.clj--username__validation(data-l8n="content:create-account/username-default-validation-message")
-          | !Enter a username
-        span.form-row__help(data-l8n="content:create-account/username-help-message")
-          | !Maximum of 16 letters or numbers. No spaces.
-      input.form-row__input.form-row__input--small.username-input.clj--username__input.func--username__input(type="text", id="username", name="username", maxlength="16", autofocus="autofocus")
-    button.button.func--create-account__button(type="submit" data-l8n="content:create-account/create-account-submit")
-      | !Create account
+  .box
+    form.create-account-form.clj--create-account__form(action="./create-account", method="post", role="form")
+      h1 Choose your username
+      p.form-row.clj--username
+        label.form-row__label(for="username")
+          span.form-row__title(data-l8n="content:create-account/username-label")
+            | !Username
+          span.form-row__validation.clj--username__validation(data-l8n="content:create-account/username-default-validation-message")
+            | !Enter a username
+          span.form-row__help(data-l8n="content:create-account/username-help-message")
+            | !Maximum of 16 letters or numbers. No spaces.
+        input.form-row__input.form-row__input--small.username-input.clj--username__input.func--username__input(type="text", id="username", name="username", maxlength="16", autofocus="autofocus")
+      button.button.func--create-account__button(type="submit" data-l8n="content:create-account/create-account-submit")
+        | !Create account
 
