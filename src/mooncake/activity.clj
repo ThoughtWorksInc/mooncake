@@ -6,7 +6,6 @@
             [mooncake.db.activity :as a]
             [mooncake.helper :as mh]))
 
-
 (defn load-activity-sources [activity-resource-name]
   (-> activity-resource-name
       io/resource
@@ -34,14 +33,15 @@
         activities (get-json-from-activity-source source-url)]
     (map #(assoc % :activity-src source-key) activities)))
 
-(defn retrieve-activities-from-multple-sources [activity-source-m]
-  (->> activity-source-m
-       (map retrieve-activities-from-source)
-       flatten))
-
 (defn retrieve-activities [activity-sources]
-  (->> (retrieve-activities-from-multple-sources activity-sources)
+  (->> activity-sources
+       (map retrieve-activities-from-source)
+       flatten
        sort-by-published-time))
+
+(defn retrieve-activities-from-database [database]
+  (->> (a/fetch-activities database)
+          sort-by-published-time))
 
 (defn sync-activities [db activity-sources]
   (let [activities (retrieve-activities activity-sources)]

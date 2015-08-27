@@ -1,5 +1,6 @@
 (ns mooncake.db.activity
-  (:require [mooncake.db.mongo :as mongo]
+  (:require [mooncake.domain.activity :as domain]
+            [mooncake.db.mongo :as mongo]
             [clj-time.coerce :as time-coerce]
             [clj-time.core :as time]))
 
@@ -7,7 +8,7 @@
 (def activity-metadata-collection "activityMetaData")
 
 (defn activity->published-datetime [activity]
-  (-> (get activity "published")
+  (-> (domain/activity->published activity)
       (time-coerce/from-string)))
 
 (defn get-most-recent-activity-date [activities]
@@ -33,7 +34,7 @@
 (defn store-activity! [db activity]
   (let [most-recent-activity-date (fetch-most-recent-activity-date db)
         current-activity-date (activity->published-datetime activity)
-        current-activity-date-string (get activity "published")]
+        current-activity-date-string (domain/activity->published activity)]
     (when (or (not most-recent-activity-date) (time/after? current-activity-date most-recent-activity-date))
       (do
         (store-most-recent-activity-date! db current-activity-date-string)

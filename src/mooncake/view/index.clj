@@ -2,10 +2,12 @@
   (:require [net.cgrand.enlive-html :as html]
             [mooncake.routes :as routes]
             [mooncake.helper :as mh]
-            [mooncake.view.view-helpers :as vh]))
+            [mooncake.view.view-helpers :as vh]
+            [mooncake.activity :as a]
+            [mooncake.domain.activity :as domain]))
 
 (defn index-activity-sources [activities]
-  (zipmap (distinct (map :activity-src activities)) (range)))
+  (zipmap (distinct (map domain/activity->activity-src activities)) (range)))
 
 (defn generate-activity-stream-items [enlive-m activities]
   (let [activity-source-indexes (index-activity-sources activities)
@@ -14,19 +16,19 @@
              (html/clone-for [activity activities]
                              [:.clj--activity-item] (html/do->
                                                       (html/add-class (str "activity-src-"
-                                                                           ((:activity-src activity) activity-source-indexes))))
-                             [:.clj--avatar__initials] (html/content (-> (get-in activity ["actor" "displayName"])
+                                                                           (get activity-source-indexes (domain/activity->activity-src activity)))))
+                             [:.clj--avatar__initials] (html/content (-> (domain/activity->actor-display-name activity)
                                                                          first str clojure.string/upper-case))
-                             [:.clj--activity-item__link] (html/set-attr :href (get-in activity ["object" "url"]))
-                             [:.clj--activity-item__time] (let [activity-time (get activity "published")]
+                             [:.clj--activity-item__link] (html/set-attr :href (domain/activity->object-url activity))
+                             [:.clj--activity-item__time] (let [activity-time (domain/activity->published activity)]
                                                             (html/do->
                                                               (html/set-attr :datetime activity-time)
                                                               (html/content (when activity-time
                                                                               (mh/humanise-time activity-time)))))
-                             [:.clj--activity-item__action] (html/content (str (get-in activity ["actor" "displayName"]) " - "
-                                                                               (get-in activity ["object" "@type"])      " - "
-                                                                               (get activity "@type")))
-                             [:.clj--activity-item__title] (html/content (get-in activity ["object" "displayName"]))))))
+                             [:.clj--activity-item__action] (html/content (str (domain/activity->actor-display-name activity) " - "
+                                                                               (domain/activity->object-type activity)      " - "
+                                                                               (domain/activity->type activity)))
+                             [:.clj--activity-item__title] (html/content (domain/activity->object-display-name activity))))))
 
 (defn add-activities [enlive-m activities]
   (let [activity-stream-items (generate-activity-stream-items enlive-m activities)]

@@ -5,7 +5,10 @@
             [mooncake.db.user :as user]
             [mooncake.handler :as h]
             [mooncake.routes :as routes]
-            [mooncake.test.test-helpers.enlive :as eh]))
+            [mooncake.test.test-helpers.enlive :as eh]
+            [mooncake.test.test-helpers.db :as dbh]
+            [mooncake.db.mongo :as mongo]
+            [mooncake.db.activity :as a]))
 
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
@@ -19,27 +22,25 @@
 
 (fact "index handler displays activities retrieved from activity sources"
       (let [an-activity-src-url "https://an-activity.src"
-            another-activity-src-url "https://another-activity.src"]
-        (h/index {:context
-                  {:translator (constantly "")
-                   :activity-sources
-                   {:an-activity-src an-activity-src-url
-                    :another-activity-src another-activity-src-url}}}) => (every-checker
-                                                                            (eh/check-renders-page :.func--index-page)
-                                                                            (contains {:body (contains "JDog")})
-                                                                            (contains {:body (contains "KCat")}))
-        (provided
-          (http/get an-activity-src-url {:accept :json
-                                         :as :json-string-keys})       => {:body [{"actor" {"@type" "Person"
-                                                                                            "displayName" "JDog"}
-                                                                                   "published" ten-oclock}]}
-          (http/get another-activity-src-url {:accept :json
-                                              :as :json-string-keys})  => {:body [{"actor" {"@type" "Person"
-                                                                                            "displayName" "KCat"}
-                                                                                   "published" twelve-oclock}]})))
+            another-activity-src-url "https://another-activity.src"
+            database (dbh/create-in-memory-db)]
+        (mongo/store! database a/activity-collection {"actor"     {"@type"       "Person"
+                                                                   "displayName" "JDog"}
+                                                      "published" ten-oclock})
+        (mongo/store! database a/activity-collection {"actor"     {"@type"       "Person"
+                                                                   "displayName" "KCat"}
+                                                      "published" twelve-oclock})
+        (h/index database {:context
+                           {:translator (constantly "")
+                            :activity-sources
+                                        {:an-activity-src      an-activity-src-url
+                                         :another-activity-src another-activity-src-url}}}) => (every-checker
+                                                                                                 (eh/check-renders-page :.func--index-page)
+                                                                                                 (contains {:body (contains "JDog")})
+                                                                                                 (contains {:body (contains "KCat")}))))
 (fact "index handler displays username of logged-in user"
-      (h/index {:context {:translator (constantly "")}
-                :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
+      (h/index (dbh/create-in-memory-db) {:context {:translator (constantly "")}
+                                          :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
 (fact "sign-in handler renders the sign-in view when the user is not signed in"
       (h/sign-in {:context {:translator {}}}) => (eh/check-renders-page :.func--sign-in-page))
@@ -66,7 +67,7 @@
                       (user/fetch-user ...db... ...stonecutter-user-id...) => nil))
 
               (fact "when existing user, redirects to / with the username set in the session and auth-provider-user-id removed"
-                    (h/stonecutter-callback ...stonecutter-config...  ...db...
+                    (h/stonecutter-callback ...stonecutter-config... ...db...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
                          (eh/check-redirects-to (routes/absolute-path {} :index))
@@ -84,8 +85,9 @@
                (soc/request-access-token! anything anything) =throws=> (ex-info "Invalid token response" {:token-response-keys []}))))
 
 (fact "sign-out handler clears the session and redirects to /sign-in"
-      (let [response (h/sign-out {:session {:user-id ...some-user-id...
+      (let [response (h/sign-out {:session {:user-id        ...some-user-id...
                                             :some-other-key ...some-other-value...}})]
         (:session response) => {}
         response => (eh/check-redirects-to (routes/absolute-path {} :sign-in))))
+
 

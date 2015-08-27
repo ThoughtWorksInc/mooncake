@@ -14,7 +14,7 @@
             [mooncake.db.mongo :as mongo]))
 
 (defn print-enlive [state]
-  (prn (-> state :enlive))
+  (clojure.pprint/pprint (-> state :enlive))
   state)
 
 (defn print-request [state]
@@ -46,9 +46,8 @@
 (defn authenticate-against-stub [state]
   (k/visit state (routes/absolute-path (c/create-config) :stonecutter-callback)))
 
-(defn sign-in! [app]
-  (drop-db!)
-  (-> (k/session app)
+(defn sign-in! [state]
+  (-> state
       authenticate-against-stub
       (kh/check-and-follow-redirect "to /create-account")
       (kh/page-uri-is "/create-account")
@@ -89,7 +88,8 @@
        (against-background
          (soc/authorisation-redirect-response anything) =>
          (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
-       (-> (sign-in! app)
+       (-> (k/session (clean-app!))
+           sign-in!
            sign-out
            (k/visit (routes/absolute-path (c/create-config) :sign-in))
            (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
@@ -100,13 +100,14 @@
            (kh/selector-exists ks/index-page-body)))
 
 (facts "A signed in user can sign out"
-      (-> (sign-in! app)
-          (k/visit (routes/absolute-path (c/create-config) :index))
-          (kh/check-and-follow ks/header-sign-out-link)
-          (kh/check-and-follow-redirect "to sign-in page after signing out")
-          (kh/page-uri-is "/sign-in")
-          (kh/response-status-is 200)
-          (kh/selector-not-present ks/header-sign-out-link)))
+       (-> (k/session (clean-app!))
+           sign-in!
+           (k/visit (routes/absolute-path (c/create-config) :index))
+           (kh/check-and-follow ks/header-sign-out-link)
+           (kh/check-and-follow-redirect "to sign-in page after signing out")
+           (kh/page-uri-is "/sign-in")
+           (kh/response-status-is 200)
+           (kh/selector-not-present ks/header-sign-out-link)))
 
 (def server (atom nil))
 (defn start-server [] (swap! server (fn [_] (ring-jetty/run-jetty
@@ -118,18 +119,22 @@
   [(before :contents (start-server))
    (after :contents (stop-server))]
   (facts "Stub activities are rendered"
-         (-> (h/create-app (c/create-config) database {:stub-activity-source "http://127.0.0.1:3000/stub-activities"})
+         (drop-db!)
+         (-> (k/session (h/create-app (c/create-config) database {:stub-activity-source "http://127.0.0.1:3000/stub-activities"}))
              sign-in!
-             (k/visit (routes/absolute-path (c/create-config) :index))
+             (k/visit (routes/path :index))
              (kh/page-uri-is "/")
              (kh/response-status-is 200)
              (kh/selector-exists ks/index-page-body)
              (kh/selector-includes-content ks/index-page-activity-item-title "Stub activity title")
              (kh/selector-includes-content ks/index-page-activity-item-action "Barry - STUB_ACTIVITY - Create")
-             (kh/selector-has-attribute-with-content ks/index-page-activity-item-link :href "http://stub-activity.url"))))
+             (kh/selector-has-attribute-with-content ks/index-page-activity-item-link :href "http://stub-activity.url")
+             )))
+
 
 (facts "Invalid activity source responses are handled gracefully"
-       (-> (h/create-app (c/create-config) database {:invalid-activity-src "http://localhost:6666/not-an-activity-source"})
+       (drop-db!)
+       (-> (k/session (h/create-app (c/create-config) database {:invalid-activity-src "http://localhost:6666/not-an-activity-source"}))
            sign-in!
            (k/visit (routes/absolute-path (c/create-config) :index))
            (kh/page-uri-is "/")

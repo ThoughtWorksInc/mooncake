@@ -24,9 +24,8 @@
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
-(defn index [request]
-  (let [activity-sources (get-in request [:context :activity-sources])
-        activities (a/retrieve-activities activity-sources)]
+(defn index [database request]
+  (let [activities (a/retrieve-activities-from-database database)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) (:context request))))
 
 (defn get-user-id-from [request]
@@ -86,13 +85,13 @@
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
-    (-> {:index index
-         :sign-in sign-in 
-         :sign-out sign-out
-         :show-create-account cac/show-create-account
-         :create-account (partial cac/create-account db)
-         :stub-activities stub-activities
-         :stonecutter-sign-in (partial stonecutter-sign-in stonecutter-config)
+    (-> {:index                (partial index db)
+         :sign-in              sign-in
+         :sign-out             sign-out
+         :show-create-account  cac/show-create-account
+         :create-account       (partial cac/create-account db)
+         :stub-activities      stub-activities
+         :stonecutter-sign-in  (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config db)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback 
@@ -105,6 +104,7 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-app [config-m db activity-sources]
+  (a/sync-activities db activity-sources)                 ;; Ensure database is populated before starting app
   (-> (scenic/scenic-handler routes/routes (site-handlers config-m db) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
       (m/wrap-config config-m)
@@ -114,9 +114,9 @@
 
 (defn -main [& args]
   (let [config-m (config/create-config)
-        db (mongo/create-database (mongo/get-mongo-db (config/mongo-uri config-m)))]
-    (a/sync-activities db a/activity-sources)
-    (schedule/schedule (a/sync-activities-task db a/activity-sources) 60) ;; FIXME move this value to configuration
-    (ring-jetty/run-jetty (create-app config-m db a/activity-sources)
+        db (mongo/create-database (mongo/get-mongo-db (config/mongo-uri config-m)))
+        activity-sources a/activity-sources]
+    (schedule/schedule (a/sync-activities-task db activity-sources) 60) ;; FIXME move this value to configuration
+    (ring-jetty/run-jetty (create-app config-m db activity-sources)
                           {:port (config/port config-m)
                            :host (config/host config-m)})))
