@@ -31,7 +31,7 @@
 (defn retrieve-activities-from-source [source-k-v-pair]
   (let [[source-key source-url] source-k-v-pair
         activities (get-json-from-activity-source source-url)]
-    (map #(assoc % :activity-src source-key) activities)))
+    (map #(assoc % "activity-src" source-key) activities)))
 
 (defn retrieve-activities [activity-sources]
   (->> activity-sources

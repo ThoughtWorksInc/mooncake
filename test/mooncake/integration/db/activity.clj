@@ -46,12 +46,35 @@
             (activity/store-activity! database activity)
             (activity/fetch-activities database) => [activity]))))
 
-(fact "can store and retrieve latest-activity-time in metadata collection"
+(fact "can store and retrieve latest-activity-time in metadata collection per activity-src"
       (dbh/with-mongo-do
         (fn [db]
-          (let [database (mongo/create-database db)]
-            (activity/fetch-most-recent-activity-date database) => nil
-            (activity/store-most-recent-activity-date! database "2015-08-12T10:20:41.000Z")
-            (activity/fetch-most-recent-activity-date database) => (time/date-time 2015 8 12 10 20 41 0)
-            (activity/store-most-recent-activity-date! database "2015-08-12T10:20:42.000Z")
-            (activity/fetch-most-recent-activity-date database) => (time/date-time 2015 8 12 10 20 42 0)))))
+          (let [database (mongo/create-database db)
+                api1 "api1"
+                api2 "api2"]
+            (activity/fetch-most-recent-activity-date database api1) => nil
+            (activity/fetch-most-recent-activity-date database api2) => nil
+
+            (activity/store-most-recent-activity-date! database api1 "2015-08-12T10:20:41.000Z")
+            (activity/fetch-most-recent-activity-date database api1) => (time/date-time 2015 8 12 10 20 41 0)
+            (activity/fetch-most-recent-activity-date database api2) => nil
+
+            (activity/store-most-recent-activity-date! database api1 "2015-08-12T10:20:42.000Z")
+            (activity/store-most-recent-activity-date! database api2 "2015-08-12T10:20:43.000Z")
+            (activity/fetch-most-recent-activity-date database api1) => (time/date-time 2015 8 12 10 20 42 0)
+            (activity/fetch-most-recent-activity-date database api2) => (time/date-time 2015 8 12 10 20 43 0)))))
+
+(fact "if new event is retrieved from API1 that is has an older timestamp than existing event from API2, then event is still stored"
+      (dbh/with-mongo-do
+        (fn [db]
+          (let [database (mongo/create-database db)
+                event1api1 {"@displayName" "KCat"
+                            "published" "2015-08-12T10:20:41.000Z"
+                            "activity-src" "api1"}
+                event2api2 {"@diplayName" "JDog"
+                            "published" "2015-08-12T10:20:41.000Z"
+                            "activity-src" "api2"}]
+            (activity/store-activity! database event1api1)
+            ;; time passes
+            (activity/store-activity! database event2api2)
+            (count (activity/fetch-activities database)) => 2))))

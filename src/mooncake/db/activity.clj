@@ -18,24 +18,25 @@
     sort
     last))
 
-(defn store-most-recent-activity-date! [db date]
-  (mongo/upsert! db activity-metadata-collection {:name "latest-activity-datetime"} {:name "latest-activity-datetime"
-                                                                                     :value date}))
+(defn store-most-recent-activity-date! [db activity-src date]
+  (mongo/upsert! db activity-metadata-collection {:activity-src activity-src} {:activity-src activity-src
+                                                                               :latest-activity-datetime date}))
 
-(defn fetch-most-recent-activity-date [db]
-  (when-let [item (mongo/find-item db activity-metadata-collection {:name "latest-activity-datetime"} true)]
+(defn fetch-most-recent-activity-date [db activity-src]
+  (when-let [item (mongo/find-item db activity-metadata-collection {:activity-src activity-src} true)]
     (-> item
-        :value
+        :latest-activity-datetime
         (time-coerce/from-string))))
 
 (defn fetch-activities [db]
   (mongo/fetch-all db activity-collection false))
 
 (defn store-activity! [db activity]
-  (let [most-recent-activity-date (fetch-most-recent-activity-date db)
+  (let [activity-src (domain/activity->activity-src activity)
+        most-recent-activity-date (fetch-most-recent-activity-date db activity-src)
         current-activity-date (activity->published-datetime activity)
         current-activity-date-string (domain/activity->published activity)]
     (when (or (not most-recent-activity-date) (time/after? current-activity-date most-recent-activity-date))
       (do
-        (store-most-recent-activity-date! db current-activity-date-string)
+        (store-most-recent-activity-date! db activity-src current-activity-date-string)
         (mongo/store! db activity-collection activity)))))

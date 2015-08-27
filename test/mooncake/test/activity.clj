@@ -14,13 +14,13 @@
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]
         (a/retrieve-activities {:an-activity-src      an-activity-src-url
-                                :another-activity-src another-activity-src-url}) => [{:activity-src :an-activity-src
+                                :another-activity-src another-activity-src-url}) => [{"activity-src" :an-activity-src
                                                                                       "actor"       {"displayName" "KCat"}
                                                                                       "published"   twelve-oclock}
-                                                                                     {:activity-src :another-activity-src
+                                                                                     {"activity-src" :another-activity-src
                                                                                       "actor"       {"displayName" "LSheep"}
                                                                                       "published"   eleven-oclock}
-                                                                                     {:activity-src :an-activity-src
+                                                                                     {"activity-src" :an-activity-src
                                                                                       "actor"       {"displayName" "JDog"}
                                                                                       "published"   ten-oclock}]
         (provided
