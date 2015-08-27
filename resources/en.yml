@@ -27,6 +27,7 @@ sign-in:
 
 create-account:
   title: Create Account
+  page-title: Choose your username
   username-label: Username
   username-help-message: Maximum of 16 letters or numbers. No spaces.
   username-blank-validation-message: Enter a username
