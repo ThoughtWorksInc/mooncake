@@ -18,14 +18,16 @@
       </div>
     </header>
     <main role="main" class="main-content">
-      <form action="./create-account" method="post" role="form" class="create-account-form clj--create-account__form">
-        <h1>Choose your username</h1>
-        <p class="form-row clj--username">
-          <label for="username" class="form-row__label"><span data-l8n="content:create-account/username-label" class="form-row__title">!Username</span><span data-l8n="content:create-account/username-default-validation-message" class="form-row__validation clj--username__validation">!Enter a username</span><span data-l8n="content:create-account/username-help-message" class="form-row__help">!Maximum of 16 letters or numbers. No spaces.</span></label>
-          <input type="text" id="username" name="username" maxlength="16" autofocus="autofocus" class="form-row__input form-row__input--small username-input clj--username__input func--username__input">
-        </p>
-        <button type="submit" data-l8n="content:create-account/create-account-submit" class="button func--create-account__button">!Create account</button>
-      </form>
+      <div class="box">
+        <form action="./create-account" method="post" role="form" class="create-account-form clj--create-account__form">
+          <h1>!Choose your username</h1>
+          <p class="form-row clj--username">
+            <label for="username" class="form-row__label"><span data-l8n="content:create-account/username-label" class="form-row__title">!Username</span><span data-l8n="content:create-account/username-default-validation-message" class="form-row__validation clj--username__validation">!Enter a username</span><span data-l8n="content:create-account/username-help-message" class="form-row__help">!Maximum of 16 letters or numbers. No spaces.</span></label>
+            <input type="text" id="username" name="username" maxlength="16" autofocus="autofocus" class="form-row__input form-row__input--small username-input clj--username__input func--username__input">
+          </p>
+          <button type="submit" data-l8n="content:create-account/create-account-submit" class="button func--create-account__button">!Create account</button>
+        </form>
+      </div>
     </main>
   </body>
 </html>

@@ -18,19 +18,23 @@
       </div>
     </header>
     <main role="main" class="main-content">
-      <form action="" method="post" class="customise-feed-form">
-        <ul class="customise-feed">
-          <li class="feed-item">
-            <label for="Objective 8" class="feed-item__name">Objective 8</label>
-            <input type="checkbox" id="Objective 8" name="Objective 8" value="feedname" checked="checked" class="feed-item__checkbox"/>
-          </li>
-          <li class="feed-item">
-            <label for="TFL updates" class="feed-item__name">TFL updates</label>
-            <input type="checkbox" id="TFL updates" name="TFL updates" value="feedname" class="feed-item__checkbox"/>
-          </li>
-        </ul>
-        <button type="submit" value="Save" class="button button--full-width">Save</button>
-      </form>
+      <div class="box">
+        <h1 data-l8n="content:customise-feed/page-title">!Customise your feed</h1>
+        <p data-l8n="content:customise-feed/page-intro">!Choose the information you'd like to receive updates on:</p>
+        <form action="" method="post" class="customise-feed-form">
+          <ul class="customise-feed">
+            <li class="feed-item">
+              <label for="Objective 8" class="feed-item__name">Objective 8</label>
+              <input type="checkbox" id="Objective 8" name="Objective 8" value="feedname" checked="checked" class="feed-item__checkbox"/>
+            </li>
+            <li class="feed-item">
+              <label for="TFL updates" class="feed-item__name">TFL updates</label>
+              <input type="checkbox" id="TFL updates" name="TFL updates" value="feedname" class="feed-item__checkbox"/>
+            </li>
+          </ul>
+          <button type="submit" value="Save" class="button">Save</button>
+        </form>
+      </div>
     </main>
   </body>
 </html>
