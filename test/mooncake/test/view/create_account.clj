@@ -10,6 +10,7 @@
         page => (eh/has-class? [:body] "func--create-account-page")))
 
 (eh/test-translations "create-account page" ca/create-account)
+(eh/test-logo-link ca/create-account)
 
 (fact "create account form action is set correctly"
       (let [page (ca/create-account ...request...)]

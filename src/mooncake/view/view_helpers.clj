@@ -2,7 +2,8 @@
   (:require [ring.util.anti-forgery :refer [anti-forgery-field]]
             [net.cgrand.enlive-html :as html]
             [net.cgrand.jsoup :as jsoup]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [mooncake.routes :as routes]))
 
 (defn remove-element [enlive-m selector]
   (html/at enlive-m selector nil))
@@ -13,6 +14,9 @@
 (defn add-anti-forgery [enlive-m]
   (html/at enlive-m
            [:form] (html/prepend (anti-forgery-snippet))))
+
+(defn add-logo-link [enlive-m]
+  (html/at enlive-m [:.clj--header__logo :a] (html/set-attr :href (routes/path :index))))
 
 (def template-caching? (atom true))
 

@@ -12,6 +12,7 @@
         page => (eh/has-class? [:body] "func--index-page")))
 
 (eh/test-translations "Index page" i/index)
+(eh/test-logo-link i/index)
 
 (fact "username is rendered"
       (i/index {:session {:username "Dave"}}) => (eh/text-is? [:.clj--username] "Dave"))

@@ -9,6 +9,7 @@
         page => (eh/has-class? [:body] "func--sign-in-page")))
 
 (eh/test-translations "Sign-in page" si/sign-in)
+(eh/test-logo-link si/sign-in)
 
 (fact "sign-in links to the correct location"
       (let [page (si/sign-in ...request...)]

@@ -59,17 +59,17 @@
       (r/content-type "application/json")))
 
 (defn internal-server-error-handler [request]
-  (-> (error/internal-server-error)
+  (-> (error/internal-server-error request)
       (mh/enlive-response default-context)
       (r/status 500)))
 
 (defn not-found-handler [request]
-  (-> (error/not-found-error)
+  (-> (error/not-found-error request)
       (mh/enlive-response default-context)
       (r/status 404)))
 
 (defn forbidden-error-handler [request]
-  (-> (error/forbidden-error)
+  (-> (error/forbidden-error request)
       (mh/enlive-response default-context)
       (r/status 403)))
 
@@ -82,7 +82,7 @@
 (defn site-handlers [config-m db]
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
-      (throw (Exception. "Invalid stonecutter configuration. Application launch aborted.")))
+      (throw (Exception. "Invalid mooncake configuration. Application launch aborted.")))
     (-> {:index                (partial index db)
          :sign-in              sign-in
          :sign-out             sign-out

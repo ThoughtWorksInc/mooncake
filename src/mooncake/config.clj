@@ -47,7 +47,7 @@
 
 (defn- get-docker-mongo-uri [config-m]
   (when-let [mongo-ip (get-env config-m :mongo-port-27017-tcp-addr)]
-    (format "mongodb://%s:27017/stonecutter" mongo-ip)))
+    (format "mongodb://%s:27017/mooncake" mongo-ip)))
 
 (defn mongo-uri [config-m]
   (or

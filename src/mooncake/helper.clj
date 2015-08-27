@@ -15,6 +15,7 @@
 
 (defn enlive-response [enlive-m context]
   (-> enlive-m
+      vh/add-logo-link
       (vh/remove-elements [:.clj--STRIP])
       vh/add-anti-forgery
       (t/context-translate context)

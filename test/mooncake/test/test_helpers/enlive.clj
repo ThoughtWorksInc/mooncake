@@ -2,7 +2,8 @@
   (:require [midje.sweet :as midje]
             [net.cgrand.enlive-html :as html]
             [mooncake.helper :as mh]
-            [mooncake.translation :as t]))
+            [mooncake.translation :as t]
+            [mooncake.routes :as routes]))
 
 (defn check-redirects-to [path]
   (midje/checker [response] (and
@@ -64,3 +65,8 @@
 (defn has-class? [selector css-class]
   (fn [enlive-m]
     ((midje/contains css-class) (enlive-m->attr enlive-m selector :class))))
+
+(defn test-logo-link [view-fn]
+  (midje/fact {:midje/name "Checking logo has a correct link"}
+  (let [page (-> (view-fn ...request...) (mh/enlive-response {:translator (constantly {})}) :body (html/html-snippet))]
+    page => (links-to? [:.clj--header__logo :a] (routes/path :index)))))
