@@ -20,8 +20,6 @@
             [mooncake.schedule :as schedule])
   (:gen-class))
 
-
-
 (def default-context {:translator (t/translations-fn t/translation-map)})
 
 (defn index [database request]
@@ -116,7 +114,7 @@
   (let [config-m (config/create-config)
         db (mongo/create-database (mongo/get-mongo-db (config/mongo-uri config-m)))
         activity-sources a/activity-sources]
-    (schedule/schedule (a/sync-activities-task db activity-sources) 60) ;; FIXME move this value to configuration
+    (schedule/schedule (a/sync-activities-task db activity-sources) (config/sync-interval config-m))
     (ring-jetty/run-jetty (create-app config-m db activity-sources)
                           {:port (config/port config-m)
                            :host (config/host config-m)})))

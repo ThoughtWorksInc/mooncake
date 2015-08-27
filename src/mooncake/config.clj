@@ -5,7 +5,7 @@
 (def env-vars #{:port :host :base-url
                 :mongo-uri :mongo-port-27017-tcp-addr
                 :client-id :client-secret :auth-url
-                :secure})
+                :secure :sync-interval})
 
 (defn create-config []
   (select-keys env/env env-vars))
@@ -36,6 +36,9 @@
 
 (defn auth-url [config-m]
   (get-env config-m :auth-url))
+
+(defn sync-interval [config-m]
+  (Integer. (get-env config-m :sync-interval 60)))
 
 (defn secure?
   "Returns true unless 'secure' environment variable set to 'false'"
