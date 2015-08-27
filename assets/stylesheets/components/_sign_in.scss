@@ -1,51 +1,50 @@
-.icon-d-cent {
-  background-image: url('/images/d-cent-sign-in-icon.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-.button--sign-in :first-child {
-  line-height: 45px;
-  width: 45px;
-  font-size: 1.8em;
-}
-
-.button--sign-in > :first-child {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  bottom: 0px;
+.sign-in-promo {
   text-align: center;
-  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+.icon-d-cent {
+  line-height: 45px;
+  width: 50px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 1.8em;
+  background: image-url('d-cent-sign-in-icon.png') no-repeat 50% 50%;
+  background-size: 30px;
 }
 
 .button--sign-in {
-  font-weight: normal;
-  vertical-align: middle;
-  cursor: pointer;
-  -moz-user-select: none;
-  background-image: none;
-  border: 1px solid transparent;
-  display: block;
-  width: 100%;
-  position: relative;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #000;
-  background-color: #FFF;
-  border-color: rgba(0, 0, 0, 0.2);
-  padding: 10px 16px 10px 61px;
-  font-size: 18px;
-  line-height: 1.33;
-  border-radius: 6px;
-  max-width: 12.5em;
-  margin: 2em auto;
-  text-decoration: none;
-
-
-  &:hover {
-    background-color: #E6E6E6;
-  }
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 48px;
 }
+//.button--sign-in {
+//  font-weight: normal;
+//  vertical-align: middle;
+//  cursor: pointer;
+//  -moz-user-select: none;
+//  background-image: none;
+//  border: 1px solid rgba(0, 0, 0, 0.2);
+//  display: block;
+//  width: 100%;
+//  position: relative;
+//  text-align: left;
+//  white-space: nowrap;
+//  overflow: hidden;
+//  text-overflow: ellipsis;
+//  color: #000;
+//  background-color: #FFF;
+//  padding: 10px 16px 10px 42px;
+//  @include font-size(16px);
+//  line-height: 1.33;
+//  border-radius: 6px;
+//  max-width: 12.5em;
+//  margin: 2em auto;
+//  text-decoration: none;
+//
+//
+//  &:hover {
+//    background-color: #E6E6E6;
+//  }
+//}
