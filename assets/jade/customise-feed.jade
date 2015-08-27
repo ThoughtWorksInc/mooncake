@@ -8,8 +8,12 @@ block vars
 block headerScripts
 
 block content
-  form.customise-feed-form(action="", method="post")
-    ul.customise-feed
-      +feedItem('Objective 8', true)
-      +feedItem('TFL updates')
-    button.button.button--full-width(type="submit", value="Save") Save
+  .box
+    h1(data-l8n="content:customise-feed/page-title") Customise your feed
+    p.lede(data-l8n="content:customise-feed/page-intro") Choose the information you'd like to receive updates on:
+
+    form.customise-feed-form(action="", method="post")
+      ul.customise-feed
+        +feedItem('Objective 8', true)
+        +feedItem('TFL updates')
+      button.button(type="submit", value="Save") Save

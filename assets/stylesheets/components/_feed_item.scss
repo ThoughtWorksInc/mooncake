@@ -1,12 +1,16 @@
 .customise-feed {
   @include reset-list;
-
+  margin-bottom: 1.5rem;
 }
 .feed-item {
   position: relative;
+  background-color: $white;
   border-bottom: 1px solid $grey_light;
   color: $purple;
-  background-color: $white;
+  user-select: none;
+  &:last-child {
+    border-bottom-color: transparent;
+  }
 }
 
 .feed-item__name {

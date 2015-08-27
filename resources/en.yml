@@ -10,6 +10,8 @@ index:
 
 customise-feed:
   title: Customise feed
+  page-header: Customise your feed
+  page-intro: "Choose the information you'd like to receive updates on:"
 
 sign-in:
   title: Sign In
