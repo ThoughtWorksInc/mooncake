@@ -41,13 +41,6 @@
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
 
-(defn get-public-key [jwks-url]
-  (-> (http/get jwks-url {:accept :json :as :json})
-      :body
-      :keys
-      first
-      json/generate-string))
-
 (defn get-auth-jwks-url [stonecutter-config]
   (str (:auth-provider-url stonecutter-config) "/api/jwk-set"))
 
@@ -55,9 +48,8 @@
   (let [auth-code (get-in request [:params :code])
         token-response (soc/request-access-token! stonecutter-config auth-code)
         auth-jwks-url (get-auth-jwks-url stonecutter-config)
-        public-key-string (get-public-key auth-jwks-url)
-        public-key (so-jwt/json->key-pair public-key-string)
-        user-info (so-jwt/decode stonecutter-config (:id_token token-response) public-key)
+        public-key-string (so-jwt/get-public-key-string-from-jwk-set-url auth-jwks-url)
+        user-info (so-jwt/decode stonecutter-config (:id_token token-response) public-key-string)
         auth-provider-user-id (:sub user-info)]
     (if-let [user (user/fetch-user db auth-provider-user-id)]
       (-> (mh/redirect-to request :index)

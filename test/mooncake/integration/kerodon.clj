@@ -29,9 +29,8 @@
 
 (background
   (soc/request-access-token! anything anything) => {:id_token ...id-token...}
-  (h/get-public-key anything) => ...public-key-str...
-  (so-jwt/json->key-pair ...public-key-str...) => ...public-key...
-  (so-jwt/decode anything ...id-token... ...public-key...) => {:sub "test-stonecutter-user-uuid"})
+  (so-jwt/get-public-key-string-from-jwk-set-url anything) => ...public-key-str...
+  (so-jwt/decode anything ...id-token... ...public-key-str...) => {:sub "test-stonecutter-user-uuid"})
 
 (def test-db-uri "mongodb://localhost:27017/mooncake")
 (def database (mongo/create-database (mongo/get-mongo-db test-db-uri)))

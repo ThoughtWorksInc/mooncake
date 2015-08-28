@@ -3,6 +3,7 @@
             [clj-http.client :as http]
             [cheshire.core :as json]
             [stonecutter-oauth.client :as soc]
+            [stonecutter-oauth.jwt :as so-jwt]
             [mooncake.db.user :as user]
             [mooncake.handler :as h]
             [mooncake.routes :as routes]
@@ -103,7 +104,8 @@
                     (provided
                       (soc/request-access-token! openid-test-config ...auth-code...)
                       => {:id_token token-expiring-in-year-2515}
-                      (h/get-public-key "ISSUER/api/jwk-set") => test-auth-provider-public-key
+                      (so-jwt/get-public-key-string-from-jwk-set-url "ISSUER/api/jwk-set")
+                      => test-auth-provider-public-key
                       (user/fetch-user ...db... "SUBJECT")
                       => {:username ...username... :auth-provider-user-id "SUBJECT"})))
 

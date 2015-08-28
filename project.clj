@@ -14,7 +14,7 @@
                  [cheshire "5.5.0"]
                  [bilus/clojure-humanize "0.1.0"]
                  [clj-http "2.0.0"]
-                 [org.clojars.d-cent/stonecutter-oauth "0.1.9-SNAPSHOT"]
+                 [org.clojars.d-cent/stonecutter-oauth "0.2.0-SNAPSHOT"]
                  [environ "1.0.0"]
                  [jarohen/chime "0.1.6"]
                  [com.novemberain/monger "2.1.0"]
