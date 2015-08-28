@@ -1,6 +1,5 @@
 (ns mooncake.test.handler
   (:require [midje.sweet :refer :all]
-            [clj-http.client :as http]
             [cheshire.core :as json]
             [stonecutter-oauth.client :as soc]
             [stonecutter-oauth.jwt :as so-jwt]
@@ -67,7 +66,6 @@
                                        :protocol :openid))
 
 (def test-auth-provider-public-key (slurp "./test-resources/test-key.json"))
-(def test-auth-provider-public-key-as-clj-map (json/parse-string test-auth-provider-public-key))
 (def token-expiring-in-year-2515 "eyJraWQiOiJ0ZXN0LWtleSIsImFsZyI6IlJTMjU2In0.eyJpc3MiOiJJU1NVRVIiLCJhdWQiOiJDTElFTlRfSUQiLCJleHAiOjE3MjA3OTkzMjUyLCJpYXQiOjE0Mzk5OTI3NDAsInN1YiI6IlNVQkpFQ1QiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZW1haWwiOiJlbWFpbEBhZGRyZXNzLmNvbSJ9.PQWWJQGECzC8EchkfwGjQBBUfhFGoLDOjZ1Ohl1t-eo8rXDO4FxONk3rYEY9v01fVg3pzQW8zLJYcZ73gyE2ju8feHhwS8wYwcsgKq6XC-Zr9LwRJIeFpZoVcgMpvW21UHX1bxAhHE7WM_UzSerKtGkIuK21XraGVTiIB-0o8eWOJX0Rud8FXC3Cr0LdZeqDytPZDwM1Pbcr0eFyfNq9ngi75BFNTGHCMLGshJGt1LvQhDtTWifXDlwW5uk-kuOVavnQGK_i7qvrcy8c7lFCCPqd5X3x6EZJyfk-BZGgDT1ySwdM2EjRAi1W1nPAmdWms9rts0rkbk_Q73gEkWQpOw")
 
 ;token-content is the decoded version of token-expiring-in-year-2515 signed with test-auth-provider-public-key
@@ -91,8 +89,8 @@
                     (provided
                       (soc/request-access-token! openid-test-config ...auth-code...)
                       => {:id_token token-expiring-in-year-2515}
-                      (http/get "ISSUER/api/jwk-set" {:accept :json :as :json})
-                      => {:body {:keys [test-auth-provider-public-key-as-clj-map]}}
+                      (so-jwt/get-public-key-string-from-jwk-set-url "ISSUER/api/jwk-set")
+                      => test-auth-provider-public-key
                       (user/fetch-user ...db... "SUBJECT") => nil))
 
               (fact "when existing user, redirects to / with the username set in the session and auth-provider-user-id removed"
