@@ -1,6 +1,5 @@
 (ns mooncake.config
-  (:require [environ.core :as env]
-            [clojure.tools.logging :as log]))
+  (:require [environ.core :as env]))
 
 (def env-vars #{:port :host :base-url
                 :mongo-uri :mongo-port-27017-tcp-addr

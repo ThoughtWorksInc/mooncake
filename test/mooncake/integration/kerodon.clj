@@ -5,6 +5,7 @@
             [kerodon.core :as k]
             [ring.adapter.jetty :as ring-jetty]
             [stonecutter-oauth.client :as soc]
+            [stonecutter-oauth.jwt :as so-jwt]
             [ring.util.response :as r]
             [mooncake.routes :as routes]
             [mooncake.handler :as h]
@@ -27,7 +28,10 @@
   state)
 
 (background
-  (soc/request-access-token! anything anything) => {:user-info {:sub "test-stonecutter-user-uuid"}})
+  (soc/request-access-token! anything anything) => {:id_token ...id-token...}
+  (h/get-public-key anything) => ...public-key-str...
+  (so-jwt/json->key-pair ...public-key-str...) => ...public-key...
+  (so-jwt/decode anything ...id-token... ...public-key...) => {:sub "test-stonecutter-user-uuid"})
 
 (def test-db-uri "mongodb://localhost:27017/mooncake")
 (def database (mongo/create-database (mongo/get-mongo-db test-db-uri)))

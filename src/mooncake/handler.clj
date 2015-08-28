@@ -4,7 +4,10 @@
             [ring.util.response :as r]
             [ring.middleware.defaults :as ring-mw]
             [clojure.java.io :as io]
+            [cheshire.core :as json]
+            [clj-http.client :as http]
             [stonecutter-oauth.client :as soc]
+            [stonecutter-oauth.jwt :as so-jwt]
             [mooncake.activity :as a]
             [mooncake.config :as config]
             [mooncake.db.mongo :as mongo]
@@ -26,9 +29,6 @@
   (let [activities (a/retrieve-activities-from-database database)]
     (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) (:context request))))
 
-(defn get-user-id-from [request]
-  (get-in request [:session :user-id]))
-
 (defn sign-in [request]
   (if (mh/signed-in? request)
     (mh/redirect-to request :index)
@@ -41,10 +41,24 @@
 (defn stonecutter-sign-in [stonecutter-config request]
   (soc/authorisation-redirect-response stonecutter-config))
 
+(defn get-public-key [jwks-url]
+  (-> (http/get jwks-url {:accept :json :as :json})
+      :body
+      :keys
+      first
+      json/generate-string))
+
+(defn get-auth-jwks-url [stonecutter-config]
+  (str (:auth-provider-url stonecutter-config) "/api/jwk-set"))
+
 (defn stonecutter-callback [stonecutter-config db request]
   (let [auth-code (get-in request [:params :code])
         token-response (soc/request-access-token! stonecutter-config auth-code)
-        auth-provider-user-id (get-in token-response [:user-info :sub])]
+        auth-jwks-url (get-auth-jwks-url stonecutter-config)
+        public-key-string (get-public-key auth-jwks-url)
+        public-key (so-jwt/json->key-pair public-key-string)
+        user-info (so-jwt/decode stonecutter-config (:id_token token-response) public-key)
+        auth-provider-user-id (:sub user-info)]
     (if-let [user (user/fetch-user db auth-provider-user-id)]
       (-> (mh/redirect-to request :index)
           (assoc-in [:session :username] (:username user)))
@@ -77,7 +91,8 @@
   (soc/configure (config/auth-url config-m)
                  (config/client-id config-m)
                  (config/client-secret config-m)
-                 (routes/absolute-path config-m :stonecutter-callback)))
+                 (routes/absolute-path config-m :stonecutter-callback)
+                 :protocol :openid))
 
 (defn site-handlers [config-m db]
   (let [stonecutter-config (create-stonecutter-config config-m)]
