@@ -16,4 +16,8 @@ block content
       ul.customise-feed
         +feedItem('Objective 8', true)
         +feedItem('TFL updates')
+        +feedItem('Future 8', true)
+          +feedItemChild('Create', true)
+          +feedItemChild('Comment', true)
+          +feedItemChild('Question', true)
       button.button(type="submit", value="Save") Save

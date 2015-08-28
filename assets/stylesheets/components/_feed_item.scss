@@ -1,9 +1,9 @@
 .customise-feed {
   @include reset-list;
   margin-bottom: 1.5rem;
+  font-weight: bold;
 }
 .feed-item {
-  position: relative;
   background-color: $white;
   border-bottom: 1px solid $grey_light;
   color: $purple;
@@ -11,22 +11,56 @@
   &:last-child {
     border-bottom-color: transparent;
   }
+  &__children-list {
+    @include reset-list;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    font-weight: normal;
+    border-top: 1px solid $grey_light;
+  }
 }
 
 .feed-item__name {
+  position: relative;
   display: block;
   @include font-size(17px);
   margin: 0;
   padding: 30px 20px;
   line-height: 1.1;
   color: $grey_blue;
-  font-weight: bold;
   @include width-from($medium_device) {
     @include font-size(19px);
   }
 }
 
 .feed-item__checkbox {
+  position: absolute;
+  right: 20px;
+  @include vertical-middle-me;
+}
+
+
+.feed-item-child {
+  background-color: $white;
+  color: $purple;
+  user-select: none;
+}
+
+.feed-item-child__name {
+  position: relative;
+  display: block;
+  @include font-size(16px);
+  margin: 0;
+  padding: 15px 20px;
+  line-height: 1.1;
+  color: $grey_blue;
+  @include width-from($medium_device) {
+    @include font-size(17px);
+  }
+}
+
+.feed-item-child__checkbox {
   position: absolute;
   right: 20px;
   @include vertical-middle-me;
