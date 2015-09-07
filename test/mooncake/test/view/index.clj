@@ -23,44 +23,60 @@
         page =not=> (eh/has-class? [:.clj--sign-out__link] "clj--STRIP")))
 
 (fact "activities are rendered on the page"
-             (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
-                   ten-minutes-ago-str (f/unparse (f/formatters :date-time) ten-minutes-ago)
-                   page (i/index {:context {:activities
-                                            [{"activity-src" "an-activity-src"
-                                              "@context"     "http://www.w3.org/ns/activitystreams"
-                                              "@type"        "Create"
-                                              "published"    ten-minutes-ago-str
-                                              "actor"        {"@type"       "Person"
-                                                              "displayName" "JDog"}
-                                              "object"       {"@type"       "Objective"
-                                                              "displayName" "OBJECTIVE 7 TITLE"
-                                                              "content"     "We want to establish Activity Types for Objective8"
-                                                              "url"         "http://objective8.dcentproject.eu/objectives/7"}}
-                                             {"activity-src" "another-activity-src"
-                                              "@context"     "http://www.w3.org/ns/activitystreams"
-                                              "@type"        "Create"
-                                              "published"    "2015-08-04T14:49:38.407Z"
-                                              "actor"        {"@type"       "Person"
-                                                              "displayName" "Lala"}
-                                              "object"       {"@type"       "Objective"
-                                                              "displayName" "OBJECTIVE 6 TITLE"
-                                                              "description" "Yes."
-                                                              "url"         "http://objective8.dcentproject.eu/objectives/6"}}]}})
-                   first-activity-item (first (html/select page [:.clj--activity-item]))
-                   second-activity-item (second (html/select page [:.clj--activity-item]))]
+      (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
+            ten-minutes-ago-str (f/unparse (f/formatters :date-time) ten-minutes-ago)
+            page (i/index {:context {:activities
+                                     [{"activity-src" "an-objective8-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Create"
+                                       "published"    ten-minutes-ago-str
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "JDog"}
+                                       "object"       {"@type"       "Objective"
+                                                       "displayName" "OBJECTIVE 7 TITLE"
+                                                       "content"     "We want to establish Activity Types for Objective8"
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/7"}}
+                                      {"activity-src" "a-helsinki-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Add"
+                                       "published"    "2015-09-06T11:05:53.338Z"
+                                       "actor"        {"@type"       "Group"
+                                                       "displayName" "Kaupunginjohtaja/J"
+                                                       "@id"         "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
+                                       "object"       {"@id"         "http://dev.hel.fi/paatokset/v1/agenda_item/52359/"
+                                                       "displayName" "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
+                                                       "@type"       "Content"
+                                                       "url"         "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
+                                                       "content"     "some Finnish HTML"}}
+                                      {"activity-src" "another-objective8-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Create"
+                                       "published"    "2015-08-04T14:49:38.407Z"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "Lala"}
+                                       "object"       {"@type"       "Objective"
+                                                       "displayName" "OBJECTIVE 6 TITLE"
+                                                       "description" "Yes."
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/6"}}]}})
+            [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
-               (count (html/select page [:.clj--activity-item])) => 2
+        (count (html/select page [:.clj--activity-item])) => 3
 
-               first-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/7")
-               first-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
-               first-activity-item => (eh/text-is? [:.clj--activity-item__time] "10 minutes ago")
-               first-activity-item => (eh/text-is? [:.clj--activity-item__action] "JDog - Objective - Create")
-               first-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
+        first-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/7")
+        first-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
+        first-activity-item => (eh/text-is? [:.clj--activity-item__time] "10 minutes ago")
+        first-activity-item => (eh/text-is? [:.clj--activity-item__action] "JDog - Objective - Create")
+        first-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
 
-               second-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6")
-               second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
-               second-activity-item => (eh/text-is? [:.clj--activity-item__action] "Lala - Objective - Create")
-               second-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 6 TITLE")))
+        second-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/")
+        second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-09-06T11:05:53.338Z")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__action] "Kaupunginjohtaja/J - Content - Add")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__title] "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020")
+
+        third-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6")
+        third-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
+        third-activity-item => (eh/text-is? [:.clj--activity-item__action] "Lala - Objective - Create")
+        third-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 6 TITLE")))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (i/index {:context {:activities

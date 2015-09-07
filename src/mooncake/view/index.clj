@@ -26,7 +26,7 @@
                                                               (html/content (when activity-time
                                                                               (mh/humanise-time activity-time)))))
                              [:.clj--activity-item__action] (html/content (str (domain/activity->actor-display-name activity) " - "
-                                                                               (domain/activity->object-type activity)      " - "
+                                                                               (domain/activity->object-type activity) " - "
                                                                                (domain/activity->type activity)))
                              [:.clj--activity-item__title] (html/content (domain/activity->object-display-name activity))))))
 
