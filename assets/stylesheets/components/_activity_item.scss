@@ -1,10 +1,8 @@
 .activity-item {
   position: relative;
-  min-height: 100px;
-  padding: 30px 18px 30px 80px;
-  border-bottom: 1px solid $grey_light;
   color: $purple;
   background-color: $white;
+  border-bottom: 1px solid $grey_light;
 }
 
 .activity-src- {
@@ -24,8 +22,14 @@
 
 .activity-item__link {
   display: block;
+  padding: 30px 18px 30px 80px;
   color: inherit;
   text-decoration: none;
+  min-height: 100px;
+  &:focus {
+    background-color: $grey_super_light;
+    outline: 1px solid currentColor;
+  }
 }
 
 .activity-item__action {
