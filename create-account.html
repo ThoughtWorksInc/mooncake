@@ -13,14 +13,14 @@
   <body class="func--create-account-page">
     <header class="header">
       <div class="middle-container middle-container--relative">
-        <div class="header__logo"><a href="./index" class="logo__link">Mooncake</a></div>
+        <div class="header__logo clj--header__logo"><a href="./index" class="logo__link">Mooncake</a></div>
         <div class="header__actions"><span class="clj--username"></span><a href="./sign-out" class="action-link clj--STRIP clj--sign-out__link func--sign-out__link"><span data-l8n="content:default/sign-out-link" class="action-link__title">!Sign out</span></a></div>
       </div>
     </header>
     <main role="main" class="main-content">
       <div class="box">
         <form action="./create-account" method="post" role="form" class="create-account-form clj--create-account__form">
-          <h1>!Choose your username</h1>
+          <h1 data-l8n="content:create-account/page-title">!Choose your username</h1>
           <p class="form-row clj--username">
             <label for="username" class="form-row__label"><span data-l8n="content:create-account/username-label" class="form-row__title">!Username</span><span data-l8n="content:create-account/username-default-validation-message" class="form-row__validation clj--username__validation">!Enter a username</span><span data-l8n="content:create-account/username-help-message" class="form-row__help">!Maximum of 16 letters or numbers. No spaces.</span></label>
             <input type="text" id="username" name="username" maxlength="16" autofocus="autofocus" class="form-row__input form-row__input--small username-input clj--username__input func--username__input">

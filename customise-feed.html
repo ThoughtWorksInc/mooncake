@@ -13,7 +13,7 @@
   <body class="func--customise-feed">
     <header class="header">
       <div class="middle-container middle-container--relative">
-        <div class="header__logo"><a href="./index" class="logo__link">Mooncake</a></div>
+        <div class="header__logo clj--header__logo"><a href="./index" class="logo__link">Mooncake</a></div>
         <div class="header__actions"><span class="clj--username"></span><a href="./sign-out" class="action-link clj--STRIP clj--sign-out__link func--sign-out__link"><span data-l8n="content:default/sign-out-link" class="action-link__title">!Sign out</span></a></div>
       </div>
     </header>
@@ -24,12 +24,36 @@
         <form action="" method="post" class="customise-feed-form">
           <ul class="customise-feed">
             <li class="feed-item">
-              <label for="Objective 8" class="feed-item__name">Objective 8</label>
-              <input type="checkbox" id="Objective 8" name="Objective 8" value="feedname" checked="checked" class="feed-item__checkbox"/>
+              <label for="Objective 8" class="feed-item__name">Objective 8
+                <input type="checkbox" id="Objective 8" name="Objective 8" value="feedname" checked="checked" class="feed-item__checkbox"/>
+              </label>
             </li>
             <li class="feed-item">
-              <label for="TFL updates" class="feed-item__name">TFL updates</label>
-              <input type="checkbox" id="TFL updates" name="TFL updates" value="feedname" class="feed-item__checkbox"/>
+              <label for="TFL updates" class="feed-item__name">TFL updates
+                <input type="checkbox" id="TFL updates" name="TFL updates" value="feedname" class="feed-item__checkbox"/>
+              </label>
+            </li>
+            <li class="feed-item">
+              <label for="Future 8" class="feed-item__name">Future 8
+                <input type="checkbox" id="Future 8" name="Future 8" value="feedname" checked="checked" class="feed-item__checkbox"/>
+              </label>
+              <ul class="feed-item__children-list">
+                <li class="feed-item-child">
+                  <label for="Create" class="feed-item-child__name">Create
+                    <input type="checkbox" id="Create" name="Create" value="feedname" checked="checked" class="feed-item-child__checkbox"/>
+                  </label>
+                </li>
+                <li class="feed-item-child">
+                  <label for="Comment" class="feed-item-child__name">Comment
+                    <input type="checkbox" id="Comment" name="Comment" value="feedname" checked="checked" class="feed-item-child__checkbox"/>
+                  </label>
+                </li>
+                <li class="feed-item-child">
+                  <label for="Question" class="feed-item-child__name">Question
+                    <input type="checkbox" id="Question" name="Question" value="feedname" checked="checked" class="feed-item-child__checkbox"/>
+                  </label>
+                </li>
+              </ul>
             </li>
           </ul>
           <button type="submit" value="Save" class="button">Save</button>
