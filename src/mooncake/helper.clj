@@ -24,7 +24,7 @@
       (r/content-type "text/html")))
 
 (defn datetime-str->datetime [datetime-str]
-  (f/parse (f/formatters :date-time) datetime-str))
+  (f/parse (f/formatters :date-time-parser) datetime-str))
 
 (defn humanise-time [datetime-str]
   (-> (datetime-str->datetime datetime-str)

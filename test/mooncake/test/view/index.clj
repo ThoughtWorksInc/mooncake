@@ -39,7 +39,7 @@
                                       {"activity-src" "a-helsinki-activity-src"
                                        "@context"     "http://www.w3.org/ns/activitystreams"
                                        "@type"        "Add"
-                                       "published"    "2015-09-06T11:05:53.338Z"
+                                       "published"    "2015-09-06T11:05:53+03:00"
                                        "actor"        {"@type"       "Group"
                                                        "displayName" "Kaupunginjohtaja/J"
                                                        "@id"         "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
@@ -69,7 +69,7 @@
         first-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
 
         second-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/")
-        second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-09-06T11:05:53.338Z")
+        second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-09-06T11:05:53+03:00")
         second-activity-item => (eh/text-is? [:.clj--activity-item__action] "Kaupunginjohtaja/J - Content - Add")
         second-activity-item => (eh/text-is? [:.clj--activity-item__title] "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020")
 

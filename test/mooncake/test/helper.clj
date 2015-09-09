@@ -1,5 +1,6 @@
 (ns mooncake.test.helper
   (:require [midje.sweet :refer :all]
+            [clj-time.format :as f]
             [net.cgrand.enlive-html :as html]
             [mooncake.helper :as mh]))
 
@@ -39,3 +40,14 @@
   {:session {:auth-provider-user-id ...user-id...}} false
   {:session {:username nil}}                        false
   {:session {:username ...username...}}             true)
+
+
+(tabular
+  (fact "about datetime-str->datetime with time zones and optional milliseconds"
+        (f/unparse (f/formatters :date-time) (mh/datetime-str->datetime ?datetime-str-in)) => ?datetime-str-out)
+
+  ?datetime-str-in                            ?datetime-str-out
+  "2015-09-06T11:05:53+03:00"                 "2015-09-06T08:05:53.000Z"
+  "2015-09-06T12:05:53Z"                      "2015-09-06T12:05:53.000Z"
+  "2015-09-06T13:05:53.213Z"                  "2015-09-06T13:05:53.213Z"
+  "2015-09-06T14:05:53.542-02:00"             "2015-09-06T16:05:53.542Z")
