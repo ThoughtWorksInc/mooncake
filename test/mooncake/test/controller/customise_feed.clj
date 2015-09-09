@@ -11,14 +11,17 @@
        (facts "when successful"
               (let [customise-feed-request {:context {:activity-sources {:activity-src "a url"
                                                                          :another-activity-src "another url"}}
-                                            :params  {:activity-src "true"}
+                                            :params  {:activity-src "foobar"
+                                                      :some-other-param "something-else"}
                                             :session {:username ...username...}}
                     db (dbh/create-in-memory-db)
                     stored-user (user/create-user! db ...user-id... ...username...)
                     response (cf/customise-feed db customise-feed-request)]
-                (fact "it should update the user's feed settings"
+                (fact "it should update the user's feed settings for all activity sources"
                       (user/find-user db ...username...) => {:auth-provider-user-id ...user-id...
                                                              :username              ...username...
-                                                             :feed-settings {:activity-src true}})
+                                                             :feed-settings {:activity-src true
+                                                                             :another-activity-src false}})
+
                 (future-fact "it should redirect to /"
                       response => (eh/check-redirects-to (routes/absolute-path {} :index))))))
