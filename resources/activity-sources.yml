@@ -1,4 +1,10 @@
 ---
 
-objective8: https://objective8.dcentproject.eu/api/v1/activities
-OpenAhjo: https://helsinki-activity-stream.herokuapp.com
+objective8:
+  url: https://objective8.dcentproject.eu/api/v1/activities
+  name: Objective8
+
+OpenAhjo:
+  url: https://helsinki-activity-stream.herokuapp.com
+  name: Helsinki Decisions
+

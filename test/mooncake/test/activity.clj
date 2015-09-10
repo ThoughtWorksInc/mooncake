@@ -13,8 +13,8 @@
 (fact "retrieve activities retrieves activities from multiple sources, sorts them by published time and assocs activity source into each activity"
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]
-        (a/retrieve-activities {:an-activity-src      an-activity-src-url
-                                :another-activity-src another-activity-src-url}) => [{"activity-src" :an-activity-src
+        (a/retrieve-activities {:an-activity-src      {:url an-activity-src-url}
+                                :another-activity-src {:url another-activity-src-url}}) => [{"activity-src" :an-activity-src
                                                                                       "actor"       {"displayName" "KCat"}
                                                                                       "published"   twelve-oclock}
                                                                                      {"activity-src" :another-activity-src
@@ -34,8 +34,10 @@
                                                                                       "published" eleven-oclock}]})))
 
 (fact "can load activity sources from a resource"
-      (a/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 "https://test-activity.src/activities"
-                                                                :test-activity-source-2 "https://another-test-activity.src"})
+      (a/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 {:url  "https://test-activity.src/activities"
+                                                                                         :name "Test Activity Source 1"}
+                                                                :test-activity-source-2 {:url  "https://another-test-activity.src"
+                                                                                         :name "Test Activity Source 2"}})
 
 (fact "get-json-from-activity-source gracefully handles exceptions caused by bad/missing responses"
       (a/get-json-from-activity-source ...invalid-activity-src-url...) => nil
@@ -54,11 +56,11 @@
                         "published" eleven-oclock}]
             db (dbh/create-in-memory-db)]
         (fact
-          (a/sync-activities db {:an-activity-src      an-activity-src-url
-                                 :another-activity-src another-activity-src-url})
+          (a/sync-activities db {:an-activity-src       {:url an-activity-src-url}
+                                 :another-activity-src  {:url another-activity-src-url}})
           (count (activity/fetch-activities db)) => 3
-          (a/sync-activities db {:an-activity-src      an-activity-src-url
-                                 :another-activity-src another-activity-src-url})
+          (a/sync-activities db {:an-activity-src      {:url an-activity-src-url}
+                                 :another-activity-src {:url another-activity-src-url}})
           (count (activity/fetch-activities db)) => 3
           (against-background
             (http/get an-activity-src-url {:accept :json

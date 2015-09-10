@@ -9,8 +9,10 @@
             [mooncake.test.test-helpers.db :as dbh]))
 
 (facts "about customise-feed"
-       (let [customise-feed-request {:context {:activity-sources {:activity-src         "a url"
-                                                                  :another-activity-src "another url"}}
+       (let [customise-feed-request {:context {:activity-sources {:activity-src         {:name "A. Activity Source"
+                                                                                         :url  "some url"}
+                                                                  :another-activity-src {:name "B. Another Source"
+                                                                                         :url  "another url"}}}
                                      :params  {:activity-src     "foobar"
                                                :some-other-param "something-else"}
                                      :session {:username ...username...}}

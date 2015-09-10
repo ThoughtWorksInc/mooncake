@@ -78,10 +78,13 @@
         (-> state :enlive (html/select [kerodon-selector]) first html/text) => (contains content))
   state)
 
-(defn selector-has-attribute-with-content [state kerodon-selector attr content]
-  (fact {:midje/name "Check if element contains attribute with string"}
-        (-> state :enlive (html/select [kerodon-selector]) first :attrs attr) => content)
-  state)
+(defn selector-has-attribute-with-content
+  ([state kerodon-selector attr content]
+    (selector-has-attribute-with-content state kerodon-selector first attr content))
+  ([state kerodon-selector position-fn attr content]
+   (fact {:midje/name "Check if element contains attribute with string"}
+         (-> state :enlive (html/select [kerodon-selector]) position-fn :attrs attr) => content)
+   state))
 
 (defn selector-does-not-include-content [state kerodon-selector content]
   (fact {:midje/name "Check if element does not contain string"}

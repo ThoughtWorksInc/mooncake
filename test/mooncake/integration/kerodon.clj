@@ -8,6 +8,7 @@
             [stonecutter-oauth.jwt :as so-jwt]
             [ring.util.response :as r]
             [mooncake.routes :as routes]
+            [mooncake.activity :as a]
             [mooncake.handler :as h]
             [mooncake.config :as c]
             [mooncake.integration.kerodon-helpers :as kh]
@@ -36,6 +37,8 @@
 (def database (mongo/create-database (mongo/get-mongo-db test-db-uri)))
 
 (def app (h/create-app (c/create-config) database {}))
+
+(def app-with-activity-sources-from-yaml (h/create-app (c/create-config) database (a/load-activity-sources "test-activity-sources.yml")))
 
 (defn drop-db! []
   (let [{:keys [conn db]} (monger/connect-via-uri test-db-uri)]
@@ -123,7 +126,7 @@
    (after :contents (stop-server))]
   (facts "Stub activities are rendered"
          (drop-db!)
-         (-> (k/session (h/create-app (c/create-config) database {:stub-activity-source "http://127.0.0.1:3000/stub-activities"}))
+         (-> (k/session (h/create-app (c/create-config) database {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
              sign-in!
              (k/visit (routes/path :index))
              (kh/page-uri-is "/")
@@ -131,13 +134,24 @@
              (kh/selector-exists ks/index-page-body)
              (kh/selector-includes-content ks/index-page-activity-item-title "Stub activity title")
              (kh/selector-includes-content ks/index-page-activity-item-action "Barry - STUB_ACTIVITY - Create")
-             (kh/selector-has-attribute-with-content ks/index-page-activity-item-link :href "http://stub-activity.url")
-             )))
+             (kh/selector-has-attribute-with-content ks/index-page-activity-item-link :href "http://stub-activity.url"))))
 
+(facts "User can customise feed preferences"
+       (drop-db!)
+       (-> (k/session app-with-activity-sources-from-yaml)
+           sign-in!
+           (k/visit (routes/path :show-customise-feed))
+           (kh/page-uri-is "/customise-feed")
+           (kh/response-status-is 200)
+           (kh/selector-exists ks/customise-feed-page-body)
+           (kh/selector-includes-content ks/customise-feed-page-feed-item-list "Test Activity Source 1")
+           (kh/selector-includes-content ks/customise-feed-page-feed-item-list "Test Activity Source 2")
+           (kh/selector-has-attribute-with-content ks/customise-feed-page-feed-item-checkbox first :checked "checked")
+           (kh/selector-has-attribute-with-content ks/customise-feed-page-feed-item-checkbox second :checked "checked")))
 
 (facts "Invalid activity source responses are handled gracefully"
        (drop-db!)
-       (-> (k/session (h/create-app (c/create-config) database {:invalid-activity-src "http://localhost:6666/not-an-activity-source"}))
+       (-> (k/session (h/create-app (c/create-config) database {:invalid-activity-src {:url "http://localhost:6666/not-an-activity-source"}}))
            sign-in!
            (k/visit (routes/absolute-path (c/create-config) :index))
            (kh/page-uri-is "/")

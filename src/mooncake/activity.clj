@@ -29,8 +29,8 @@
          (sort-by published-time mh/after?))))
 
 (defn retrieve-activities-from-source [source-k-v-pair]
-  (let [[source-key source-url] source-k-v-pair
-        activities (get-json-from-activity-source source-url)]
+  (let [[source-key source-attributes] source-k-v-pair
+        activities (get-json-from-activity-source (:url source-attributes))]
     (map #(assoc % "activity-src" source-key) activities)))
 
 (defn retrieve-activities [activity-sources]

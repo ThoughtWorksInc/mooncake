@@ -1,4 +1,9 @@
 ---
 
-test-activity-source-1: https://test-activity.src/activities
-test-activity-source-2: https://another-test-activity.src
+test-activity-source-1:
+  url: https://test-activity.src/activities
+  name: Test Activity Source 1
+
+test-activity-source-2:
+  url: https://another-test-activity.src
+  name: Test Activity Source 2

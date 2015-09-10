@@ -16,6 +16,7 @@
             [mooncake.routes :as routes]
             [mooncake.translation :as t]
             [mooncake.controller.create-account :as cac]
+            [mooncake.controller.customise-feed :as cfc]
             [mooncake.view.error :as error]
             [mooncake.view.index :as i]
             [mooncake.view.sign-in :as si]
@@ -95,6 +96,7 @@
          :sign-out             sign-out
          :show-create-account  cac/show-create-account
          :create-account       (partial cac/create-account db)
+         :show-customise-feed  (partial cfc/show-customise-feed db)
          :stub-activities      stub-activities
          :stonecutter-sign-in  (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config db)}

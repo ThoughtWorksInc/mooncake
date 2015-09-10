@@ -30,9 +30,7 @@
         => ...stonecutter-config-m...))
 
 (fact "index handler displays activities retrieved from activity sources"
-      (let [an-activity-src-url "https://an-activity.src"
-            another-activity-src-url "https://another-activity.src"
-            database (dbh/create-in-memory-db)]
+      (let [database (dbh/create-in-memory-db)]
         (mongo/store! database a/activity-collection {"actor"     {"@type"       "Person"
                                                                    "displayName" "JDog"}
                                                       "published" ten-oclock})
@@ -40,13 +38,10 @@
                                                                    "displayName" "KCat"}
                                                       "published" twelve-oclock})
         (h/index database {:context
-                           {:translator (constantly "")
-                            :activity-sources
-                                        {:an-activity-src      an-activity-src-url
-                                         :another-activity-src another-activity-src-url}}}) => (every-checker
-                                                                                                 (eh/check-renders-page :.func--index-page)
-                                                                                                 (contains {:body (contains "JDog")})
-                                                                                                 (contains {:body (contains "KCat")}))))
+                           {:translator (constantly "")}}) => (every-checker
+                                                                (eh/check-renders-page :.func--index-page)
+                                                                (contains {:body (contains "JDog")})
+                                                                (contains {:body (contains "KCat")}))))
 (fact "index handler displays username of logged-in user"
       (h/index (dbh/create-in-memory-db) {:context {:translator (constantly "")}
                                           :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
