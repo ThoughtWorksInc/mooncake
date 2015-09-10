@@ -21,12 +21,15 @@
   }
 }
 
-.feed-item__name {
+.feed-item__label {
   position: relative;
   display: block;
-  @include font-size(17px);
   margin: 0;
   padding: 30px 20px;
+}
+
+.feed-item__name {
+  @include font-size(17px);
   line-height: 1.1;
   color: $grey_blue;
   @include width-from($medium_device) {

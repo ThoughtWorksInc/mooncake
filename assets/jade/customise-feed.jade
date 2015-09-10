@@ -1,7 +1,7 @@
 extends layout/layout
 
 block vars
-  - bodyClass = "func--customise-feed"
+  - bodyClass = "func--customise-feed-page"
   - pageTitle = "!Customise feed"
   - pageTitleDataL8n = "content:customise-feed/title"
 
@@ -12,8 +12,8 @@ block content
     h1(data-l8n="content:customise-feed/page-title") !Customise your feed
     p(data-l8n="content:customise-feed/page-intro") !Choose the information you'd like to receive updates on:
 
-    form.customise-feed-form(action="", method="post")
-      ul.customise-feed
+    form.customise-feed-form.clj--customise-feed__form(action="", method="post")
+      ul.customise-feed.clj--customise-feed__list
         +feedItem('Objective 8', true)
         +feedItem('TFL updates')
         +feedItem('Future 8', true)
