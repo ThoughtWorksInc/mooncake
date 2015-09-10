@@ -23,8 +23,8 @@ html
     block headerScripts
 
   body(class="#{bodyClass}")
-
-    +headerSignedIn
+    .header-wrapper
+      +headerSignedIn
 
     main.main-content(role="main")
       block content

@@ -3,6 +3,7 @@
   margin-bottom: 1.5rem;
   font-weight: bold;
 }
+
 .feed-item {
   background-color: $white;
   border-bottom: 1px solid $grey_light;
@@ -42,7 +43,6 @@
   right: 20px;
   @include vertical-middle-me;
 }
-
 
 .feed-item-child {
   background-color: $white;

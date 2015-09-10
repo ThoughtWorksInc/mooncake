@@ -1,6 +1,6 @@
 mixin headerSignedOut
   header.header
-    .middle-container.middle-container--relative
+    .header__middle-container
       .header__logo: a.logo__link(href="./index") Mooncake
       .header__actions
         a.action-link.clj--STRIP.clj--sign-in__link.func--sign-in__link(href="./sign-in")
@@ -9,9 +9,14 @@ mixin headerSignedOut
 
 mixin headerSignedIn
   header.header
-    .middle-container.middle-container--relative
+    .header__middle-container
       .header__logo.clj--header__logo: a.logo__link(href="./index") Mooncake
       .header__actions
-        span.clj--username
+        span.header__username.clj--username
+
+        a.action-link.clj--STRIP(href="./customise-feed")
+          span.action-link__icon.action-link__icon--cog
+          span.action-link__title.visuallyhidden(data-l8n="content:default/nav-customise-feed") !Customise feed
+
         a.action-link.clj--STRIP.clj--sign-out__link.func--sign-out__link(href="./sign-out")
           span.action-link__title(data-l8n="content:default/sign-out-link") !Sign out

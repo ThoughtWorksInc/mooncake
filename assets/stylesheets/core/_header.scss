@@ -1,11 +1,29 @@
 $header--height: 50px;
+.header-wrapper {
+  height: $header--height;
+  margin-bottom: 1px;
+}
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
   height: $header--height;
   background: $purple;
-  margin-bottom: 0.25rem;
-  padding: 0 20px;
   @include width-from($medium_device) {
     margin-bottom: 1.5rem;
+  }
+  &__middle-container {
+    max-width: $medium_device;
+    margin: 0 auto 3rem auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: relative;
+    @include width-from($medium_device) {
+      padding-left: 0;
+      padding-right: 0;
+    }
   }
 }
 .header__logo {
@@ -30,9 +48,13 @@ $header--height: 50px;
   right: 0;
   top: 0;
   color: $white;
+  @include clearfix;
 }
 .action-link {
   display: inline-block;
+  float: left;
+  height: $header--height;
+  margin-left: 10px;
   line-height: $header--height;
   color: inherit;
   &, &:hover {
@@ -41,11 +63,31 @@ $header--height: 50px;
   &:hover span {
     text-decoration: underline;
   }
-}
-.action-link__title {
 
+  &__title {
+
+  }
+  &__icon {
+    display: block;
+    @include size(20px, 100%);
+
+    &--cog {
+      background: image-url('cog.svg') no-repeat 50% 50%;
+      background-size: contain;
+      transform-origin: 50% 50%;
+      &:hover, &:focus {
+        animation: spinner .9s linear infinite;
+      }
+    }
+  }
 }
 
 .header__username {
-  padding-right: 0.75rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  @include font-size(10px);
+  @include width-to($smallish_device) {
+    @include visuallyhidden;
+  }
 }

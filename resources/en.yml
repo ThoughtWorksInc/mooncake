@@ -4,6 +4,7 @@ default:
   title: Mooncake Activity Stream
   sign-out-link: Sign out
   sign-in-link: Sign in
+  nav-customise-feed: Customise feed
 
 index:
   title: Mooncake Activity Stream
