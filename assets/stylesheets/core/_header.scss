@@ -92,10 +92,11 @@ $header--height: 50px;
 
 .header__username {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  @include font-size(10px);
-  @include width-to($smallish_device) {
+  top: 16px;
+  right: 62px;
+  text-align: right;
+  @include font-size(12px);
+  @include width-to($small_device) {
     @include visuallyhidden;
   }
 }
