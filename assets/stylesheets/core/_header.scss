@@ -79,6 +79,14 @@ $header--height: 50px;
         animation: spinner .9s linear infinite;
       }
     }
+    &--sign-in {
+      background: image-url('sign-in.svg') no-repeat 50% 50%;
+      background-size: contain;
+    }
+    &--sign-out {
+      background: image-url('sign-out.svg') no-repeat 50% 50%;
+      background-size: contain;
+    }
   }
 }
 

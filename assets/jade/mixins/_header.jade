@@ -4,7 +4,8 @@ mixin headerSignedOut
       .header__logo: a.logo__link(href="./index") Mooncake
       .header__actions
         a.action-link.clj--STRIP.clj--sign-in__link.func--sign-in__link(href="./sign-in")
-          span.action-link__title(data-l8n="content:default/sign-in-link") !Sign in
+          span.action-link__icon.action-link__icon--sign-in
+          span.action-link__title.visuallyhidden(data-l8n="content:default/sign-in-link") !Sign in
 
 
 mixin headerSignedIn
@@ -19,4 +20,5 @@ mixin headerSignedIn
           span.action-link__title.visuallyhidden(data-l8n="content:default/nav-customise-feed") !Customise feed
 
         a.action-link.clj--STRIP.clj--sign-out__link.func--sign-out__link(href="./sign-out")
-          span.action-link__title(data-l8n="content:default/sign-out-link") !Sign out
+          span.action-link__icon.action-link__icon--sign-out
+          span.action-link__title.visuallyhidden(data-l8n="content:default/sign-out-link") !Sign out
