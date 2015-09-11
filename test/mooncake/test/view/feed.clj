@@ -7,11 +7,11 @@
             [mooncake.test.test-helpers.enlive :as eh]
             [mooncake.view.feed :as fv]))
 
-(fact "index page should return index template"
+(fact "feed page should return feed template"
       (let [page (fv/feed :request)]
-        page => (eh/has-class? [:body] "func--index-page")))
+        page => (eh/has-class? [:body] "func--feed-page")))
 
-(eh/test-translations "Index page" fv/feed)
+(eh/test-translations "feed page" fv/feed)
 (eh/test-logo-link fv/feed)
 
 (fact "username is rendered"

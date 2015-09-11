@@ -30,7 +30,7 @@
                       (user/fetch-user db ...user-id...) => {:auth-provider-user-id ...user-id...
                                                              :username              "username"})
                 (fact "it should redirect to /"
-                      response => (eh/check-redirects-to (routes/absolute-path {} :index)))
+                      response => (eh/check-redirects-to (routes/absolute-path {} :feed)))
                 (fact "it should set the username in the session"
                       (get-in response [:session :username]) => "username")
                 (fact "it should remove the auth-provider-user-id from the session"

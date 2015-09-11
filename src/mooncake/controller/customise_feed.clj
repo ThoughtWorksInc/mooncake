@@ -13,7 +13,7 @@
         feed-settings-submitted (zipmap posted-activity-source-keys (repeat true))
         feed-settings-combined (merge feed-settings-false feed-settings-submitted)]
     (user/update-feed-settings! db username feed-settings-combined)
-    (mh/redirect-to request :index)))
+    (mh/redirect-to request :feed)))
 
 (defn selected-feed? [a-feed-setting]
   (case a-feed-setting

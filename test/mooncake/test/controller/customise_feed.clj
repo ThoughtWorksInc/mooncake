@@ -26,7 +26,7 @@
                                                                               :another-activity-src false}})
 
          (fact "it should redirect to /"
-               response => (eh/check-redirects-to (routes/absolute-path {} :index)))))
+               response => (eh/check-redirects-to (routes/absolute-path {} :feed)))))
 
 (facts "about show-customise-feed"
        (let [show-customise-feed-request {:context {:activity-sources {:activity-src             {:name "A. Activity Source"

@@ -26,7 +26,7 @@
 
 (defn sign-in [request]
   (if (mh/signed-in? request)
-    (mh/redirect-to request :index)
+    (mh/redirect-to request :feed)
     (mh/enlive-response (si/sign-in request) (:context request))))
 
 (defn sign-out [request]
@@ -47,7 +47,7 @@
         user-info (so-jwt/decode stonecutter-config (:id_token token-response) public-key-string)
         auth-provider-user-id (:sub user-info)]
     (if-let [user (user/fetch-user db auth-provider-user-id)]
-      (-> (mh/redirect-to request :index)
+      (-> (mh/redirect-to request :feed)
           (assoc-in [:session :username] (:username user)))
       (-> (mh/redirect-to request :show-create-account)
           (assoc-in [:session :auth-provider-user-id] auth-provider-user-id)))))
@@ -85,7 +85,7 @@
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid mooncake configuration. Application launch aborted.")))
-    (-> {:index                (partial fc/feed db)
+    (-> {:feed                 (partial fc/feed db)
          :sign-in              sign-in
          :sign-out             sign-out
          :show-create-account  cac/show-create-account

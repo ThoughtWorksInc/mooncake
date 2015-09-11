@@ -61,9 +61,9 @@
       (kh/check-and-fill-in ks/create-account-page-username-input "Barry")
       (kh/check-and-press ks/create-account-page-submit-button)))
 
-(facts "The index page redirects to /sign-in when user is not signed in"
+(facts "The feed page redirects to /sign-in when user is not signed in"
        (-> (k/session app)
-           (k/visit (routes/absolute-path (c/create-config) :index))
+           (k/visit (routes/absolute-path (c/create-config) :feed))
            (kh/check-and-follow-redirect "sign-in")
            (kh/check-page-is "/sign-in" ks/sign-in-page-body)))
 
@@ -83,7 +83,7 @@
            (kh/check-and-fill-in ks/create-account-page-username-input "Barry")
            (kh/check-and-press ks/create-account-page-submit-button)
            (kh/check-and-follow-redirect "to /")
-           (kh/check-page-is "/" ks/index-page-body)))
+           (kh/check-page-is "/" ks/feed-page-body)))
 
 (facts "An existing user is redirected to / (rather than /create-account) after authenticating with stonecutter"
        (against-background
@@ -96,12 +96,12 @@
            (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
            (kh/check-and-follow-redirect "to stonecutter")
            (kh/check-and-follow-redirect "to /")
-           (kh/check-page-is "/" ks/index-page-body)))
+           (kh/check-page-is "/" ks/feed-page-body)))
 
 (facts "A signed in user can sign out"
        (-> (k/session (clean-app!))
            sign-in!
-           (k/visit (routes/absolute-path (c/create-config) :index))
+           (k/visit (routes/absolute-path (c/create-config) :feed))
            (kh/check-and-follow ks/header-sign-out-link)
            (kh/check-and-follow-redirect "to sign-in page after signing out")
            (kh/check-page-is "/sign-in" ks/sign-in-page-body)
@@ -120,11 +120,11 @@
          (drop-db!)
          (-> (k/session (h/create-app (c/create-config) database {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
              sign-in!
-             (k/visit (routes/path :index))
-             (kh/check-page-is "/" ks/index-page-body)
-             (kh/selector-includes-content ks/index-page-activity-item-title "Stub activity title")
-             (kh/selector-includes-content ks/index-page-activity-item-action "Barry - STUB_ACTIVITY - Create")
-             (kh/selector-has-attribute-with-content ks/index-page-activity-item-link :href "http://stub-activity.url"))))
+             (k/visit (routes/path :feed))
+             (kh/check-page-is "/" ks/feed-page-body)
+             (kh/selector-includes-content ks/feed-page-activity-item-title "Stub activity title")
+             (kh/selector-includes-content ks/feed-page-activity-item-action "Barry - STUB_ACTIVITY - Create")
+             (kh/selector-has-attribute-with-content ks/feed-page-activity-item-link :href "http://stub-activity.url"))))
 
 (facts "User can see current feed preferences"
        (drop-db!)
@@ -146,7 +146,7 @@
            (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")])
            (kh/check-and-press ks/customise-feed-page-submit-button)
            (kh/check-and-follow-redirect "to /")
-           (kh/check-page-is "/" ks/index-page-body)
+           (kh/check-page-is "/" ks/feed-page-body)
            (k/visit (routes/path :show-customise-feed))
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
            (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked)
@@ -167,8 +167,8 @@
        (drop-db!)
        (-> (k/session (h/create-app (c/create-config) database {:invalid-activity-src {:url "http://localhost:6666/not-an-activity-source"}}))
            sign-in!
-           (k/visit (routes/absolute-path (c/create-config) :index))
-           (kh/check-page-is "/" ks/index-page-body)))
+           (k/visit (routes/absolute-path (c/create-config) :feed))
+           (kh/check-page-is "/" ks/feed-page-body)))
 
 (facts "Error page is shown if an exception is thrown"
        (against-background

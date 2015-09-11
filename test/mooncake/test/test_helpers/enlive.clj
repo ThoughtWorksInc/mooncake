@@ -69,4 +69,4 @@
 (defn test-logo-link [view-fn]
   (midje/fact {:midje/name "Checking logo has a correct link"}
   (let [page (-> (view-fn ...request...) (mh/enlive-response {:translator (constantly {})}) :body (html/html-snippet))]
-    page => (links-to? [:.clj--header__logo :a] (routes/path :index)))))
+    page => (links-to? [:.clj--header__logo :a] (routes/path :feed)))))

@@ -13,13 +13,15 @@
       (let [database (dbh/create-in-memory-db)]
         (mongo/store! database a/activity-collection {"actor"     {"@type"       "Person"
                                                                    "displayName" "JDog"}
-                                                      "published" ten-oclock})
+                                                      "published" ten-oclock
+                                                      "activity-src" "OpenAhjo"})
         (mongo/store! database a/activity-collection {"actor"     {"@type"       "Person"
                                                                    "displayName" "KCat"}
-                                                      "published" twelve-oclock})
+                                                      "published" twelve-oclock
+                                                      "activity-src" "objective8"})
         (fc/feed database {:context
                            {:translator (constantly "")}}) => (every-checker
-                                                                (eh/check-renders-page :.func--index-page)
+                                                                (eh/check-renders-page :.func--feed-page)
                                                                 (contains {:body (contains "JDog")})
                                                                 (contains {:body (contains "KCat")}))))
 

@@ -29,7 +29,7 @@
       (h/sign-in {:context {:translator {}}}) => (eh/check-renders-page :.func--sign-in-page))
 
 (fact "sign-in handler redirects to / when user is signed in"
-      (h/sign-in {:session {:username ...username...}}) => (eh/check-redirects-to (routes/absolute-path {} :index)))
+      (h/sign-in {:session {:username ...username...}}) => (eh/check-redirects-to (routes/absolute-path {} :feed)))
 
 (fact "stonecutter-sign-in handler delegates to the stonecutter client library"
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
@@ -71,7 +71,7 @@
                     (h/stonecutter-callback openid-test-config ...db...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
-                         (eh/check-redirects-to (routes/absolute-path {} :index))
+                         (eh/check-redirects-to (routes/absolute-path {} :feed))
                          (contains {:session {:username ...username...}}))
                     (provided
                       (soc/request-access-token! openid-test-config ...auth-code...)

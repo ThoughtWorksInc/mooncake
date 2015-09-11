@@ -6,7 +6,7 @@ default:
   sign-in-link: Sign in
   nav-customise-feed: Customise feed
 
-index:
+feed:
   title: Mooncake Activity Stream
 
 empty-feed:

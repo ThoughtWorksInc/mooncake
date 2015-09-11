@@ -16,7 +16,7 @@
            [:form] (html/prepend (anti-forgery-snippet))))
 
 (defn add-logo-link [enlive-m]
-  (html/at enlive-m [:.clj--header__logo :a] (html/set-attr :href (routes/path :index))))
+  (html/at enlive-m [:.clj--header__logo :a] (html/set-attr :href (routes/path :feed))))
 
 (def template-caching? (atom true))
 

@@ -14,7 +14,7 @@
   (let [updated-session (-> (:session request)
                             (dissoc :auth-provider-user-id)
                             (assoc :username (:username user)))]
-    (-> (mh/redirect-to request :index)
+    (-> (mh/redirect-to request :feed)
         (assoc :session updated-session))))
 
 (defn- create-account-response [db request username]

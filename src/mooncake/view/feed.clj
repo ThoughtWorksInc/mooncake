@@ -46,7 +46,7 @@
 
 (defn feed [request]
   (let [activities (get-in request [:context :activities])]
-    (-> (vh/load-template "public/index.html")
+    (-> (vh/load-template "public/feed.html")
         (render-username (get-in request [:session :username]))
         (render-sign-out-link (mh/signed-in? request))
         (add-activities activities))))
