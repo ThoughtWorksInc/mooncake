@@ -27,12 +27,14 @@
     </style>
   </head>
   <body class="func--library-page">
-    <header class="header">
-      <div class="middle-container middle-container--relative">
-        <div class="header__logo clj--header__logo"><a href="./index" class="logo__link">Mooncake</a></div>
-        <div class="header__actions"><span class="clj--username"></span><a href="./sign-out" class="action-link clj--STRIP clj--sign-out__link func--sign-out__link"><span data-l8n="content:default/sign-out-link" class="action-link__title">!Sign out</span></a></div>
-      </div>
-    </header>
+    <div class="header-wrapper">
+      <header class="header">
+        <div class="header__middle-container">
+          <div class="header__logo clj--header__logo"><a href="./index" class="logo__link">Mooncake</a></div>
+          <div class="header__actions"><span class="header__username clj--username"></span><a href="./customise-feed" class="action-link clj--STRIP"><span class="action-link__icon action-link__icon--cog"></span><span data-l8n="content:default/nav-customise-feed" class="action-link__title visuallyhidden">!Customise feed</span></a><a href="./sign-out" class="action-link clj--STRIP clj--sign-out__link func--sign-out__link"><span class="action-link__icon action-link__icon--sign-out"></span><span data-l8n="content:default/sign-out-link" class="action-link__title visuallyhidden">!Sign out</span></a></div>
+        </div>
+      </header>
+    </div>
     <main role="main" class="main-content">
       <div class="middle-container">
         <div class="section">
@@ -41,9 +43,9 @@
             <h3 class="library-title">Header for sign in</h3>
             <div class="library__demo clj--library__sign-in-header">
               <header class="header">
-                <div class="middle-container middle-container--relative">
+                <div class="header__middle-container">
                   <div class="header__logo"><a href="./index" class="logo__link">Mooncake</a></div>
-                  <div class="header__actions"><a href="./sign-in" class="action-link clj--STRIP clj--sign-in__link func--sign-in__link"><span data-l8n="content:default/sign-in-link" class="action-link__title">!Sign in</span></a></div>
+                  <div class="header__actions"><a href="./sign-in" class="action-link clj--STRIP clj--sign-in__link func--sign-in__link"><span class="action-link__icon action-link__icon--sign-in"></span><span data-l8n="content:default/sign-in-link" class="action-link__title visuallyhidden">!Sign in</span></a></div>
                 </div>
               </header>
             </div>
@@ -52,9 +54,9 @@
             <h3 class="library-title">Header for sign out</h3>
             <div class="library__demo clj--library__sign-out-header">
               <header class="header">
-                <div class="middle-container middle-container--relative">
+                <div class="header__middle-container">
                   <div class="header__logo clj--header__logo"><a href="./index" class="logo__link">Mooncake</a></div>
-                  <div class="header__actions"><span class="clj--username"></span><a href="./sign-out" class="action-link clj--STRIP clj--sign-out__link func--sign-out__link"><span data-l8n="content:default/sign-out-link" class="action-link__title">!Sign out</span></a></div>
+                  <div class="header__actions"><span class="header__username clj--username"></span><a href="./customise-feed" class="action-link clj--STRIP"><span class="action-link__icon action-link__icon--cog"></span><span data-l8n="content:default/nav-customise-feed" class="action-link__title visuallyhidden">!Customise feed</span></a><a href="./sign-out" class="action-link clj--STRIP clj--sign-out__link func--sign-out__link"><span class="action-link__icon action-link__icon--sign-out"></span><span data-l8n="content:default/sign-out-link" class="action-link__title visuallyhidden">!Sign out</span></a></div>
                 </div>
               </header>
             </div>

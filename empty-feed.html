@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title data-l8n="content:create-account/title">!Create Account</title>
+    <title data-l8n="content:index/title">!Activities</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="format-detection" content="telephone=no">
     <link rel="icon" type="image/png" href="favicon.png">
     <link href="stylesheets/application.css" media="screen" rel="stylesheet" type="text/css"/>
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" rel="stylesheet" type="text/css">
   </head>
-  <body class="func--create-account-page">
+  <body class="func--index-page">
     <div class="header-wrapper">
       <header class="header">
         <div class="header__middle-container">
@@ -20,16 +20,12 @@
       </header>
     </div>
     <main role="main" class="main-content">
-      <div class="box">
-        <form action="./create-account" method="post" role="form" class="create-account-form clj--create-account__form">
-          <h1 data-l8n="content:create-account/page-title">!Choose your username</h1>
-          <p class="form-row clj--username">
-            <label for="username" class="form-row__label"><span data-l8n="content:create-account/username-label" class="form-row__title">!Username</span><span data-l8n="content:create-account/username-default-validation-message" class="form-row__validation clj--username__validation">!Enter a username</span><span data-l8n="content:create-account/username-help-message" class="form-row__help">!Maximum of 16 letters or numbers. No spaces.</span></label>
-            <input type="text" id="username" name="username" maxlength="16" autofocus="autofocus" class="form-row__input form-row__input--small username-input clj--username__input func--username__input">
-          </p>
-          <button type="submit" data-l8n="content:create-account/create-account-submit" class="button func--create-account__button">!Create account</button>
-        </form>
-      </div>
+      <ul class="stream clj--activity-stream">
+        <li class="empty-stream"><a href="./customise-feed" class="empty-stream__link">
+            <h1 class="empty-stream__title">You haven't chosen any feeds to follow</h1>
+            <div class="cog"></div>
+            <p class="empty-stream__intro">Customise your feed here</p></a></li>
+      </ul>
     </main>
   </body>
 </html>
