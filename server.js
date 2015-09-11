@@ -61,6 +61,10 @@ app.get('/library', function(req, res) {
   customRender(res, 'library', pageData);
 });
 
+app.get('/sign-out', function(req, res) {
+  res.redirect('./');
+});
+
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
