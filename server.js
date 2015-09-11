@@ -37,6 +37,10 @@ app.get('/index', function(req, res){
   customRender(res, 'index', pageData);
 });
 
+app.get('/empty-feed', function(req, res){
+  customRender(res, 'empty-feed', pageData);
+});
+
 app.get('/routes', function(req, res){
   customRender(res, 'routes', pageData);
 });

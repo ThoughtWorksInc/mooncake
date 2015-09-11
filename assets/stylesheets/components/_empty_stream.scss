@@ -1,0 +1,45 @@
+.empty-stream {
+  @include middle-me;
+  width: 100%;
+  max-width: $medium_device;
+  &__link {
+    display: block;
+    padding: 30px;
+    text-align: center;
+    background-color: $white;
+    text-decoration: none;
+    color: inherit;
+    @include width-from($medium_device) {
+      padding-left: 80px;
+      padding-right: 80px;
+    }
+    &:focus, &:hover {
+      .empty-stream__icon {
+        animation: spinner 5s linear infinite;
+      }
+    }
+    &:hover {
+      color: $grey_blue;
+    }
+    &:focus {
+      outline: 1px solid rgba($grey_blue,0.3);
+    }
+  }
+  &__title {
+    @include h1;
+    color: $default_text_color;
+  }
+  &__icon {
+    height: 50px;
+    background: image-url('cog-dark.svg') no-repeat 50% 50%;
+    background-size: contain;
+    transform-origin: 50% 50%;
+    transition: height 250ms ease;
+    @include width-from($medium_device) {
+      height: 100px;
+    }
+  }
+  &__intro {
+    color: currentColor;
+  }
+}

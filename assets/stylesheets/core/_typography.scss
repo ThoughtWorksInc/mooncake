@@ -2,7 +2,7 @@ $paragraphy-font--lede: 22px;
 $heading-font--small-device: 28px;
 $heading-font--medium-device: 32px;
 
-h1 {
+@mixin h1 {
   line-height: 1;
   margin-top: 0;
   letter-spacing: -0.045rem;
@@ -10,6 +10,10 @@ h1 {
   @include width-from($medium_device) {
     @include font-size($heading-font--medium-device);
   }
+}
+
+.page-title {
+  @include h1;
 }
 
 .lede {

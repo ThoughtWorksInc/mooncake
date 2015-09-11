@@ -1,0 +1,17 @@
+extends layout/layout
+
+block vars
+  - bodyClass = "func--index-page"
+  - pageTitle = "!Activities"
+  - pageTitleDataL8n = "content:index/title"
+
+block headerScripts
+
+block content
+  ul.stream.clj--activity-stream
+    li.empty-stream
+      a.empty-stream__link(href="./customise-feed")
+        h1.empty-stream__title !You haven't chosen any activity feeds to follow
+        .empty-stream__icon
+        p.empty-stream__intro !Customise your feed here
+      
