@@ -45,10 +45,13 @@ $header--height: 50px;
 
 .header__actions {
   position: absolute;
-  right: 0;
+  right: 10px;
   top: 0;
   color: $white;
   @include clearfix;
+  @include width-from($medium_device) {
+    right: 0;
+  }
 }
 .action-link {
   display: inline-block;
