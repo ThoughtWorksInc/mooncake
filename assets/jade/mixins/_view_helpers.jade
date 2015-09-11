@@ -23,10 +23,11 @@ mixin feedItemChild(feedName, isOn)
       input.feed-item-child__checkbox(type="checkbox", id="#{feedName}", name="#{feedName}", value="feedname", checked=isOn)
 
 mixin feedItem(feedName, isOn)
+  - var feedInputID = feedName.replace(/ /g, "").toLowerCase();
   li.feed-item.clj--feed-item
-    label.feed-item__label.clj--feed-item__label.func--feed-item__label(for="#{feedName}")
+    label.feed-item__label.clj--feed-item__label.func--feed-item__label(for="#{feedInputID}")
       span.feed-item__name.clj--feed-item__name #{feedName}
-      input.feed-item__checkbox.clj--feed-item__checkbox.func--feed-item__checkbox(type="checkbox", id="#{feedName}", name="#{feedName}", value="true", checked=isOn)
+      input.feed-item__checkbox.clj--feed-item__checkbox.func--feed-item__checkbox(type="checkbox", id="#{feedInputID}", name="#{feedInputID}", value="true", checked=isOn)
     if block
       ul.feed-item__children-list
         block
