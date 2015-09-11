@@ -30,11 +30,11 @@ function customRender(res, template, data) {
 }
 
 app.all('/', function(req, res){
-  customRender(res, 'index', pageData);
+  customRender(res, 'sign-in', pageData);
 });
 
-app.get('/index', function(req, res){
-  customRender(res, 'index', pageData);
+app.get(['/index', '/feed'], function(req, res){
+  customRender(res, 'feed', pageData);
 });
 
 app.get('/empty-feed', function(req, res){
