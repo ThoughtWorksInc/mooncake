@@ -75,7 +75,7 @@ $header--height: 50px;
     @include size(20px, 100%);
 
     &--cog {
-      background: image-url('cog.svg') no-repeat 50% 50%;
+      @include svgAndPng('cog', no-repeat 50% 50%);
       background-size: contain;
       transform-origin: 50% 50%;
       &:hover, &:focus {
@@ -83,11 +83,11 @@ $header--height: 50px;
       }
     }
     &--sign-in {
-      background: image-url('sign-in.svg') no-repeat 50% 50%;
+      @include svgAndPng('sign-in', no-repeat 50% 50%);
       background-size: contain;
     }
     &--sign-out {
-      background: image-url('sign-out.svg') no-repeat 50% 50%;
+      @include svgAndPng('sign-out', no-repeat 50% 50%);
       background-size: contain;
     }
   }

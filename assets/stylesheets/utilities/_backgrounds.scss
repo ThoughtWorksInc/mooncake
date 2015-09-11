@@ -16,3 +16,8 @@
     }
   }
 }
+
+@mixin svgAndPng($fileName, $properties) {
+  background: image-url('#{$fileName}.png') $properties;
+  background: none, image-url('#{$fileName}.svg') $properties;
+}

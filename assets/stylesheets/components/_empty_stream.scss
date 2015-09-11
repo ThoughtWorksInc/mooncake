@@ -30,16 +30,19 @@
     color: $default_text_color;
   }
   &__icon {
-    height: 50px;
-    background: image-url('cog-dark.svg') no-repeat 50% 50%;
+    @include size(50px);
+    margin-left: auto;
+    margin-right: auto;
+    @include svgAndPng('cog-dark', no-repeat 50% 50%);
     background-size: contain;
     transform-origin: 50% 50%;
     transition: height 250ms ease;
     @include width-from($medium_device) {
-      height: 100px;
+      @include size(100px);
     }
   }
   &__intro {
     color: currentColor;
   }
 }
+
