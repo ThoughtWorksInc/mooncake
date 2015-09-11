@@ -5,6 +5,7 @@ include ../mixins/_header
 - var bodyClass = ""
 - var pageTitle = "Mooncake"
 - var pageTitleDataL8n = "content:default/title"
+- var isSignedIn = true
 block vars
 
 doctype
@@ -24,7 +25,10 @@ html
 
   body(class="#{bodyClass}")
     .header-wrapper
-      +headerSignedIn
+      if isSignedIn
+        +headerSignedIn
+      else
+        +headerSignedOut
 
     main.main-content(role="main")
       block content
