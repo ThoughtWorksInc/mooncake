@@ -1,31 +1,31 @@
-(ns mooncake.test.view.index
+(ns mooncake.test.view.feed
   (:require [midje.sweet :refer :all]
             [net.cgrand.enlive-html :as html]
             [clj-time.core :as c]
             [clj-time.format :as f]
             [mooncake.routes :as routes]
             [mooncake.test.test-helpers.enlive :as eh]
-            [mooncake.view.index :as i]))
+            [mooncake.view.feed :as fv]))
 
 (fact "index page should return index template"
-      (let [page (i/index :request)]
+      (let [page (fv/feed :request)]
         page => (eh/has-class? [:body] "func--index-page")))
 
-(eh/test-translations "Index page" i/index)
-(eh/test-logo-link i/index)
+(eh/test-translations "Index page" fv/feed)
+(eh/test-logo-link fv/feed)
 
 (fact "username is rendered"
-      (i/index {:session {:username "Dave"}}) => (eh/text-is? [:.clj--username] "Dave"))
+      (fv/feed {:session {:username "Dave"}}) => (eh/text-is? [:.clj--username] "Dave"))
 
 (fact "sign-out link is rendered and directs to /sign-out when user is signed in"
-      (let [page (i/index {:session {:username ...username...}})]
+      (let [page (fv/feed {:session {:username ...username...}})]
         page => (eh/links-to? [:.clj--sign-out__link] (routes/path :sign-out))
         page =not=> (eh/has-class? [:.clj--sign-out__link] "clj--STRIP")))
 
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
             ten-minutes-ago-str (f/unparse (f/formatters :date-time) ten-minutes-ago)
-            page (i/index {:context {:activities
+            page (fv/feed {:context {:activities
                                      [{"activity-src" "an-objective8-activity-src"
                                        "@context"     "http://www.w3.org/ns/activitystreams"
                                        "@type"        "Create"
@@ -79,7 +79,7 @@
         third-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 6 TITLE")))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
-      (let [page (i/index {:context {:activities
+      (let [page (fv/feed {:context {:activities
                                      [{"activity-src" "an-activity-src"
                                        "actor"        {"@type"       "Person"
                                                        "displayName" "abby"}}
@@ -95,7 +95,7 @@
         (html/text (nth initials-elements 2 nil)) => "2"))
 
 (fact "activity item avatars are assigned the correct classes so they can be colour-coded by activity source"
-      (let [page (i/index {:context {:activities
+      (let [page (fv/feed {:context {:activities
                                      [{"activity-src" "an-activity-src"}
                                       {"activity-src" "another-activity-src"}
                                       {"activity-src" "an-activity-src"}]}})

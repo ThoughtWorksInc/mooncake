@@ -4,8 +4,6 @@
             [ring.util.response :as r]
             [ring.middleware.defaults :as ring-mw]
             [clojure.java.io :as io]
-            [cheshire.core :as json]
-            [clj-http.client :as http]
             [stonecutter-oauth.client :as soc]
             [stonecutter-oauth.jwt :as so-jwt]
             [mooncake.activity :as a]
@@ -15,20 +13,16 @@
             [mooncake.middleware :as m]
             [mooncake.routes :as routes]
             [mooncake.translation :as t]
+            [mooncake.controller.feed :as fc]
             [mooncake.controller.create-account :as cac]
             [mooncake.controller.customise-feed :as cfc]
             [mooncake.view.error :as error]
-            [mooncake.view.index :as i]
             [mooncake.view.sign-in :as si]
             [mooncake.db.user :as user]
             [mooncake.schedule :as schedule])
   (:gen-class))
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
-
-(defn index [database request]
-  (let [activities (a/retrieve-activities-from-database database)]
-    (mh/enlive-response (i/index (assoc-in request [:context :activities] activities)) (:context request))))
 
 (defn sign-in [request]
   (if (mh/signed-in? request)
@@ -91,7 +85,7 @@
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid mooncake configuration. Application launch aborted.")))
-    (-> {:index                (partial index db)
+    (-> {:index                (partial fc/feed db)
          :sign-in              sign-in
          :sign-out             sign-out
          :show-create-account  cac/show-create-account

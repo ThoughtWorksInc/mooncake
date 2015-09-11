@@ -1,9 +1,8 @@
-(ns mooncake.view.index
+(ns mooncake.view.feed
   (:require [net.cgrand.enlive-html :as html]
             [mooncake.routes :as routes]
             [mooncake.helper :as mh]
             [mooncake.view.view-helpers :as vh]
-            [mooncake.activity :as a]
             [mooncake.domain.activity :as domain]))
 
 (defn index-activity-sources [activities]
@@ -45,7 +44,7 @@
 (defn render-username [enlive-m username]
   (html/at enlive-m [:.clj--username] (html/content username)))
 
-(defn index [request]
+(defn feed [request]
   (let [activities (get-in request [:context :activities])]
     (-> (vh/load-template "public/index.html")
         (render-username (get-in request [:session :username]))

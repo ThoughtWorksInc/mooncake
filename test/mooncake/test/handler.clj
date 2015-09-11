@@ -11,10 +11,6 @@
             [mooncake.db.mongo :as mongo]
             [mooncake.db.activity :as a]))
 
-
-(def ten-oclock "2015-01-01T10:00:00.000Z")
-(def twelve-oclock "2015-01-01T12:00:00.000Z")
-
 (facts "about site-handlers"
        (fact "throws an exception when stonecutter oauth configuration is invalid"
              (h/site-handlers {} nil) => (throws anything)
@@ -28,23 +24,6 @@
       (provided
         (soc/configure ...auth-url... ...client-id... ...client-secret... anything :protocol :openid)
         => ...stonecutter-config-m...))
-
-(fact "index handler displays activities retrieved from activity sources"
-      (let [database (dbh/create-in-memory-db)]
-        (mongo/store! database a/activity-collection {"actor"     {"@type"       "Person"
-                                                                   "displayName" "JDog"}
-                                                      "published" ten-oclock})
-        (mongo/store! database a/activity-collection {"actor"     {"@type"       "Person"
-                                                                   "displayName" "KCat"}
-                                                      "published" twelve-oclock})
-        (h/index database {:context
-                           {:translator (constantly "")}}) => (every-checker
-                                                                (eh/check-renders-page :.func--index-page)
-                                                                (contains {:body (contains "JDog")})
-                                                                (contains {:body (contains "KCat")}))))
-(fact "index handler displays username of logged-in user"
-      (h/index (dbh/create-in-memory-db) {:context {:translator (constantly "")}
-                                          :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
 (fact "sign-in handler renders the sign-in view when the user is not signed in"
       (h/sign-in {:context {:translator {}}}) => (eh/check-renders-page :.func--sign-in-page))
