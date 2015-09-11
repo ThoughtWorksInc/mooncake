@@ -152,6 +152,17 @@
            (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked)
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")))
 
+(facts "User can sign out from the customise feed page"
+       (drop-db!)
+       (-> (k/session app-with-activity-sources-from-yaml)
+           sign-in!
+           (k/visit (routes/path :show-customise-feed))
+           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
+           (kh/check-and-follow ks/header-sign-out-link)
+           (kh/check-and-follow-redirect "to sign-in page after signing out")
+           (kh/check-page-is "/sign-in" ks/sign-in-page-body)
+           (kh/selector-not-present ks/header-sign-out-link)))
+
 (facts "Invalid activity source responses are handled gracefully"
        (drop-db!)
        (-> (k/session (h/create-app (c/create-config) database {:invalid-activity-src {:url "http://localhost:6666/not-an-activity-source"}}))
