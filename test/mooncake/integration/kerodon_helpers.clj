@@ -78,13 +78,15 @@
         (-> state :enlive (html/select [kerodon-selector]) first html/text) => (contains content))
   state)
 
-(defn selector-has-attribute-with-content
-  ([state kerodon-selector attr content]
-    (selector-has-attribute-with-content state kerodon-selector first attr content))
-  ([state kerodon-selector position-fn attr content]
+(defn selector-has-attribute-with-content [state kerodon-selector attr content]
    (fact {:midje/name "Check if element contains attribute with string"}
-         (-> state :enlive (html/select [kerodon-selector]) position-fn :attrs attr) => content)
-   state))
+         (-> state :enlive (html/select [kerodon-selector]) first :attrs attr) => content)
+   state)
+
+(defn selector-does-not-have-attribute [state kerodon-selector attr]
+  (fact {:midje/name "Check if element does not have an attribute"}
+        (contains? (-> state :enlive (html/select [kerodon-selector]) first :attrs) attr) => falsey)
+  state)
 
 (defn selector-does-not-include-content [state kerodon-selector content]
   (fact {:midje/name "Check if element does not contain string"}
@@ -95,3 +97,8 @@
   (fact {:midje/name "Checking location in header:"}
         (-> state :response (get-in [:headers "Location"])) => (contains path))
   state)
+
+(defn check-page-is [state uri body-selector]
+  (page-uri-is state uri)
+  (response-status-is state 200)
+  (selector-exists state body-selector))

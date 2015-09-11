@@ -97,6 +97,7 @@
          :show-create-account  cac/show-create-account
          :create-account       (partial cac/create-account db)
          :show-customise-feed  (partial cfc/show-customise-feed db)
+         :customise-feed       (partial cfc/customise-feed db)
          :stub-activities      stub-activities
          :stonecutter-sign-in  (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config db)}

@@ -3,6 +3,7 @@
             [monger.db :as mdb]
             [midje.sweet :refer :all]
             [kerodon.core :as k]
+            [net.cgrand.enlive-html :as html]
             [ring.adapter.jetty :as ring-jetty]
             [stonecutter-oauth.client :as soc]
             [stonecutter-oauth.jwt :as so-jwt]
@@ -56,8 +57,7 @@
   (-> state
       authenticate-against-stub
       (kh/check-and-follow-redirect "to /create-account")
-      (kh/page-uri-is "/create-account")
-      (kh/response-status-is 200)
+      (kh/check-page-is "/create-account" ks/create-account-page-body)
       (kh/check-and-fill-in ks/create-account-page-username-input "Barry")
       (kh/check-and-press ks/create-account-page-submit-button)))
 
@@ -65,9 +65,7 @@
        (-> (k/session app)
            (k/visit (routes/absolute-path (c/create-config) :index))
            (kh/check-and-follow-redirect "sign-in")
-           (kh/page-uri-is "/sign-in")
-           (kh/selector-exists ks/sign-in-page-body)
-           (kh/response-status-is 200)))
+           (kh/check-page-is "/sign-in" ks/sign-in-page-body)))
 
 (defn sign-out [state]
   (k/visit state (routes/absolute-path (c/create-config) :sign-out)))
@@ -81,14 +79,11 @@
            (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
            (kh/check-and-follow-redirect "to stonecutter")
            (kh/check-and-follow-redirect "to /create-account")
-           (kh/page-uri-is "/create-account")
-           (kh/response-status-is 200)
+           (kh/check-page-is "/create-account" ks/create-account-page-body)
            (kh/check-and-fill-in ks/create-account-page-username-input "Barry")
            (kh/check-and-press ks/create-account-page-submit-button)
            (kh/check-and-follow-redirect "to /")
-           (kh/page-uri-is "/")
-           (kh/response-status-is 200)
-           (kh/selector-exists ks/index-page-body)))
+           (kh/check-page-is "/" ks/index-page-body)))
 
 (facts "An existing user is redirected to / (rather than /create-account) after authenticating with stonecutter"
        (against-background
@@ -101,9 +96,7 @@
            (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
            (kh/check-and-follow-redirect "to stonecutter")
            (kh/check-and-follow-redirect "to /")
-           (kh/page-uri-is "/")
-           (kh/response-status-is 200)
-           (kh/selector-exists ks/index-page-body)))
+           (kh/check-page-is "/" ks/index-page-body)))
 
 (facts "A signed in user can sign out"
        (-> (k/session (clean-app!))
@@ -111,8 +104,7 @@
            (k/visit (routes/absolute-path (c/create-config) :index))
            (kh/check-and-follow ks/header-sign-out-link)
            (kh/check-and-follow-redirect "to sign-in page after signing out")
-           (kh/page-uri-is "/sign-in")
-           (kh/response-status-is 200)
+           (kh/check-page-is "/sign-in" ks/sign-in-page-body)
            (kh/selector-not-present ks/header-sign-out-link)))
 
 (def server (atom nil))
@@ -129,33 +121,43 @@
          (-> (k/session (h/create-app (c/create-config) database {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
              sign-in!
              (k/visit (routes/path :index))
-             (kh/page-uri-is "/")
-             (kh/response-status-is 200)
-             (kh/selector-exists ks/index-page-body)
+             (kh/check-page-is "/" ks/index-page-body)
              (kh/selector-includes-content ks/index-page-activity-item-title "Stub activity title")
              (kh/selector-includes-content ks/index-page-activity-item-action "Barry - STUB_ACTIVITY - Create")
              (kh/selector-has-attribute-with-content ks/index-page-activity-item-link :href "http://stub-activity.url"))))
+
+(facts "User can see current feed preferences"
+       (drop-db!)
+       (-> (k/session app-with-activity-sources-from-yaml)
+           sign-in!
+           (k/visit (routes/path :show-customise-feed))
+           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label (html/attr= :for "test-activity-source-1")] "Test Activity Source 1")
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label (html/attr= :for "test-activity-source-2")] "Test Activity Source 2")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")))
 
 (facts "User can customise feed preferences"
        (drop-db!)
        (-> (k/session app-with-activity-sources-from-yaml)
            sign-in!
            (k/visit (routes/path :show-customise-feed))
-           (kh/page-uri-is "/customise-feed")
-           (kh/response-status-is 200)
-           (kh/selector-exists ks/customise-feed-page-body)
-           (kh/selector-includes-content ks/customise-feed-page-feed-item-list "Test Activity Source 1")
-           (kh/selector-includes-content ks/customise-feed-page-feed-item-list "Test Activity Source 2")
-           (kh/selector-has-attribute-with-content ks/customise-feed-page-feed-item-checkbox first :checked "checked")
-           (kh/selector-has-attribute-with-content ks/customise-feed-page-feed-item-checkbox second :checked "checked")))
+           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
+           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")])
+           (kh/check-and-press ks/customise-feed-page-submit-button)
+           (kh/check-and-follow-redirect "to /")
+           (kh/check-page-is "/" ks/index-page-body)
+           (k/visit (routes/path :show-customise-feed))
+           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
+           (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked)
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")))
 
 (facts "Invalid activity source responses are handled gracefully"
        (drop-db!)
        (-> (k/session (h/create-app (c/create-config) database {:invalid-activity-src {:url "http://localhost:6666/not-an-activity-source"}}))
            sign-in!
            (k/visit (routes/absolute-path (c/create-config) :index))
-           (kh/page-uri-is "/")
-           (kh/response-status-is 200)))
+           (kh/check-page-is "/" ks/index-page-body)))
 
 (facts "Error page is shown if an exception is thrown"
        (against-background
