@@ -42,8 +42,26 @@
           (fact {:midje/name "returns nil if query is nil"}
                 (mongo/find-item database collection-name nil true) => nil)
           (fact "can turn off keywordisation of keys"
-                (mongo/find-item database collection-name {:some-other-key "other"} false) => {"some-index-key" "barry" "some-other-key" "other"})
-          )))
+                (mongo/find-item database collection-name {:some-other-key "other"} false) => {"some-index-key" "barry" "some-other-key" "other"}))))
+
+(defn test-find-items-by-key-values [database]
+  (fact {:midje/name "find-items-by-key-values queries items based on values of a single key and returns all matching items"}
+        (let [item1 {:some-index-key "barry" :some-other-key "other"}
+              item2 {:some-index-key "rebecca" :some-other-key "bsaa"}
+              item3 {:some-index-key "zane" :some-other-key "foo" :a-third-key "bar"}
+              _ (mongo/store-with-id! database collection-name :some-index-key item1)
+              _ (mongo/store-with-id! database collection-name :some-index-key item2)
+              _ (mongo/store-with-id! database collection-name :some-index-key item3)]
+          (mongo/find-items-by-key-values database collection-name :some-other-key ["other"] true) => [item1]
+          (mongo/find-items-by-key-values database collection-name :some-index-key ["rebecca"] true) => [item2]
+          (mongo/find-items-by-key-values database collection-name :some-other-key ["other" "foo"] true) => [item1 item3]
+
+          (fact {:midje/name "check that non-existant item returns an empty vector"}
+                (mongo/find-items-by-key-values database collection-name :some-other-key ["nonExisty"] true) => [])
+          (fact {:midje/name "check that non-existant key returns an empty vector"}
+                (mongo/find-items-by-key-values database collection-name :non-existing-key ["nonExisty"] true) => [])
+          (fact "can turn off keywordisation of keys"
+                (mongo/find-items-by-key-values database collection-name :some-other-key ["other"] false) => [{"some-index-key" "barry" "some-other-key" "other"}]))))
 
 (defn test-fetch-all-items-with-stringified-keys [database]
   (fact {:midje/name "can fetch all items in a collection with stringified keys"}
@@ -72,6 +90,7 @@
             test-store-with-id
             test-upsert
             test-find-item
+            test-find-items-by-key-values
             test-duplicate-key
             test-fetch-all-items-with-stringified-keys
             test-fetch-all-items-with-keywordised-keys])

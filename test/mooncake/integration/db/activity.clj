@@ -78,3 +78,27 @@
             ;; time passes
             (activity/store-activity! database event2api2)
             (count (activity/fetch-activities database)) => 2))))
+
+
+(tabular
+  (fact "can fetch a collection of activities with the given activity source keys"
+        (dbh/with-mongo-do
+          (fn [db]
+            (let [database (mongo/create-database db)
+                  activity1 {"@displayName" "KCat"
+                            "published" "2015-08-12T10:20:41.000Z"
+                             "activity-src" "source-1"}
+                  activity2 {"@displayName" "JDon"
+                             "published" "2015-08-12T11:20:41.000Z"
+                             "activity-src" "source-2"}]
+              (activity/store-activity! database activity1)
+              (activity/store-activity! database activity2)
+              (activity/fetch-activities-by-activity-source database ?activity-source-keys) => ?result))))
+
+  ?activity-source-keys               ?result
+  [:source-1 :source-2]               [activity1 activity2]
+  [:source-1]                         [activity1]
+  [:source-1 :source-2 :source-x]     [activity1 activity2]
+  [:source-x]                         []
+  []                                  []
+  nil                                 [])

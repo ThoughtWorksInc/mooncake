@@ -23,6 +23,10 @@
             (dissoc :_id))
         (-> (mongo/find-item this coll query-m true)
             (walk/stringify-keys)))))
+  (find-items-by-key-values [this coll k values keywordise?]
+    (->> (for [value values]
+           (mongo/find-item this coll {k value} keywordise?))
+         (remove nil?)) )
   (store! [this coll item]
     (->> (assoc item :_id (UUID/randomUUID))
          (mongo/store-with-id! this coll :_id)))

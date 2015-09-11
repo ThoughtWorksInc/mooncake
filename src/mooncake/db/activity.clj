@@ -31,6 +31,9 @@
 (defn fetch-activities [db]
   (mongo/fetch-all db activity-collection false))
 
+(defn fetch-activities-by-activity-source [db activity-source-keys]
+  (mongo/find-items-by-key-values db activity-collection :activity-src activity-source-keys false))
+
 (defn store-activity! [db activity]
   (let [activity-src (domain/activity->activity-src activity)
         most-recent-activity-date (fetch-most-recent-activity-date db activity-src)

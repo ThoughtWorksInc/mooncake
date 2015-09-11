@@ -39,6 +39,10 @@
        flatten
        sort-by-published-time))
 
+(defn retrieve-activities-from-database-by-activity-source [database activity-source-keys]
+  (->> (a/fetch-activities-by-activity-source database activity-source-keys)
+       sort-by-published-time))
+
 (defn retrieve-activities-from-database [database]
   (->> (a/fetch-activities database)
           sort-by-published-time))
