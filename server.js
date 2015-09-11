@@ -29,7 +29,7 @@ function customRender(res, template, data) {
   });
 }
 
-app.get('/', function(req, res){
+app.all('/', function(req, res){
   customRender(res, 'index', pageData);
 });
 

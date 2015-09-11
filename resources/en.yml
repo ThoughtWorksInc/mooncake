@@ -9,6 +9,10 @@ default:
 index:
   title: Mooncake Activity Stream
 
+empty-feed:
+  page-title: You haven't chosen any activity feeds to follow
+  intro: Customise your feed here
+
 customise-feed:
   title: Customise feed
   page-title: Customise your feed

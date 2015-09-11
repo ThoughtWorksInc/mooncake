@@ -19,7 +19,11 @@ block headerScripts
     .library-item:last-of-type {
       margin-bottom: 0;
     }
-
+    .library__demo {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
 
 block content
 
@@ -37,3 +41,11 @@ block content
         h3.library-title Header for sign out
         .library__demo.clj--library__sign-out-header
           +headerSignedIn
+
+    .section
+      h2.section-title Feed
+
+      .library-item
+        h3.library-title Empty activity feed item
+        ul.library__demo
+          +emptyStreamItem
