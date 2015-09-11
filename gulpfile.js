@@ -7,6 +7,7 @@ var gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
     del = require('del'),
     runSequence = require('run-sequence'),
+    html5Lint = require('gulp-html5-lint'),
     browsersync = '',
     nodemon = '',
     ghPages = '';
@@ -88,6 +89,11 @@ gulp.task('favicons', function () {
 gulp.task('fonts', function () {
   return gulp.src(dev_path.fonts)
       .pipe(gulp.dest(build_path.fonts));
+});
+
+gulp.task('html5lint', ['jade'], function() {
+  return gulp.src(output_path + '/*.html')
+      .pipe(html5Lint());
 });
 
 // Reload all Browsers
