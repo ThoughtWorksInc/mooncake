@@ -31,6 +31,13 @@
                                                 (html/set-attr :href (r/path :sign-out))))
     enlive-m))
 
+(defn render-customise-feed-link [enlive-m signed-in?]
+  (if signed-in?
+    (html/at enlive-m [:.clj--customise-feed__link] (html/do->
+                                                      (html/remove-class "clj--STRIP")
+                                                      (html/set-attr :href (r/path :show-customise-feed))))
+    enlive-m))
+
 (defn render-username [enlive-m username]
   (html/at enlive-m [:.clj--username] (html/content username)))
 
@@ -39,6 +46,7 @@
     (vh/load-template "public/customise-feed.html")
     (render-username (get-in request [:session :username]))
     (render-sign-out-link (mh/signed-in? request))
+    (render-customise-feed-link (mh/signed-in? request))
     (add-feed-items (get-in request [:context :activity-source-preferences]))
     set-form-action))
 

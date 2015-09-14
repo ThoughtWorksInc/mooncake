@@ -10,6 +10,7 @@
         page => (eh/has-class? [:body] "func--customise-feed-page")))
 
 (eh/test-translations "customise-feed page" cf/customise-feed)
+(eh/test-logo-link cf/customise-feed)
 
 (fact "username is rendered"
       (cf/customise-feed {:session {:username "Dave"}}) => (eh/text-is? [:.clj--username] "Dave"))
@@ -18,6 +19,19 @@
       (let [page (cf/customise-feed {:session {:username ...username...}})]
         page => (eh/links-to? [:.clj--sign-out__link] (r/path :sign-out))
         page =not=> (eh/has-class? [:.clj--sign-out__link] "clj--STRIP")))
+
+(fact "sign-out link is not rendered if user is not signed in"
+      (let [page (cf/customise-feed {})]
+        page => (eh/has-class? [:.clj--sign-out__link] "clj--STRIP")))
+
+(fact "customise-feed link is rendered and directs to /customise-feed when user is signed in"
+      (let [page (cf/customise-feed {:session {:username ...username...}})]
+        page => (eh/links-to? [:.clj--customise-feed__link] (r/path :show-customise-feed))
+        page =not=> (eh/has-class? [:.clj--customise-feed__link] "clj--STRIP")))
+
+(fact "customise-feed link is not rendered if user is not signed in"
+      (let [page (cf/customise-feed {})]
+        page => (eh/has-class? [:.clj--customise-feed__link] "clj--STRIP")))
 
 (fact "customise feed form action is set correctly"
       (let [page (cf/customise-feed ...request...)]
