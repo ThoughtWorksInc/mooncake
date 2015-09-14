@@ -52,33 +52,52 @@
                                           :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
 (facts "about which activities feed handler displays"
-      (let [database (dbh/create-in-memory-db)
-            _ (mongo/store! database a/activity-collection source-a-activity)
-            _ (mongo/store! database a/activity-collection source-b-activity)
-            _ (mongo/store! database a/activity-collection source-c-activity)
-            _ (user/create-user! database ...user-id... ...username...)
-            _ (user/update-feed-settings! database ...username... {:source-a true :source-b false})
-            response (fc/feed database {:context {:activity-sources {:source-a {} :source-b {} :source-c {}}
-                                                  :translator (constantly "")}
-                                        :session {:username ...username...}})]
-        (fact "activities from enabled activity sources are shown"
-              (:body response)  => (contains "Author A"))
-        (fact "activities from disabled activity sources are not shown"
-              (:body response)  =not=> (contains "Author B"))))
+       (let [database (dbh/create-in-memory-db)
+             _ (mongo/store! database a/activity-collection source-a-activity)
+             _ (mongo/store! database a/activity-collection source-b-activity)
+             _ (mongo/store! database a/activity-collection source-c-activity)
+             _ (user/create-user! database ...user-id... ...username...)
+             _ (user/update-feed-settings! database ...username... {:source-a true :source-b false})
+             request {:context {:activity-sources {:source-a {} :source-b {} :source-c {}}
+                                :translator       (constantly "")}
+                      :session {:username ...username...}}
+             response (fc/feed database request)]
+         (fact "activities from enabled activity sources are shown"
+               (:body response) => (contains "Author A"))
+         (fact "activities from disabled activity sources are not shown"
+               (:body response) =not=> (contains "Author B"))
+         (fact "custom message is shown if all activity sources are disabled"
+               (user/update-feed-settings! database ...username... {:source-a false :source-b false :source-c false})
+               (let [response (fc/feed database request)]
+                 (:body response) => (contains "clj--empty-activity-item")))
+         (fact "custom message is not shown if any activity sources are enabled"
+               (user/update-feed-settings! database ...username... {:source-a false :source-b false :source-c true})
+               (let [response (fc/feed database request)]
+                 (:body response) =not=> (contains "clj--empty-activity-item")))))
+
+(tabular
+  (fact "about retrieve-activities-from-user-sources"
+        (let [activity-sources {:source-a {} :source-b {} :source-c {}}]
+          (fc/get-active-activity-source-keys ?user-feed-settings activity-sources) => ?active-activity-source-keys))
+  ?user-feed-settings                                  ?active-activity-source-keys
+  nil                                                  ["source-a" "source-b" "source-c"]
+  {}                                                   ["source-a" "source-b" "source-c"]
+  {:source-c true}                                     ["source-a" "source-b" "source-c"]
+  {:source-a true :source-b true}                      ["source-a" "source-b" "source-c"]
+  {:source-a true :source-b true  :source-c true}      ["source-a" "source-b" "source-c"]
+  {:source-a true :source-b false :source-c true}      ["source-a"  "source-c"]
+  {:source-a false :source-b false :source-c false}    [])
 
 (tabular
   (fact "about retrieve-activities-from-user-sources"
         (let [database (dbh/create-in-memory-db)
               _ (mongo/store! database a/activity-collection source-a-activity)
               _ (mongo/store! database a/activity-collection source-b-activity)
-              _ (mongo/store! database a/activity-collection source-c-activity)
-              activity-sources {:source-a {} :source-b {} :source-c {}}]
-          (fc/retrieve-activities-from-user-sources database ?user-feed-settings activity-sources) => ?activities)
-        )
-  ?user-feed-settings                                  ?activities
-  nil                                                  [str-source-c-activity str-source-b-activity str-source-a-activity]
-  {}                                                   [str-source-c-activity str-source-b-activity str-source-a-activity]
-  {:source-c true}                                     [str-source-c-activity str-source-b-activity str-source-a-activity]
-  {:source-a true :source-b true}                      [str-source-c-activity str-source-b-activity str-source-a-activity]
-  {:source-a true :source-b true  :source-c true}      [str-source-c-activity str-source-b-activity str-source-a-activity]
-  {:source-a true :source-b false :source-c true}      [str-source-c-activity str-source-a-activity])
+              _ (mongo/store! database a/activity-collection source-c-activity)]
+          (fc/retrieve-activities-from-user-sources database ?active-activity-source-keys) => ?activities))
+  ?active-activity-source-keys             ?activities
+  nil                                      []
+  []                                       []
+  ["source-a"]                             [str-source-a-activity]
+  ["source-a" "source-c"]                  [str-source-c-activity str-source-a-activity]
+  ["source-a" "source-b" "source-c"]       [str-source-c-activity str-source-b-activity str-source-a-activity])

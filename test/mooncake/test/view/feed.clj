@@ -70,7 +70,8 @@
                                        "object"       {"@type"       "Objective"
                                                        "displayName" "OBJECTIVE 6 TITLE"
                                                        "description" "Yes."
-                                                       "url"         "http://objective8.dcentproject.eu/objectives/6"}}]}})
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/6"}}]
+                                     :active-activity-source-keys [...active-activity-source-key...]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
         (count (html/select page [:.clj--activity-item])) => 3
@@ -101,7 +102,8 @@
                                                        "displayName" "Bobby"}}
                                       {"activity-src" "an-activity-src"
                                        "actor"        {"@type"       "Person"
-                                                       "displayName" "2k12carlos"}}]}})
+                                                       "displayName" "2k12carlos"}}]
+                                     :active-activity-source-keys [...active-activity-source-key...]}})
             initials-elements (-> (html/select page [:.clj--avatar__initials]))]
         (html/text (first initials-elements)) => "A"
         (html/text (second initials-elements)) => "B"
@@ -111,7 +113,8 @@
       (let [page (fv/feed {:context {:activities
                                      [{"activity-src" "an-activity-src"}
                                       {"activity-src" "another-activity-src"}
-                                      {"activity-src" "an-activity-src"}]}})
+                                      {"activity-src" "an-activity-src"}]
+                                     :active-activity-source-keys [...active-activity-source-key...]}})
             first-activity-item-class (-> (html/select page [:.clj--activity-item])
                                           first :attrs :class)
             second-activity-item-class (-> (html/select page [:.clj--activity-item])
@@ -127,3 +130,17 @@
         third-activity-item-class => (contains "activity-src-0")
         third-activity-item-class =not=> (contains "activity-src-1")
         (count (re-seq #"activity-src-" third-activity-item-class)) => 1))
+
+(facts "about active-activity-source-keys"
+       (facts "about when empty"
+              (let [page (fv/feed {:context {:activities [] :active-activity-source-keys []}})]
+                (fact "message indicating no selected activity sources is shown"
+                      (-> page (html/select [:.clj--empty-activity-item]) first) =not=> nil?)
+                (fact "message indicating no selected activity sources links to the customise feed page"
+                      page => (eh/links-to? [:.clj--empty-stream__link] (routes/path :show-customise-feed)))
+                (fact "message indicating no selected activity sources is translated"
+                      (eh/test-translations "feed page - no activity sources message" (constantly page)))))
+       (facts "about when not empty"
+              (let [page (fv/feed {:context {:activities [] :active-activity-source-keys [:some-activity-source]}})]
+                (fact "message indicating no selected activity sources is not shown"
+                      (-> page (html/select [:.clj--empty-activity-item]) first) => nil?))))

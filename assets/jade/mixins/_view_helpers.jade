@@ -9,8 +9,8 @@ mixin streamItem(title, activityAction, sourceClass)
       h3.activity-item__title.clj--activity-item__title.func--activity-item__title !#{title}
 
 mixin emptyStreamItem()
-  li.empty-stream.clj--empty-activity-item
-    a.empty-stream__link(href="./customise-feed")
+  li.empty-stream.clj--empty-activity-item.func--empty-activity-item
+    a.empty-stream__link.clj--empty-stream__link(href="./customise-feed")
       h1.empty-stream__title(data-l8n="content:empty-feed/page-title") !You haven't chosen any activity feeds to follow
       .empty-stream__icon
       p.empty-stream__intro(data-l8n="content:empty-feed/intro") !Customise your feed here

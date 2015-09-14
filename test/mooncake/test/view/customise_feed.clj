@@ -9,7 +9,6 @@
       (let [page (cf/customise-feed ...request...)]
         page => (eh/has-class? [:body] "func--customise-feed-page")))
 
-
 (eh/test-translations "customise-feed page" cf/customise-feed)
 
 (fact "username is rendered"
@@ -62,4 +61,3 @@
                (let [[first-checkbox second-checkbox] (html/select page [:.clj--feed-item__checkbox])]
                  (:attrs first-checkbox) => (contains {:checked "checked"})
                  (contains? (:attrs second-checkbox) :checked) => falsey))))
-

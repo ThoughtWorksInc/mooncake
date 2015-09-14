@@ -184,6 +184,19 @@
            (kh/selector-includes-content ks/feed-page-activity-list "Activity Source 1 Title")
            (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity Source 2 Title")))
 
+(facts "A message is displayed on feed page if user disables all activity sources"
+       (drop-db!)
+       (-> (k/session app-with-activity-sources-from-yaml)
+           sign-in!
+           (k/visit (routes/path :show-customise-feed))
+           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
+           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")])
+           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")])
+           (kh/check-and-press ks/customise-feed-page-submit-button)
+           (kh/check-and-follow-redirect "to /")
+           (kh/check-page-is "/" ks/feed-page-body)
+           (kh/selector-exists ks/feed-page-no-active-sources-message)))
+
 (facts "User can sign out from the customise feed page"
        (drop-db!)
        (-> (k/session app-with-activity-sources-from-yaml)

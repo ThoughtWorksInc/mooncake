@@ -7,6 +7,7 @@
 (def feed-page-activity-item-title :.func--activity-item__title)
 (def feed-page-activity-item-action :.func--activity-item__action)
 (def feed-page-activity-item-link :.func--activity-item__link)
+(def feed-page-no-active-sources-message :.func--empty-activity-item)
 (def sign-in-page-body :.func--sign-in-page)
 (def sign-in-page-sign-in-with-d-cent-link :.func--sign-in-with-d-cent)
 (def error-500-page-body :.func--error-500-page)

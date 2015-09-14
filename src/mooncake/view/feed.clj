@@ -34,6 +34,13 @@
     (html/at enlive-m [:.clj--activity-stream]
              (html/content activity-stream-items))))
 
+(defn add-no-active-activity-sources-message [enlive-m]
+  (html/at enlive-m
+           [:.clj--activity-stream] (html/content (-> (vh/load-template "public/library.html")
+                                                      (html/select [:.clj--empty-activity-item])
+                                                      first))
+           [:.clj--empty-stream__link] (html/set-attr :href (routes/path :show-customise-feed))))
+
 (defn render-sign-out-link [enlive-m signed-in?]
   (if signed-in?
     (html/at enlive-m [:.clj--sign-out__link] (html/do->
@@ -51,10 +58,16 @@
 (defn render-username [enlive-m username]
   (html/at enlive-m [:.clj--username] (html/content username)))
 
+(defn render-activity-stream [enlive-m activities active-activity-source-keys]
+  (if (empty? active-activity-source-keys)
+    (add-no-active-activity-sources-message enlive-m)
+    (add-activities enlive-m activities)))
+
 (defn feed [request]
-  (let [activities (get-in request [:context :activities])]
+  (let [activities (get-in request [:context :activities])
+        active-activity-source-keys (get-in request [:context :active-activity-source-keys])]
     (-> (vh/load-template "public/feed.html")
         (render-username (get-in request [:session :username]))
         (render-customise-feed-link (mh/signed-in? request))
         (render-sign-out-link (mh/signed-in? request))
-        (add-activities activities))))
+        (render-activity-stream activities active-activity-source-keys))))
