@@ -14,7 +14,11 @@
             [mooncake.config :as c]
             [mooncake.integration.kerodon-helpers :as kh]
             [mooncake.integration.kerodon-selectors :as ks]
-            [mooncake.db.mongo :as mongo]))
+            [mooncake.db.mongo :as mongo]
+            [mooncake.db.activity :as adb]))
+
+(def ten-oclock "2015-01-01T10:00:00.000Z")
+(def eleven-oclock "2015-01-01T11:00:00.000Z")
 
 (defn print-enlive [state]
   (clojure.pprint/pprint (-> state :enlive))
@@ -45,6 +49,10 @@
   (let [{:keys [conn db]} (monger/connect-via-uri test-db-uri)]
     (mdb/drop-db db)
     (monger/disconnect conn)))
+
+(defn populate-db-with-stub-activities! [activities]
+  (doseq [activity activities]
+    (mongo/store! database adb/activity-collection activity)))
 
 (defn clean-app! []
   (drop-db!)
@@ -137,7 +145,7 @@
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked "checked")
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")))
 
-(facts "User can customise feed preferences"
+(facts "User can customise feed preferences - customisations are reflected on the 'customise feed' form"
        (drop-db!)
        (-> (k/session app-with-activity-sources-from-yaml)
            sign-in!
@@ -151,6 +159,30 @@
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
            (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked)
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")))
+
+(facts "User can customise feed preferences - activities from disabled sources are not shown on the 'feed' page"
+       (drop-db!)
+       (populate-db-with-stub-activities! [{:object       {"displayName" "Activity Source 1 Title"}
+                                            :published    ten-oclock
+                                            :activity-src "test-activity-source-1"}
+                                           {:object       {"displayName" "Activity Source 2 Title"}
+                                            :published    eleven-oclock
+                                            :activity-src "test-activity-source-2"}])
+
+       (-> (k/session app-with-activity-sources-from-yaml)
+           sign-in!
+           (k/visit (routes/path :feed))
+           (kh/check-page-is "/" ks/feed-page-body)
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity Source 1 Title")
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity Source 2 Title")
+           (kh/check-and-follow ks/header-customise-feed-link)
+           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
+           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")])
+           (kh/check-and-press ks/customise-feed-page-submit-button)
+           (kh/check-and-follow-redirect "to /")
+           (kh/check-page-is "/" ks/feed-page-body)
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity Source 1 Title")
+           (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity Source 2 Title")))
 
 (facts "User can sign out from the customise feed page"
        (drop-db!)

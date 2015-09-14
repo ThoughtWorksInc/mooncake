@@ -1,7 +1,9 @@
 (ns mooncake.integration.kerodon-selectors)
 
 (def header-sign-out-link :.func--sign-out__link)
+(def header-customise-feed-link :.func--customise-feed__link)
 (def feed-page-body :.func--feed-page)
+(def feed-page-activity-list :.func--activity-stream)
 (def feed-page-activity-item-title :.func--activity-item__title)
 (def feed-page-activity-item-action :.func--activity-item__action)
 (def feed-page-activity-item-link :.func--activity-item__link)
