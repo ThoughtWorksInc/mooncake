@@ -14,11 +14,11 @@
   }
   &__children-list {
     @include reset-list;
-    padding-top: 15px;
+    margin-top: -15px;
     padding-bottom: 15px;
     padding-left: 15px;
     font-weight: normal;
-    border-top: 1px solid $grey_light;
+    //border-top: 1px solid $grey_light;
   }
 }
 
