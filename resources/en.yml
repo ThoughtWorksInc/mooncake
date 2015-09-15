@@ -17,6 +17,8 @@ customise-feed:
   title: Customise feed
   page-title: Customise your feed
   page-intro: "Choose the information you'd like to receive updates on:"
+  feed-digitally-signed-false: Unconfirmed source
+  feed-digitally-signed-true: Confirmed trusted source
 
 sign-in:
   title: Sign In
