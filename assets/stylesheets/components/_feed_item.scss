@@ -38,6 +38,19 @@
   }
 }
 
+.feed-item__trusted {
+  display: block;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  @include font-size(12px);
+  font-weight: normal;
+  line-height: 1.1;
+  color: $blue;
+  @include width-from($medium_device) {
+    @include font-size(13px);
+  }
+}
+
 .feed-item__checkbox {
   position: absolute;
   right: 20px;

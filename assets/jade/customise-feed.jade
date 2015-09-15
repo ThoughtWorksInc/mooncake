@@ -15,9 +15,9 @@ block content
 
     form.customise-feed-form.clj--customise-feed__form(action="./", method="post")
       ul.customise-feed.clj--customise-feed__list.func--customise-feed__list
-        +feedItem('Objective 8', true)
-        +feedItem('TFL updates')
-        +feedItem('Future 8', true)
+        +feedItem('Objective 8', true, true)
+        +feedItem('TFL updates', false)
+        +feedItem('Future 8', true, true)
           +feedItemChild('Create', true)
           +feedItemChild('Comment', true)
           +feedItemChild('Question', true)
