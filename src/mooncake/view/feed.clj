@@ -8,6 +8,12 @@
 (defn index-activity-sources [activities]
   (zipmap (distinct (map domain/activity->activity-src activities)) (range)))
 
+(defn activity-action-message-translation [activity-action-key]
+  (case activity-action-key
+    :objective "content:feed/action-text-objective"
+    :question "content:feed/action-text-question"
+    nil))
+
 (defn generate-activity-stream-items [enlive-m activities]
   (let [activity-source-indexes (index-activity-sources activities)
         activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])]
@@ -24,9 +30,11 @@
                                                               (html/set-attr :datetime activity-time)
                                                               (html/content (when activity-time
                                                                               (mh/humanise-time activity-time)))))
-                             [:.clj--activity-item__action] (html/content (str (domain/activity->actor-display-name activity) " - "
-                                                                               (domain/activity->object-type activity) " - "
-                                                                               (domain/activity->type activity)))
+                             [:.clj--activity-item__action__author] (html/content (domain/activity->actor-display-name activity))
+                             [:.clj--activity-item__action] (let [action-text-key (domain/activity->action-text-key activity)]
+                                                              (if (= :default action-text-key)
+                                                                (html/content (domain/activity->default-action-text activity))
+                                                                (html/set-attr :data-l8n (activity-action-message-translation action-text-key))))
                              [:.clj--activity-item__title] (html/content (domain/activity->object-display-name activity))))))
 
 (defn add-activities [enlive-m activities]

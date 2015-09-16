@@ -8,6 +8,8 @@ default:
 
 feed:
   title: Mooncake Activity Stream
+  action-text-objective: created an objective
+  action-text-question: asked a question
 
 empty-feed:
   page-title: You haven't chosen any activity feeds to follow

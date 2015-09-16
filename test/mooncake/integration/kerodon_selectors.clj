@@ -5,6 +5,7 @@
 (def feed-page-body :.func--feed-page)
 (def feed-page-activity-list :.func--activity-stream)
 (def feed-page-activity-item-title :.func--activity-item__title)
+(def feed-page-activity-item-author :.func--activity-item__action__author)
 (def feed-page-activity-item-action :.func--activity-item__action)
 (def feed-page-activity-item-link :.func--activity-item__link)
 (def feed-page-no-active-sources-message :.func--empty-activity-item)

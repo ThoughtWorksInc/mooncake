@@ -20,3 +20,15 @@
 
 (defn activity->type [activity]
   (get activity "@type"))
+
+(defn activity->action-text-key [activity]
+  (let [activity-object-type (get-in activity ["object" "@type"])
+        activity-type (get activity "@type")]
+    (if (= activity-type "Question")
+      :question
+      (if (= activity-object-type "Objective")
+        :objective
+        :default))))
+
+(defn activity->default-action-text [activity]
+  (str "- " (activity->object-type activity) " - " (activity->type activity)))

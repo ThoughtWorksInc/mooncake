@@ -121,6 +121,14 @@
                                               {:host "127.0.0.1" :port 3000 :join? false}))))
 (defn stop-server [] (.stop @server))
 
+(defn page-contains-feed-item [state position title author action link]
+  (-> state
+      (kh/selector-includes-content ks/feed-page-activity-item-title title position)
+      (kh/selector-includes-content ks/feed-page-activity-item-author author position)
+      (kh/selector-includes-content ks/feed-page-activity-item-action action position)
+      (kh/selector-has-attribute-with-content ks/feed-page-activity-item-link :href link position))
+  state)
+
 (against-background
   [(before :contents (start-server))
    (after :contents (stop-server))]
@@ -130,9 +138,9 @@
              sign-in!
              (k/visit (routes/path :feed))
              (kh/check-page-is "/" ks/feed-page-body)
-             (kh/selector-includes-content ks/feed-page-activity-item-title "Stub activity title")
-             (kh/selector-includes-content ks/feed-page-activity-item-action "Barry - STUB_ACTIVITY - Create")
-             (kh/selector-has-attribute-with-content ks/feed-page-activity-item-link :href "http://stub-activity.url"))))
+             (page-contains-feed-item first "Stub activity title" "Barry" "- STUB_ACTIVITY - Create" "http://stub-activity.url")
+             (page-contains-feed-item second "Objective title" "John Doe" "created an objective" "http://objective-activity.url")
+             (page-contains-feed-item #(nth % 2) "Question title" "Jane Q. Public" "asked a question" "http://question-activity.url"))))
 
 (facts "User can see current feed preferences"
        (drop-db!)

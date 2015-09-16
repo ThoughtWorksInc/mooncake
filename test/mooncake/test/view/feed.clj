@@ -63,14 +63,14 @@
                                                        "content"     "some Finnish HTML"}}
                                       {"activity-src" "another-objective8-activity-src"
                                        "@context"     "http://www.w3.org/ns/activitystreams"
-                                       "@type"        "Create"
+                                       "@type"        "Question"
                                        "published"    "2015-08-04T14:49:38.407Z"
                                        "actor"        {"@type"       "Person"
                                                        "displayName" "Lala"}
-                                       "object"       {"@type"       "Objective"
-                                                       "displayName" "OBJECTIVE 6 TITLE"
+                                       "object"       {"@type"       "Objective Question"
+                                                       "displayName" "QUESTION 6 TITLE"
                                                        "description" "Yes."
-                                                       "url"         "http://objective8.dcentproject.eu/objectives/6"}}]
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/6/questions/23"}}]
                                      :active-activity-source-keys [...active-activity-source-key...]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
@@ -79,18 +79,21 @@
         first-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/7")
         first-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
         first-activity-item => (eh/text-is? [:.clj--activity-item__time] "10 minutes ago")
-        first-activity-item => (eh/text-is? [:.clj--activity-item__action] "JDog - Objective - Create")
+        first-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "JDog")
+        first-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:feed/action-text-objective")
         first-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
 
         second-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/")
         second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-09-06T11:05:53+03:00")
-        second-activity-item => (eh/text-is? [:.clj--activity-item__action] "Kaupunginjohtaja/J - Content - Add")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "Kaupunginjohtaja/J")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__action] "- Content - Add")
         second-activity-item => (eh/text-is? [:.clj--activity-item__title] "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020")
 
-        third-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6")
+        third-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6/questions/23")
         third-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
-        third-activity-item => (eh/text-is? [:.clj--activity-item__action] "Lala - Objective - Create")
-        third-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 6 TITLE")))
+        third-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "Lala")
+        third-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:feed/action-text-question")
+        third-activity-item => (eh/text-is? [:.clj--activity-item__title] "QUESTION 6 TITLE")))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (fv/feed {:context {:activities
