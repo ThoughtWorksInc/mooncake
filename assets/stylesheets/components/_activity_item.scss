@@ -44,13 +44,13 @@
   padding-right: 0.15rem;
 }
 .activity-item__title {
-  @include font-size(17px);
-  line-height: 1.1;
+  @include font-size(15px);
+  line-height: 1.3;
   color: $grey_blue;
   margin: 0;
-  font-weight: bold;
+  font-weight: normal;
   @include width-from($medium_device) {
-    @include font-size(19px);
+    @include font-size(17px);
   }
 }
 
