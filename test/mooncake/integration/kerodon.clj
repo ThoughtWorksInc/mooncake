@@ -257,9 +257,9 @@
                                             :published    ten-oclock
                                             :activity-src "test-activity-source-2"}])
        (let [expected-objective-title (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "
-                                           "eleifend et egestas sit amet, tincidunt ac augue. Mauris&hellip;")
+                                           "eleifend et egestas sit amet, tincidunt ac augue. Mauris\u2026")
              expected-question-title (str "Nullam fermentum, magna et pellentesque ultrices, libero arcu elementum diam, "
-                                          "id molestie urna velit ultrices quam. Mauris id commodo&hellip;")]
+                                          "id molestie urna velit ultrices quam. Mauris id commodo\u2026")]
          (-> (k/session app-with-activity-sources-from-yaml)
              sign-in!
              (k/visit (routes/path :feed))

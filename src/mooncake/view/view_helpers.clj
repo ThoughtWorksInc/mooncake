@@ -52,7 +52,7 @@
   (let [any-character-other-then-punctuation-or-whitespace "(-|[^\\s\\p{Punct}])"
         any-character-at-most-n-times  (str ".{0," (- max-char-count 1) "}")
         group-of-characters-at-most-n-times (str "(" any-character-at-most-n-times any-character-other-then-punctuation-or-whitespace ")")]
-    (re-pattern (str "^" group-of-characters-at-most-n-times word-break-character-or-end-of-line))))
+    (re-pattern (str "(?s)^" group-of-characters-at-most-n-times word-break-character-or-end-of-line))))
 
 (defn limit-characters [max-char-count text]
   (when-not (nil? text)
@@ -64,5 +64,5 @@
 
 (defn limit-text-length-if-above [max-char-count text]
   (if (> (count text) max-char-count)
-    (str (limit-characters max-char-count text) "&hellip;")
+    (str (limit-characters max-char-count text) "\u2026")
     text))

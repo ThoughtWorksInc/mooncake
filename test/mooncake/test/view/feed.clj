@@ -174,6 +174,6 @@
             [first-activity-item second-activity-item] (html/select page [:.clj--activity-item])]
 
         first-activity-item => (eh/text-is? [:.clj--activity-item__title] (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "
-                                                                               "eleifend et egestas sit amet, tincidunt ac augue. Mauris&hellip;"))
+                                                                               "eleifend et egestas sit amet, tincidunt ac augue. Mauris\u2026"))
         second-activity-item => (eh/text-is? [:.clj--activity-item__title] (str "LoremxipsumxdolorxsitxametyxconsecteturxadipiscingxelitzxMorbixnuncxtortoryxeleifendxe"
-                                                                                "txegestasxsitxametyxtinciduntxacxauguezxMaurisxpellent&hellip;"))))
+                                                                                "txegestasxsitxametyxtinciduntxacxauguezxMaurisxpellent\u2026"))))
