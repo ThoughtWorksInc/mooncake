@@ -237,3 +237,32 @@
            (kh/page-uri-is "/not-a-valid-uri")
            (kh/response-status-is 404)
            (kh/selector-exists ks/error-404-page-body)))
+
+(facts "Displayed content length of activities is limited to 140 characters"
+       (drop-db!)
+       (populate-db-with-stub-activities! [{"@type"       "Create"
+                                            :object       {"@type"       "Objective"
+                                                           "displayName" (str "Lorem ipsum dolor sit amet, consectetur "
+                                                                              "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
+                                                                              "amet, tincidunt ac augue. Mauris pellentesque sed.")}
+                                            :actor        {"displayName" "John Doe"}
+                                            :published    eleven-oclock
+                                            :activity-src "test-activity-source-1"}
+                                           {"@type"       "Question"
+                                            :object       {"@type"       "Objective Question"
+                                                           "displayName" (str "Nullam fermentum, magna et pellentesque "
+                                                                              "ultrices, libero arcu elementum diam, id molestie urna velit "
+                                                                              "ultrices quam. Mauris id commodo nequeamat. Fusce posuere.")}
+                                            :actor        {"displayName" "Jane Q Public"}
+                                            :published    ten-oclock
+                                            :activity-src "test-activity-source-2"}])
+       (let [expected-objective-title (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "
+                                           "eleifend et egestas sit amet, tincidunt ac augue. Mauris&hellip;")
+             expected-question-title (str "Nullam fermentum, magna et pellentesque ultrices, libero arcu elementum diam, "
+                                          "id molestie urna velit ultrices quam. Mauris id commodo&hellip;")]
+         (-> (k/session app-with-activity-sources-from-yaml)
+             sign-in!
+             (k/visit (routes/path :feed))
+             (kh/check-page-is "/" ks/feed-page-body)
+             (page-contains-feed-item first expected-objective-title "John Doe" "created an objective" "")
+             (page-contains-feed-item second expected-question-title "Jane Q Public" "asked a question" ""))))

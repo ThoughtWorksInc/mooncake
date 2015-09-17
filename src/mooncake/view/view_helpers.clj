@@ -42,3 +42,27 @@
 
 (defn remove-elements [enlive-m selector]
   (html/at enlive-m selector nil))
+
+(def whitespace-or-punctuation-character-regex "[\\s[\\p{Punct}&&[^\\-]]]")
+(def word-break-character-or-end-of-line (str "(" whitespace-or-punctuation-character-regex "|$)"))
+
+(defn- create-max-characters-matching-pattern
+  "Creates a pattern for matching at most n characters, matching whole words: ^(.{0,15}(-|[^\\s\\p{Punct}]))([\\s[\\p{Punct}&&[^\\-]]]|$)"
+  [max-char-count]
+  (let [any-character-other-then-punctuation-or-whitespace "(-|[^\\s\\p{Punct}])"
+        any-character-at-most-n-times  (str ".{0," (- max-char-count 1) "}")
+        group-of-characters-at-most-n-times (str "(" any-character-at-most-n-times any-character-other-then-punctuation-or-whitespace ")")]
+    (re-pattern (str "^" group-of-characters-at-most-n-times word-break-character-or-end-of-line))))
+
+(defn limit-characters [max-char-count text]
+  (when-not (nil? text)
+    (let [search-pattern (create-max-characters-matching-pattern max-char-count)
+          regex-match (re-find search-pattern text)]
+      (if (nil? regex-match)
+        (subs text 0 (min (count text) max-char-count))
+        (second regex-match)))))
+
+(defn limit-text-length-if-above [max-char-count text]
+  (if (> (count text) max-char-count)
+    (str (limit-characters max-char-count text) "&hellip;")
+    text))

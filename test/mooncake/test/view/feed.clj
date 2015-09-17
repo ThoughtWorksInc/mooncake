@@ -147,3 +147,33 @@
               (let [page (fv/feed {:context {:activities [] :active-activity-source-keys [:some-activity-source]}})]
                 (fact "message indicating no selected activity sources is not shown"
                       (-> page (html/select [:.clj--empty-activity-item]) first) => nil?))))
+
+(fact "activities are rendered on the page"
+      (let [page (fv/feed {:context {:activities
+                                     [{"activity-src" "an-objective8-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Create"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "JDog"}
+                                       "object"       {"@type"       "Objective"
+                                                       "displayName" (str "Lorem ipsum dolor sit amet, consectetur "
+                                                                          "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
+                                                                          "amet, tincidunt ac augue. Mauris pellentesque sed.")
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/7"}}
+                                      {"activity-src" "an-objective8-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Create"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "HCat"}
+                                       "object"       {"@type"       "Objective"
+                                                       "displayName" (str "Loremxipsumxdolorxsitxametyxconsecteturx"
+                                                                          "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
+                                                                          "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/7"}}]
+                                     :active-activity-source-keys [...active-activity-source-key...]}})
+            [first-activity-item second-activity-item] (html/select page [:.clj--activity-item])]
+
+        first-activity-item => (eh/text-is? [:.clj--activity-item__title] (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "
+                                                                               "eleifend et egestas sit amet, tincidunt ac augue. Mauris&hellip;"))
+        second-activity-item => (eh/text-is? [:.clj--activity-item__title] (str "LoremxipsumxdolorxsitxametyxconsecteturxadipiscingxelitzxMorbixnuncxtortoryxeleifendxe"
+                                                                                "txegestasxsitxametyxtinciduntxacxauguezxMaurisxpellent&hellip;"))))

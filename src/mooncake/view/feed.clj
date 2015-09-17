@@ -5,6 +5,8 @@
             [mooncake.view.view-helpers :as vh]
             [mooncake.domain.activity :as domain]))
 
+(def max-characters-in-title 140)
+
 (defn index-activity-sources [activities]
   (zipmap (distinct (map domain/activity->activity-src activities)) (range)))
 
@@ -35,7 +37,7 @@
                                                               (if (= :default action-text-key)
                                                                 (html/content (domain/activity->default-action-text activity))
                                                                 (html/set-attr :data-l8n (activity-action-message-translation action-text-key))))
-                             [:.clj--activity-item__title] (html/content (domain/activity->object-display-name activity))))))
+                             [:.clj--activity-item__title] (html/content (vh/limit-text-length-if-above max-characters-in-title (domain/activity->object-display-name activity)))))))
 
 (defn add-activities [enlive-m activities]
   (let [activity-stream-items (generate-activity-stream-items enlive-m activities)]
