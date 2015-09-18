@@ -10,6 +10,12 @@ feed:
   title: Mooncake Activity Stream
   action-text-objective: created an objective
   action-text-question: asked a question
+  error-title-1: We have hidden
+  error-title-1: updates
+
+  error-description-1: These are missing details we use to verify their safety.
+  error-description-2: "If you are happy to continue you can show hidden items:"
+  error-button: Show hidden items
 
 empty-feed:
   page-title: You haven't chosen any activity feeds to follow

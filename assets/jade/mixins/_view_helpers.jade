@@ -16,17 +16,16 @@ mixin streamItem(title, author, activityAction, sourceClass, trusted)
 mixin streamItemWarning()
   li.activity-error.clj-STRIP
     h2.activity-error__title
-      span We have hidden
+      span(data-l8n="html:feed/error-title-1") !We have hidden
       = " "
       span.activity-error__number-bubble 17
       = " "
-      span updates
+      span(data-l8n="html:feed/error-title-2") !updates
     .activity-error__icon
-    p.activity-error__description These are missing details we use to verify their safety.
-    p.activity-error__description If you are happy to continue you can show hidden items:
+    p.activity-error__description(data-l8n="html:feed/error-description-1") !These are missing details we use to verify their safety.
+    p.activity-error__description(data-l8n="html:feed/error-description-2") !If you are happy to continue you can show hidden items:
     .activity-error__actions
-      a.button(href="#") Show hidden items
-
+      a.button(href="#", data-l8n="html:feed/error-button") !Show hidden items
 
 mixin emptyStreamItem()
   li.empty-stream.clj--empty-activity-item.func--empty-activity-item
