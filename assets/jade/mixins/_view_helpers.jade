@@ -13,6 +13,21 @@ mixin streamItem(title, author, activityAction, sourceClass, trusted)
         time.activity-item__time.clj--activity-item__time(datetime="10:32") !2 minutes ago
       h3.activity-item__title.clj--activity-item__title.func--activity-item__title !#{title}
 
+mixin streamItemWarning()
+  li.activity-error.clj-STRIP
+    h2.activity-error__title
+      span We have hidden
+      = " "
+      span.activity-error__number-bubble 17
+      = " "
+      span updates
+    .activity-error__icon
+    p.activity-error__description These are missing details we use to verify their safety.
+    p.activity-error__description If you are happy to continue you can show hidden items:
+    .activity-error__actions
+      a.button(href="#") Show hidden items
+
+
 mixin emptyStreamItem()
   li.empty-stream.clj--empty-activity-item.func--empty-activity-item
     a.empty-stream__link.clj--empty-stream__link(href="./customise-feed")
