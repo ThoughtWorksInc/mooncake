@@ -3,7 +3,12 @@
 test-activity-source-1:
   url: https://test-activity.src/activities
   name: Test Activity Source 1
+  activity-types:
+      - Create
+      - Question
 
 test-activity-source-2:
   url: https://another-test-activity.src
   name: Test Activity Source 2
+  activity-types:
+      - Add

@@ -36,10 +36,12 @@ mixin emptyStreamItem()
 
 
 
-mixin feedItemChild(feedName, isOn)
-  li.feed-item-child
-    label.feed-item-child__name(for="#{feedName}") #{feedName}
-      input.feed-item-child__checkbox(type="checkbox", id="#{feedName}", name="#{feedName}", value="feedname", checked=isOn)
+mixin feedItemChild(feedName, activityType, isOn)
+  - var feedInputID = feedName.replace(/ /g, "").toLowerCase() + "::" + activityType;
+  li.feed-item-child.clj--feed-item-child
+    label.feed-item-child__label.clj--feed-item-child__label.func--feed-item-child__label(for="#{feedInputID}")
+      span.feed-item-child__name.clj--feed-item-child__name.func--feed-item-child__name #{activityType}
+      input.feed-item-child__checkbox.clj--feed-item-child__checkbox.func--feed-item-child__checkbox(type="checkbox", id="#{feedInputID}", name="#{feedInputID}", value="true", checked=isOn)
 
 mixin feedItem(feedName, isOn, isTrusted)
   - var feedInputID = feedName.replace(/ /g, "").toLowerCase();
@@ -53,5 +55,5 @@ mixin feedItem(feedName, isOn, isTrusted)
           | !Confirmed trusted source
       input.feed-item__checkbox.clj--feed-item__checkbox.func--feed-item__checkbox(type="checkbox", id="#{feedInputID}", name="#{feedInputID}", value="true", checked=isOn)
     if block
-      ul.feed-item__children-list
+      ul.feed-item__children-list.clj--feed-item__children-list
         block

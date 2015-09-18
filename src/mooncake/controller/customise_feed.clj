@@ -5,13 +5,16 @@
 
 (def default-feed-selected-value true)
 
+(defn create-user-feed-settings [activity-sources posted-activity-source-keys]
+  (reduce (fn [user-feed-settings activity-source-key]
+            (assoc user-feed-settings activity-source-key {:selected (some? (some #{activity-source-key} posted-activity-source-keys))}))
+          {} (keys activity-sources)))
+
 (defn customise-feed [db request]
   (let [username (get-in request [:session :username])
-        activity-source-keys (keys (get-in request [:context :activity-sources]))
-        posted-activity-source-keys (keys (select-keys (:params request) activity-source-keys))
-        feed-settings-false (zipmap activity-source-keys (repeat false))
-        feed-settings-submitted (zipmap posted-activity-source-keys (repeat true))
-        feed-settings-combined (merge feed-settings-false feed-settings-submitted)]
+        activity-sources (get-in request [:context :activity-sources])
+        posted-activity-source-keys (keys (select-keys (:params request) (keys activity-sources)))
+        feed-settings-combined (create-user-feed-settings activity-sources posted-activity-source-keys)]
     (user/update-feed-settings! db username feed-settings-combined)
     (mh/redirect-to request :feed)))
 
@@ -21,8 +24,32 @@
     false false
     default-feed-selected-value))
 
+(defn get-feed-preferences-for-activity-type [user-feed-activity-type-settings activity-type-id]
+  (if-let [feed-preferences-for-activity-type (first (filter (fn[v] (= (:id v) activity-type-id)) user-feed-activity-type-settings))]
+    feed-preferences-for-activity-type
+    { :id activity-type-id :selected true}))
+
+(defn generate-activity-type-preferences [avaiable-acitivty-type-from-source user-feed-activity-type-settings is-feed-selected?]
+  (map (fn [v] {:name v
+                :selected (and is-feed-selected? (:selected (get-feed-preferences-for-activity-type user-feed-activity-type-settings v)))})
+       avaiable-acitivty-type-from-source))
+
+(defn get-feed-preferences-for-activity-source [user-feed-settings activity-source-id]
+  (if-let [feed-preferences-for-activity-source (activity-source-id user-feed-settings)]
+    feed-preferences-for-activity-source
+    {}))
+
 (defn generate-activity-source-preferences [activity-sources user-feed-settings]
-  (->> (map (fn [[k v]] (assoc v :id (name k) :selected (selected-feed? (k user-feed-settings)))) activity-sources)
+  (->> (map (fn [[k v]] (let [preferences-for-activity-source (get-feed-preferences-for-activity-source user-feed-settings k)
+                              is-feed-selected? (selected-feed? (:selected preferences-for-activity-source))]
+                          (assoc v
+                            :id (name k)
+                            :selected is-feed-selected?
+                            :activity-types (generate-activity-type-preferences
+                                              (:activity-types v)
+                                              (:types preferences-for-activity-source)
+                                              is-feed-selected?))))
+            activity-sources)
        (sort-by :name)))
 
 (defn show-customise-feed [db request]

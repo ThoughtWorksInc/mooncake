@@ -149,9 +149,15 @@
            (k/visit (routes/path :show-customise-feed))
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
            (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label (html/attr= :for "test-activity-source-1")] "Test Activity Source 1")
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label (html/attr= :for "test-activity-source-1::Create")] "Create")
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label (html/attr= :for "test-activity-source-1::Question")] "Question")
            (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label (html/attr= :for "test-activity-source-2")] "Test Activity Source 2")
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label (html/attr= :for "test-activity-source-2::Add")] "Add")
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked "checked")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")))
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::Create")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::Question")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-2::Add")] :checked "checked")))
 
 (facts "User can customise feed preferences - customisations are reflected on the 'customise feed' form"
        (drop-db!)

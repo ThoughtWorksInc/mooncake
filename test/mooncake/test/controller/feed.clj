@@ -57,7 +57,8 @@
              _ (mongo/store! database a/activity-collection source-b-activity)
              _ (mongo/store! database a/activity-collection source-c-activity)
              _ (user/create-user! database ...user-id... ...username...)
-             _ (user/update-feed-settings! database ...username... {:source-a true :source-b false})
+             _ (user/update-feed-settings! database ...username... {:source-a {:selected true}
+                                                                    :source-b {:selected false}})
              request {:context {:activity-sources {:source-a {} :source-b {} :source-c {}}
                                 :translator       (constantly "")}
                       :session {:username ...username...}}
@@ -67,11 +68,15 @@
          (fact "activities from disabled activity sources are not shown"
                (:body response) =not=> (contains "Author B"))
          (fact "custom message is shown if all activity sources are disabled"
-               (user/update-feed-settings! database ...username... {:source-a false :source-b false :source-c false})
+               (user/update-feed-settings! database ...username... {:source-a {:selected false}
+                                                                    :source-b {:selected false}
+                                                                    :source-c {:selected false}})
                (let [response (fc/feed database request)]
                  (:body response) => (contains "clj--empty-activity-item")))
          (fact "custom message is not shown if any activity sources are enabled"
-               (user/update-feed-settings! database ...username... {:source-a false :source-b false :source-c true})
+               (user/update-feed-settings! database ...username... {:source-a {:selected false}
+                                                                    :source-b {:selected false}
+                                                                    :source-c {:selected true}})
                (let [response (fc/feed database request)]
                  (:body response) =not=> (contains "clj--empty-activity-item")))))
 
@@ -79,14 +84,14 @@
   (fact "about retrieve-activities-from-user-sources"
         (let [activity-sources {:source-a {} :source-b {} :source-c {}}]
           (fc/get-active-activity-source-keys ?user-feed-settings activity-sources) => ?active-activity-source-keys))
-  ?user-feed-settings                                  ?active-activity-source-keys
-  nil                                                  ["source-a" "source-b" "source-c"]
-  {}                                                   ["source-a" "source-b" "source-c"]
-  {:source-c true}                                     ["source-a" "source-b" "source-c"]
-  {:source-a true :source-b true}                      ["source-a" "source-b" "source-c"]
-  {:source-a true :source-b true  :source-c true}      ["source-a" "source-b" "source-c"]
-  {:source-a true :source-b false :source-c true}      ["source-a"  "source-c"]
-  {:source-a false :source-b false :source-c false}    [])
+  ?user-feed-settings                                                                    ?active-activity-source-keys
+  nil                                                                                    ["source-a" "source-b" "source-c"]
+  {}                                                                                     ["source-a" "source-b" "source-c"]
+  {:source-c {:selected true}}                                                           ["source-a" "source-b" "source-c"]
+  {:source-a {:selected true}  :source-b {:selected true}}                               ["source-a" "source-b" "source-c"]
+  {:source-a {:selected true}  :source-b {:selected true}  :source-c {:selected true}}   ["source-a" "source-b" "source-c"]
+  {:source-a {:selected true}  :source-b {:selected false} :source-c {:selected true}}   ["source-a"  "source-c"]
+  {:source-a {:selected false} :source-b {:selected false} :source-c {:selected false}}  [])
 
 (tabular
   (fact "about retrieve-activities-from-user-sources"

@@ -43,35 +43,101 @@
        (let [activity-source-preferences [{:id       "activity-src"
                                            :name     "Activity Source"
                                            :url      "some url"
-                                           :selected true}
+                                           :selected true
+                                           :activity-types [{:name "activity-src-activity-type-1"
+                                                             :selected false}
+                                                            {:name "activity-src-activity-type-2"
+                                                             :selected true}]}
+                                          {:id       "another-activity-src"
+                                           :name     "Another Source"
+                                           :url      "other url"
+                                           :selected false
+                                           :activity-types [{:name "another-activity-src-activity-type-1"
+                                                             :selected false}]}]
+             context {:activity-source-preferences activity-source-preferences}
+             page (cf/customise-feed {:context context})]
+         (fact "only items generated for activity sources are present"
+               (count (html/select page [:.clj--feed-item])) => 2)
+
+         (fact "only provided activity types of activity sources are present"
+               (count (html/select page [:.clj--feed-item-child])) => 3)
+
+         (fact "names of activity sources are displayed"
+               (let [[first-activity-source-label-name second-activity-source-label-name]
+                     (html/select page [:.clj--feed-item__name])]
+                 (html/text first-activity-source-label-name) => "Activity Source"
+                 (html/text second-activity-source-label-name) => "Another Source"))
+
+         (fact "names of provided activity types of activity sources are displayed"
+               (let [[first-activity-type-label-name second-activity-type-label-name third-activity-type-label-name]
+                     (html/select page [:.clj--feed-item-child__name])]
+                 (html/text first-activity-type-label-name) => "activity-src-activity-type-1"
+                 (html/text second-activity-type-label-name) => "activity-src-activity-type-2"
+                 (html/text third-activity-type-label-name) => "another-activity-src-activity-type-1"))
+
+         (fact "name attributes for activity source selection checkboxes are set correctly"
+               (let [[first-activity-source-checkbox second-activity-source-checkbox]
+                     (html/select page [:.clj--feed-item__checkbox])]
+                 (:attrs first-activity-source-checkbox) => (contains {:name "activity-src"})
+                 (:attrs second-activity-source-checkbox) => (contains {:name "another-activity-src"})))
+
+         (fact "name attributes for provided activity types of activity sources selection checkboxes are set correctly"
+               (let [[first-activity-type-checkbox second-activity-type-checkbox third-activity-type-checkbox]
+                     (html/select page [:.clj--feed-item-child__checkbox])]
+                 (:attrs first-activity-type-checkbox) => (contains {:name "activity-src::activity-src-activity-type-1"})
+                 (:attrs second-activity-type-checkbox) => (contains {:name "activity-src::activity-src-activity-type-2"})
+                 (:attrs third-activity-type-checkbox) => (contains {:name "another-activity-src::another-activity-src-activity-type-1"})))
+
+         (fact "'for' attributes of activity source labels match 'id' attributes of activity source inputs"
+               (let [[first-activity-source-label second-activity-source-label] (html/select page [:.clj--feed-item__label])
+                     first-label-checkbox (first (html/select first-activity-source-label [:.clj--feed-item__checkbox]))
+                     second-label-checkbox (first (html/select second-activity-source-label [:.clj--feed-item__checkbox]))]
+                 (-> first-activity-source-label :attrs :for) => (-> first-label-checkbox :attrs :id)
+                 (-> second-activity-source-label :attrs :for) => (-> second-label-checkbox :attrs :id)
+                 (-> first-label-checkbox :attrs :id) =not=> (-> second-label-checkbox :attrs :id)))
+
+         (fact "'for' attributes of activity types labels match 'id' attributes of activity types inputs"
+               (let [[first-activity-type-label second-activity-type-label third-activity-type-label] (html/select page [:.clj--feed-item-child__label])
+                     first-label-checkbox  (first (html/select first-activity-type-label [:.clj--feed-item-child__checkbox]))
+                     second-label-checkbox (first (html/select second-activity-type-label [:.clj--feed-item-child__checkbox]))
+                     third-label-checkbox  (first (html/select third-activity-type-label [:.clj--feed-item-child__checkbox]))]
+                 (-> first-activity-type-label :attrs :for) => (-> first-label-checkbox :attrs :id)
+                 (-> second-activity-type-label :attrs :for) => (-> second-label-checkbox :attrs :id)
+                 (-> third-activity-type-label :attrs :for) => (-> third-label-checkbox :attrs :id)
+                 (-> first-label-checkbox :attrs :id) =not=> (-> second-label-checkbox :attrs :id)))
+
+         (fact "selected activity sources are checked"
+               (let [[first-activity-source-checkbox second-activity-source-checkbox] (html/select page [:.clj--feed-item__checkbox])]
+                 (:attrs first-activity-source-checkbox) => (contains {:checked "checked"})
+                 (contains? (:attrs second-activity-source-checkbox) :checked) => falsey))
+
+         (fact "selected activity types are checked"
+               (let [[first-activity-type-checkbox second-activity-type-checkbox third-activity-type-checkbox]
+                     (html/select page [:.clj--feed-item-child__checkbox])]
+                 (contains? (:attrs first-activity-type-checkbox) :checked) => falsey
+                 (:attrs second-activity-type-checkbox) => (contains {:checked "checked"})
+                 (contains? (:attrs third-activity-type-checkbox) :checked) => falsey))))
+
+
+
+(facts "available feed sources are displayed if no activity types are available"
+       (let [activity-source-preferences [{:id       "activity-src"
+                                           :name     "Activity Source"
+                                           :url      "some url"
+                                           :selected true
+                                           :activity-types []}
                                           {:id       "another-activity-src"
                                            :name     "Another Source"
                                            :url      "other url"
                                            :selected false}]
              context {:activity-source-preferences activity-source-preferences}
              page (cf/customise-feed {:context context})]
-         (fact "only items generated for activity sources are present"
-               (count (html/select page [:.clj--feed-item])) => 2)
 
          (fact "names of activity sources are displayed"
-               (let [[first-label-name second-label-name] (html/select page [:.clj--feed-item__name])]
-                 (html/text first-label-name) => "Activity Source"
-                 (html/text second-label-name) => "Another Source"))
+               (let [[first-activity-source-label-name second-activity-source-label-name]
+                     (html/select page [:.clj--feed-item__name])]
+                 (html/text first-activity-source-label-name) => "Activity Source"
+                 (html/text second-activity-source-label-name) => "Another Source"))
 
-         (fact "name attributes for activity source selection checkboxes are set correctly"
-               (let [[first-checkbox second-checkbox] (html/select page [:.clj--feed-item__checkbox])]
-                 (:attrs first-checkbox) => (contains {:name "activity-src"})
-                 (:attrs second-checkbox) => (contains {:name "another-activity-src"})))
-
-         (fact "'for' attributes of labels match 'id' attributes of inputs"
-               (let [[first-label second-label] (html/select page [:.clj--feed-item__label])
-                     first-label-checkbox (first (html/select first-label [:.clj--feed-item__checkbox]))
-                     second-label-checkbox (first (html/select second-label [:.clj--feed-item__checkbox]))]
-                 (-> first-label :attrs :for) => (-> first-label-checkbox :attrs :id)
-                 (-> second-label :attrs :for) => (-> second-label-checkbox :attrs :id)
-                 (-> first-label-checkbox :attrs :id) =not=> (-> second-label-checkbox :attrs :id)))
-
-         (fact "selected activity sources are checked"
-               (let [[first-checkbox second-checkbox] (html/select page [:.clj--feed-item__checkbox])]
-                 (:attrs first-checkbox) => (contains {:checked "checked"})
-                 (contains? (:attrs second-checkbox) :checked) => falsey))))
+         (fact "no acitivity type items are displayed"
+               (html/select page [:.clj--feed-item-child]) => empty?)))

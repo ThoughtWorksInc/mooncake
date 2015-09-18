@@ -20,3 +20,5 @@
 (def customise-feed-page-feed-item-list-item-label :.func--feed-item__label)
 (def customise-feed-page-feed-item-checkbox :.func--feed-item__checkbox)
 (def customise-feed-page-submit-button :.func--customise-feed__submit)
+(def customise-feed-page-feed-item-child-list-item-label :.func--feed-item-child__label)
+(def customise-feed-page-feed-item-child-checkbox :.func--feed-item-child__checkbox)
