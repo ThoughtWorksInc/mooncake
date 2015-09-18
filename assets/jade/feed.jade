@@ -9,6 +9,18 @@ block headerScripts
 
 block content
   ul.stream.clj--activity-stream.func--activity-stream
+    li.activity-error.clj-STRIP
+      h2.activity-error__title
+        span We have hidden
+        = " "
+        span.activity-error__number-bubble 17
+        = " "
+        span updates
+      .activity-error__icon
+      p.activity-error__description These are missing details we use to verify their safety.
+      p.activity-error__description If you are happy to continue you can show hidden items:
+      .activity-error__actions
+        a.button(href="#") Show hidden items
     +streamItem('Increase bike safety in Soho by 30%', 'JOANNAB',  'created an objective')
     +streamItem('Free school dinners for all children under the age of 10', 'JOANNAB',  'created an objective','activity-src-1')
     +streamItem('The UK should produce its electricity needs via wind power', 'JOANNAB',  'created an objective','activity-src-1')
@@ -20,10 +32,10 @@ block content
     +streamItem('The UK should produce its electricity needs via wind power', 'JOANNAB',  'created an objective','activity-src-1')
     +streamItem('Increase bike safety in Soho by 30%', 'JOANNAB',  'created an objective','activity-src-0')
     +streamItem('Free school dinners for all children under the age of 10', 'JOANNAB',  'created an objective','activity-src-2')
-    +streamItem('The UK should produce its electricity needs via wind power', 'JOANNAB',  'created an objective','activity-src-3')
+    +streamItem('The UK should produce its electricity needs via wind power', 'JOANNAB',  'created an objective','activity-src-3', false)
     +streamItem('Increase bike safety in Soho by 30%', 'JOANNAB',  'created an objective')
     +streamItem('Free school dinners for all children under the age of 10', 'JOANNAB',  'created an objective','activity-src-1')
-    +streamItem('The UK should produce its electricity needs via wind power', 'JOANNAB',  'created an objective','activity-src-1')
+    +streamItem('The UK should produce its electricity needs via wind power', 'JOANNAB',  'created an objective','activity-src-1', false)
     +streamItem('Increase bike safety in Soho by 30%', 'JOANNAB',  'created an objective','activity-src-0')
     +streamItem('Free school dinners for all children under the age of 10', 'JOANNAB',  'created an objective','activity-src-2')
     +streamItem('The UK should produce its electricity needs via wind power', 'JOANNAB',  'created an objective','activity-src-3')

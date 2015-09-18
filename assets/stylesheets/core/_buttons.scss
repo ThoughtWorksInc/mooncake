@@ -28,6 +28,18 @@
     box-shadow: none;
   }
 
+  &--warning {
+    $color: $yellow;
+    background-color: $color;
+    color: $grey_blue;
+    &:focus, &:hover {
+      background-color: lighten($color, 2%);
+    }
+    &:active {
+      background-color: darken($color, 2%);
+    }
+  }
+
   // make it so .button.button--half-width
   &--half-width {
     width: 50%;

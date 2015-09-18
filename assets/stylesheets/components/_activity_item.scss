@@ -3,6 +3,9 @@
   color: $purple;
   background-color: $white;
   border-bottom: 1px solid $grey_light;
+  &__suspicious {
+    background-color: $yellow_super_light;
+  }
 }
 
 .activity-src- {
@@ -10,7 +13,7 @@
     color: $green;
   }
   &1 {
-    color: $yellow;
+    color: $orange;
   }
   &2 {
     color: $blue;
@@ -78,4 +81,33 @@
   color: $white;
   font-size: 22px;
   font-weight: 300;
+}
+
+.activity-error {
+  position: relative;
+  padding: 30px 30px 30px 80px;
+  color: $default_text_color;
+  background-color: $yellow_super_light;
+  border-bottom: 1px solid $grey_light;
+  &__title {
+    font-size: $paragraphy-font--lede;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  &__description {
+    @include font-size(18px);
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+  &__icon {
+    @include size(40px);
+    position: absolute;
+    top: 25px;
+    left: 21px;
+    @include svgAndPng('warning', no-repeat 50% 50%);
+    background-size: contain;
+  }
+  &__actions {
+    padding-top: 1rem;
+  }
 }

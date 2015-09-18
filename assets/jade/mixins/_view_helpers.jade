@@ -1,5 +1,7 @@
-mixin streamItem(title, author, activityAction, sourceClass)
-  li.activity-item.clj--activity-item(class=sourceClass)
+mixin streamItem(title, author, activityAction, sourceClass, trusted)
+  - var trustedClass = (trusted==false ? 'activity-item__suspicious' : '')
+
+  li.activity-item.clj--activity-item(class="#{sourceClass} #{trustedClass}")
     a.activity-item__link.clj--activity-item__link.func--activity-item__link(href="#")
       .activity-item__avatar
         span.avatar__initials.clj--avatar__initials !C
