@@ -148,16 +148,28 @@
            sign-in!
            (k/visit (routes/path :show-customise-feed))
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label (html/attr= :for "test-activity-source-1")] "Test Activity Source 1")
-           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label (html/attr= :for "test-activity-source-1::Create")] "Create")
-           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label (html/attr= :for "test-activity-source-1::Question")] "Question")
-           (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label (html/attr= :for "test-activity-source-2")] "Test Activity Source 2")
-           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label (html/attr= :for "test-activity-source-2::Add")] "Add")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked "checked")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::Create")] :checked "checked")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::Question")] :checked "checked")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-2::Add")] :checked "checked")))
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label
+                                          (html/attr= :for "test-activity-source-1")] "Test Activity Source 1")
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label
+                                          (html/attr= :for "test-activity-source-1::TestActivityType 1 1")] "TestActivityType 1 1")
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label
+                                          (html/attr= :for "test-activity-source-1::TestActivityType 1 2")] "TestActivityType 1 2")
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label
+                                          (html/attr= :for "test-activity-source-2")] "Test Activity Source 2")
+           (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label
+                                          (html/attr= :for "test-activity-source-2::TestActivityType 2 1")] "TestActivityType 2 1")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox
+                                                      (html/attr= :id "test-activity-source-1")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
+                                                    (html/attr= :id "test-activity-source-1::TestActivityType 1 1")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
+                                                    (html/attr= :id "test-activity-source-1::TestActivityType 1 2")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox
+                                                    (html/attr= :id "test-activity-source-2")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
+                                                    (html/attr= :id "test-activity-source-2::TestActivityType 2 1")] :checked "checked")
+           (kh/selector-exists [ks/customise-feed-page-feed-item-child-checkbox
+                                (html/attr= :id "test-activity-source-2::TestActivityType 2 1")])))
 
 (facts "User can customise feed preferences - customisations are reflected on the 'customise feed' form"
        (drop-db!)
@@ -172,7 +184,10 @@
            (k/visit (routes/path :show-customise-feed))
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
            (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked)
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")))
+           (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType 1 1")] :checked)
+           (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType 1 2")] :checked)
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-2::TestActivityType 2 1")] :checked "checked")))
 
 (facts "User can customise feed preferences - activities from disabled sources are not shown on the 'feed' page"
        (drop-db!)

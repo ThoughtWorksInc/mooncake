@@ -90,6 +90,7 @@
    state))
 
 (defn selector-does-not-have-attribute [state kerodon-selector attr]
+  (selector-exists state kerodon-selector)
   (fact {:midje/name "Check if element does not have an attribute"}
         (contains? (-> state :enlive (html/select [kerodon-selector]) first :attrs) attr) => falsey)
   state)
