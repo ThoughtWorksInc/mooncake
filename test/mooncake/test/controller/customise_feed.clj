@@ -9,12 +9,15 @@
             [mooncake.test.test-helpers.db :as dbh]))
 
 (facts "about customise-feed"
-       (let [customise-feed-request {:context {:activity-sources {:activity-src         {:name "A. Activity Source"
-                                                                                         :url  "some url"}
-                                                                  :another-activity-src {:name "B. Another Source"
-                                                                                         :url  "another url"}}}
-                                     :params  {:activity-src     "foobar"
-                                               :some-other-param "something-else"}
+       (let [customise-feed-request {:context {:activity-sources {:activity-src         {:name           "A. Activity Source"
+                                                                                         :url            "some url"
+                                                                                         :activity-types '("Create" "Question")}
+                                                                  :another-activity-src {:name           "B. Another Source"
+                                                                                         :url            "another url"
+                                                                                         :activity-types '("Question")}}}
+                                     :params  {:activity-src            "foobar"
+                                               "activity-src::Question" "anything"
+                                               :some-other-param        "something-else"}
                                      :session {:username ...username...}}
              db (dbh/create-in-memory-db)
              stored-user (user/create-user! db ...user-id... ...username...)
@@ -23,22 +26,46 @@
 
                (user/find-user db ...username...) => {:auth-provider-user-id ...user-id...
                                                       :username              ...username...
-                                                      :feed-settings         {:activity-src         {:selected true }
-                                                                              :another-activity-src {:selected false}}})
+                                                      :feed-settings         {:activity-src         {:selected true
+                                                                                                     :types    [{:id       "Create"
+                                                                                                                 :selected false}
+                                                                                                                {:id       "Question"
+                                                                                                                 :selected true}]}
+                                                                              :another-activity-src {:selected false
+                                                                                                     :types    [{:id       "Question"
+                                                                                                                 :selected false}]}}})
+         (fact "it should disable activity types if parent activity source is disabled"
+               (let [customise-feed-request {:context {:activity-sources {:activity-src         {:name           "A. Activity Source"
+                                                                                                 :url            "some url"
+                                                                                                 :activity-types '("Create" "Question")}}}
+                                             :params  {"activity-src::Question" "anything"
+                                                       "activity-src::Create"   "anything"
+                                                       :some-other-param        "something-else"}
+                                             :session {:username ...username...}}
+                     db (dbh/create-in-memory-db)
+                     _ (user/create-user! db ...user-id... ...username...)
+                     _ (cf/customise-feed db customise-feed-request)]
+               (user/find-user db ...username...) => {:auth-provider-user-id ...user-id...
+                                                      :username              ...username...
+                                                      :feed-settings         {:activity-src         {:selected false
+                                                                                                     :types    [{:id       "Create"
+                                                                                                                 :selected false}
+                                                                                                                {:id       "Question"
+                                                                                                                 :selected false}]}}}))
          (fact "it should redirect to /"
                response => (eh/check-redirects-to (routes/absolute-path {} :feed)))))
 
 (facts "about show-customise-feed"
-       (let [show-customise-feed-request {:context {:activity-sources {:activity-src             {:name "A. Activity Source"
-                                                                                                  :url  "some url"
-                                                                                                  :activity-types  '("Create" "Question")}
-                                                                       :another-activity-src     {:name "B. Another Source"
-                                                                                                  :url  "another url"
-                                                                                                  :activity-types  '("Add")}
-                                                                       :yet-another-activity-src {:name "C. Yet Another Source"
-                                                                                                  :url  "yet another url"
-                                                                                                  :activity-types  '("Add")}}
-                                                    :translator {}}
+       (let [show-customise-feed-request {:context {:activity-sources {:activity-src             {:name           "A. Activity Source"
+                                                                                                  :url            "some url"
+                                                                                                  :activity-types '("Create" "Question")}
+                                                                       :another-activity-src     {:name           "B. Another Source"
+                                                                                                  :url            "another url"
+                                                                                                  :activity-types '("Add")}
+                                                                       :yet-another-activity-src {:name           "C. Yet Another Source"
+                                                                                                  :url            "yet another url"
+                                                                                                  :activity-types '("Add")}}
+                                                    :translator       {}}
                                           :session {:username ...username...}}
              db (dbh/create-in-memory-db)
              _ (user/create-user! db ...user-id... ...username...)
@@ -98,7 +125,7 @@
                                                                       :another-activity-src {:selected false}})
                      response (cf/show-customise-feed db show-customise-feed-request)
                      [first-child-checkbox second-child-checkbox third-child-checkbox fourth-child-checkbox] (-> (html/html-snippet (:body response))
-                                                                                           (html/select [:.clj--feed-item-child__checkbox]))]
+                                                                                                                 (html/select [:.clj--feed-item-child__checkbox]))]
 
                  (-> first-child-checkbox :attrs :id) => "activity-src::Create"
                  (-> first-child-checkbox :attrs :checked) => "checked"
@@ -120,8 +147,8 @@
                                                           :url  "another url"}
                                :yet-another-activity-src {:name "B. Yet Another Source"
                                                           :url  "yet another url"}}
-             user-feed-preferences {:activity-src         {:selected  true}
-                                    :another-activity-src {:selected  false}}
+             user-feed-preferences {:activity-src         {:selected true}
+                                    :another-activity-src {:selected false}}
              result (cf/generate-activity-source-preferences activity-sources user-feed-preferences)]
 
          (fact "they include activity source ids for all sources"
@@ -139,10 +166,10 @@
 
 (facts "about generate-activity-type-preferences"
        (let [avaiable-acitivty-type-from-source '("Create" "Add" "Question")
-             user-feed-activity-type-settings   [{:id       "Create"
-                                                  :selected false}
-                                                 {:id       "Question"
-                                                  :selected true}]]
+             user-feed-activity-type-settings [{:id       "Create"
+                                                :selected false}
+                                               {:id       "Question"
+                                                :selected true}]]
          (fact "they include activity type IDs for all acivity types"
                (let [result (cf/generate-activity-type-preferences avaiable-acitivty-type-from-source user-feed-activity-type-settings true)]
                  (map :name result) => (contains ["Create" "Add" "Question"] :in-any-order)))
@@ -167,9 +194,41 @@
 (tabular
   (fact "about selected-feed? - true if not set"
         (cf/selected-feed? ?feed-setting-input) => ?feed-setting-output)
-  ?feed-setting-input      ?feed-setting-output
-  true                     true
-  false                    false
-  nil                      true
-  ...anything-else...      true)
+  ?feed-setting-input ?feed-setting-output
+  true true
+  false false
+  nil true
+  ...anything-else... true)
+
+(facts "about create-user-feed-settings-for-source"
+       (let [single-activity-source-configuration {:name           "A. Activity Source"
+                                                   :url            "some url"
+                                                   :activity-types '("Create" "Question")}]
+         (fact "unselects all if no parameters submitted"
+               (let [expected-user-feed-settings {:selected false
+                                                  :types    [{:id       "Create"
+                                                              :selected false}
+                                                             {:id       "Question"
+                                                              :selected false}]}]
+
+                 (cf/create-user-feed-settings-for-source :activity-src single-activity-source-configuration {}) => expected-user-feed-settings))
+         (fact "selects activity types which match submitted parameters"
+               (let [submitted-parameters {:activity-src          "foo"
+                                           "activity-src::Create" "bar"}
+                     expected-user-feed-settings {:selected true
+                                                  :types    [{:id       "Create"
+                                                              :selected true}
+                                                             {:id       "Question"
+                                                              :selected false}]}]
+
+                 (cf/create-user-feed-settings-for-source :activity-src single-activity-source-configuration submitted-parameters) => expected-user-feed-settings))
+         (fact "deselects activity types if parent activity source is deselected"
+               (let [submitted-parameters {"activity-src::Create" "bar"}
+                     expected-user-feed-settings {:selected false
+                                                  :types    [{:id       "Create"
+                                                              :selected false}
+                                                             {:id       "Question"
+                                                              :selected false}]}]
+
+                 (cf/create-user-feed-settings-for-source :activity-src single-activity-source-configuration submitted-parameters) => expected-user-feed-settings))))
 

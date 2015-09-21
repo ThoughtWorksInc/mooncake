@@ -5,16 +5,29 @@
 
 (def default-feed-selected-value true)
 
-(defn create-user-feed-settings [activity-sources posted-activity-source-keys]
+(defn- is-type-id-submitted? [activity-source-id activity-type-id posted-parameters]
+  (let [activity-type-form-id (str (name activity-source-id) "::" activity-type-id)]
+    (contains? posted-parameters activity-type-form-id)))
+
+(defn create-user-feed-settings-for-source [activity-source-id single-activity-source-configuration posted-parameters]
+  (let [activity-source-types (get-in single-activity-source-configuration [:activity-types])
+        is-activity-source-selected? (contains? posted-parameters activity-source-id)
+        activity-source-types->feed-settings-fn (fn [v] {:id       v
+                                                         :selected (and is-activity-source-selected?
+                                                                        (is-type-id-submitted? activity-source-id v posted-parameters))})
+        feed-settings-for-types (map activity-source-types->feed-settings-fn activity-source-types)]
+    {:selected is-activity-source-selected? :types feed-settings-for-types}))
+
+(defn create-user-feed-settings [activity-sources posted-parameters]
   (reduce (fn [user-feed-settings activity-source-key]
-            (assoc user-feed-settings activity-source-key {:selected (some? (some #{activity-source-key} posted-activity-source-keys))}))
+            (let [single-activity-source-configuration (activity-source-key activity-sources)]
+              (assoc user-feed-settings activity-source-key (create-user-feed-settings-for-source activity-source-key single-activity-source-configuration posted-parameters))))
           {} (keys activity-sources)))
 
 (defn customise-feed [db request]
   (let [username (get-in request [:session :username])
         activity-sources (get-in request [:context :activity-sources])
-        posted-activity-source-keys (keys (select-keys (:params request) (keys activity-sources)))
-        feed-settings-combined (create-user-feed-settings activity-sources posted-activity-source-keys)]
+        feed-settings-combined (create-user-feed-settings activity-sources (:params request))]
     (user/update-feed-settings! db username feed-settings-combined)
     (mh/redirect-to request :feed)))
 
