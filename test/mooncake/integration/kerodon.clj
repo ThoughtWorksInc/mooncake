@@ -261,6 +261,40 @@
            (kh/selector-includes-content ks/feed-page-activity-list "Activity Source 1 Title")
            (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity Source 2 Title")))
 
+
+(future-facts "User can customise feed preferences - activities of disabled types are not shown on the 'feed' page"
+       (drop-db!)
+       (populate-db-with-stub-activities! [{:object       {"displayName" "Activity 1 Title"}
+                                            :published    ten-oclock
+                                            :activity-src "test-activity-source-1"
+                                            "@type"       "TestActivityType-1-1"}
+                                           {:object       {"displayName" "Activity 2 Title"}
+                                            :published    ten-oclock
+                                            :activity-src "test-activity-source-1"
+                                            "@type"       "TestActivityType-1-2"}
+                                           {:object       {"displayName" "Activity 3 Title"}
+                                            :published    eleven-oclock
+                                            :activity-src "test-activity-source-2"
+                                            "@type"       "TestActivityType-2-1"}])
+
+       (-> (k/session app-with-activity-sources-from-yaml)
+           sign-in!
+           (k/visit (routes/path :feed))
+           (kh/check-page-is "/" ks/feed-page-body)
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 1 Title")
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 2 Title")
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 3 Title")
+           (kh/check-and-follow ks/header-customise-feed-link)
+           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
+           (k/uncheck [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-1")])
+           (k/uncheck [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-2::TestActivityType-2-1")])
+           (kh/check-and-press ks/customise-feed-page-submit-button)
+           (kh/check-and-follow-redirect "to /")
+           (kh/check-page-is "/" ks/feed-page-body)
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 2 Title")
+           (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity 1 Title")
+           (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity 3 Title")))
+
 (facts "A message is displayed on feed page if user disables all activity sources"
        (drop-db!)
        (-> (k/session app-with-activity-sources-from-yaml)

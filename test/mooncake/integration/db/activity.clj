@@ -102,3 +102,34 @@
   [:source-x]                         []
   []                                  []
   nil                                 [])
+
+
+(tabular
+  (fact "can fetch a collection of activities with the given activity source keys and activity types"
+        (dbh/with-mongo-do
+          (fn [db]
+            (let [database (mongo/create-database db)
+                  activity1 {"@displayName" "KCat"
+                             "published" "2015-08-12T10:20:41.000Z"
+                             "activity-src" "source-1"
+                             "@type" "Create"}
+                  activity2 {"@displayName" "KCat"
+                             "published" "2015-08-12T10:20:42.000Z"
+                             "activity-src" "source-1"
+                             "@type" "Question"}
+                  activity3 {"@displayName" "JDon"
+                             "published" "2015-08-12T11:20:41.000Z"
+                             "activity-src" "source-2"
+                             "@type" "Create"}]
+              (activity/store-activity! database activity1)
+              (activity/store-activity! database activity2)
+              (activity/store-activity! database activity3)
+              (activity/fetch-activities-by-activity-sources-and-types database ?activity-sources-and-types) => ?result))))
+
+  ?activity-sources-and-types                                           ?result
+  [{:activity-src :source-1 "@type" ["Create"]}]                        [activity1]
+  [{:activity-src :source-1 "@type" ["Create" "Question"]}]             [activity1 activity2]
+  [{:activity-src :source-1 "@type" ["Create" "Question"]}
+   {:activity-src :source-2 "@type" ["Create" "Add"]}]                  [activity1 activity2 activity3]
+  []                                                                    []
+  nil                                                                   [])

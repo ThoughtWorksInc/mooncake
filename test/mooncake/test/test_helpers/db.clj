@@ -8,6 +8,23 @@
 (defn find-item-with-id [data-map coll query-m]
   (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals (get data-map coll))))
 
+(defn to-vector [value]
+  (if (sequential? value)
+    value
+    [value]))
+
+(defn keywordise [collection keywordise?]
+  (if keywordise?
+    collection
+    (walk/stringify-keys collection)))
+
+(defn find-by-map-query [database coll single-query-map keywordise?]
+  (reduce (fn [result query-key] (let [query-value (query-key single-query-map)
+                                       search-result (mongo/find-items-by-key-values database coll query-key (to-vector query-value) keywordise?)]
+                                   (filter (fn [item] (some #{item} search-result)) result)))
+          (keywordise (mongo/fetch-all database coll keywordise?) keywordise?)
+          (keys single-query-map)))
+
 (defrecord MemoryDatabase [data]
   mongo/Database
   (fetch [this coll id keywordise?]
@@ -27,6 +44,10 @@
     (->> (for [value values]
            (mongo/find-item this coll {k value} keywordise?))
          (remove nil?)) )
+  (find-items-by-alternatives [this coll value-map-vector keywordise?]
+    (reduce (fn [result single-query] (let [query-result (find-by-map-query this coll single-query keywordise?)]
+                                        (distinct (concat result query-result))))
+            [] value-map-vector))
   (store! [this coll item]
     (->> (assoc item :_id (UUID/randomUUID))
          (mongo/store-with-id! this coll :_id)))

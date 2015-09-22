@@ -14,6 +14,8 @@
     "Find an item matching the query-map.")
   (find-items-by-key-values [this coll k values keywordise?]
     "Find items whose key 'k' matches one of the given values")
+  (find-items-by-alternatives [this coll value-map-vector keywordise?]
+    "Find items whose properties match properties of at least one of the provided maps. ")
   (store! [this coll item]
     "Store the given map and return it.")
   (store-with-id! [this coll key-param item]
@@ -29,6 +31,17 @@
 
 (defn key-values->mongo-query-map [k values]
   {k {mop/$in values}})
+
+(defn value->mongo-query-value [value]
+  (if (sequential? value)
+    {mop/$in value}
+    value))
+
+(defn value-map->mongo-query-map [value-m]
+  (reduce-kv #(assoc %1 %2 (value->mongo-query-value %3)) {} value-m))
+
+(defn value-map-list->mongo-or-query-map [value-map-vector]
+  {mop/$or (map value-map->mongo-query-map value-map-vector)})
 
 (defrecord MongoDatabase [mongo-db]
   Database
@@ -50,6 +63,15 @@
     (if values
       (let [mongo-key-in-query (key-values->mongo-query-map k values)
             result-m (->> (mcoll/find-maps mongo-db coll mongo-key-in-query)
+                          (map dissoc-id))]
+        (if keywordise?
+          result-m
+          (map walk/stringify-keys result-m)))
+      []))
+  (find-items-by-alternatives [this coll value-map-vector keywordise?]
+    (if (not-empty value-map-vector)
+      (let [mongo-query-map (value-map-list->mongo-or-query-map value-map-vector)
+            result-m (->> (mcoll/find-maps mongo-db coll mongo-query-map)
                           (map dissoc-id))]
         (if keywordise?
           result-m
