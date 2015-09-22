@@ -34,7 +34,10 @@
       (assoc :session {})))
 
 (defn stonecutter-sign-in [stonecutter-config request]
-  (soc/authorisation-redirect-response stonecutter-config))
+  (if-let [stub-user (config/stub-user stonecutter-config)]
+    (-> (mh/redirect-to request :feed)
+        (assoc-in [:session :username] stub-user))
+    (soc/authorisation-redirect-response stonecutter-config)))
 
 (defn get-auth-jwks-url [stonecutter-config]
   (str (:auth-provider-url stonecutter-config) "/api/jwk-set"))
@@ -79,7 +82,8 @@
                  (config/client-id config-m)
                  (config/client-secret config-m)
                  (routes/absolute-path config-m :stonecutter-callback)
-                 :protocol :openid))
+                 :protocol :openid
+                 :stub-user (config/stub-user config-m)))
 
 (defn site-handlers [config-m db]
   (let [stonecutter-config (create-stonecutter-config config-m)]
@@ -118,6 +122,9 @@
   (let [config-m (config/create-config)
         db (mongo/create-database (mongo/get-mongo-db (config/mongo-uri config-m)))
         activity-sources a/activity-sources]
+    (if-let [stub-user (config/stub-user config-m)]
+      (when-not (user/find-user db stub-user)
+        (user/create-user! db nil stub-user)))
     (schedule/schedule (a/sync-activities-task db activity-sources) (config/sync-interval config-m))
     (ring-jetty/run-jetty (create-app config-m db activity-sources)
                           {:port (config/port config-m)

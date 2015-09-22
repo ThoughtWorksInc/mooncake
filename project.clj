@@ -18,21 +18,24 @@
                  [environ "1.0.0"]
                  [jarohen/chime "0.1.6"]
                  [com.novemberain/monger "2.1.0"]
-                 [log4j/log4j "1.2.17" :exclusions  [javax.mail/mail
-                                                     javax.jms/jms
-                                                     com.sun.jdmk/jmxtools
-                                                     com.sun.jmx/jmxri]]]
+                 [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
+                                                    javax.jms/jms
+                                                    com.sun.jdmk/jmxtools
+                                                    com.sun.jmx/jmxri]]]
   :main mooncake.handler
-  :profiles {:dev {:dependencies   [[ring-mock "0.1.5"]
-                                    [midje "1.7.0"]
-                                    [kerodon "0.6.1"]]
-                   :plugins        [[lein-environ "1.0.0"]
-                                    [lein-midje "3.1.3"]
-                                    [lein-ancient "0.6.7"]]
-                   :resource-paths ["resources" "test-resources"]
-                   :env {:secure "false"
-                         :client-id "fake stonecutter client id"
-                         :client-secret "fake stonecutter client secret"
-                         :auth-url "fake stonecutter auth url"
-                         :mongo-uri "mongodb://localhost:27017/mooncake-dev"}}
-             :uberjar {:aot :all}})
+  :profiles {:dev     {:dependencies   [[ring-mock "0.1.5"]
+                                        [midje "1.7.0"]
+                                        [kerodon "0.6.1"]]
+                       :plugins        [[lein-environ "1.0.0"]
+                                        [lein-midje "3.1.3"]
+                                        [lein-ancient "0.6.7"]]
+                       :resource-paths ["resources" "test-resources"]
+                       :env            {:secure        "false"
+                                        :client-id     "fake stonecutter client id"
+                                        :client-secret "fake stonecutter client secret"
+                                        :auth-url      "fake stonecutter auth url"
+                                        :mongo-uri     "mongodb://localhost:27017/mooncake-dev"}}
+             :stub    {:env {:stub-user "MRS STUBBY"}}
+             :uberjar {:aot :all}}
+  :aliases {"stub" ["with-profile" "dev,stub" "run"]}
+  )
