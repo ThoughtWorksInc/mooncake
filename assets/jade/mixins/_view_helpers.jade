@@ -42,6 +42,7 @@ mixin feedItemChild(feedName, activityType, isOn)
     label.feed-item-child__label.clj--feed-item-child__label.func--feed-item-child__label(for="#{feedInputID}")
       span.feed-item-child__name.clj--feed-item-child__name.func--feed-item-child__name #{activityType}
       input.feed-item-child__checkbox.clj--feed-item-child__checkbox.func--feed-item-child__checkbox(type="checkbox", id="#{feedInputID}", name="#{feedInputID}", value="true", checked=isOn)
+      input.clj--feed-item-child__input_hidden(type="hidden", name="#{feedInputID}::before", value="true")
 
 mixin feedItem(feedName, isOn, isTrusted)
   - var feedInputID = feedName.replace(/ /g, "").toLowerCase();
@@ -54,6 +55,7 @@ mixin feedItem(feedName, isOn, isTrusted)
         else
           | !Confirmed trusted source
       input.feed-item__checkbox.clj--feed-item__checkbox.func--feed-item__checkbox(type="checkbox", id="#{feedInputID}", name="#{feedInputID}", value="true", checked=isOn)
+      input.clj--feed-item__input_hidden(type="hidden", name="#{feedInputID}::before", value="true")
     if block
       ul.feed-item__children-list.clj--feed-item__children-list
         block

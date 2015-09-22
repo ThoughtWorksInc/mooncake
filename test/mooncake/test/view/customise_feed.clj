@@ -111,13 +111,30 @@
                  (:attrs first-activity-source-checkbox) => (contains {:checked "checked"})
                  (contains? (:attrs second-activity-source-checkbox) :checked) => falsey))
 
+         (fact "initial values of activity sources are present on the page"
+               (let [[first-activity-source-initial-value-input second-activity-source-initial-value-input]
+                     (html/select page [:.clj--feed-item__input_hidden])]
+                 (:attrs first-activity-source-initial-value-input) => (contains {:name "activity-src::before"})
+                 (:attrs first-activity-source-initial-value-input) => (contains {:value "true"})
+                 (:attrs second-activity-source-initial-value-input) => (contains {:name "another-activity-src::before"})
+                 (:attrs second-activity-source-initial-value-input) => (contains {:value "false"})))
+
          (fact "selected activity types are checked"
                (let [[first-activity-type-checkbox second-activity-type-checkbox third-activity-type-checkbox]
                      (html/select page [:.clj--feed-item-child__checkbox])]
                  (contains? (:attrs first-activity-type-checkbox) :checked) => falsey
                  (:attrs second-activity-type-checkbox) => (contains {:checked "checked"})
-                 (contains? (:attrs third-activity-type-checkbox) :checked) => falsey))))
+                 (contains? (:attrs third-activity-type-checkbox) :checked) => falsey))
 
+         (fact "initial values of activity types are present on the page"
+               (let [[first-activity-type-initial-value-input second-activity-type-initial-value-input third-activity-type-initial-value-input]
+                     (html/select page [:.clj--feed-item-child__input_hidden])]
+                 (:attrs first-activity-type-initial-value-input) => (contains {:name "activity-src::activity-src-activity-type-1::before"})
+                 (:attrs first-activity-type-initial-value-input) => (contains {:value "false"})
+                 (:attrs second-activity-type-initial-value-input) => (contains {:name "activity-src::activity-src-activity-type-2::before"})
+                 (:attrs second-activity-type-initial-value-input) => (contains {:value "true"})
+                 (:attrs third-activity-type-initial-value-input) => (contains {:name "another-activity-src::another-activity-src-activity-type-1::before"})
+                 (:attrs third-activity-type-initial-value-input) => (contains {:value "false"})))))
 
 
 (facts "available feed sources are displayed if no activity types are available"
