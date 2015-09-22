@@ -20,9 +20,10 @@
 (fact "create-stonecutter-config configures stonecutter-oauth client to use openid"
       (h/create-stonecutter-config {:auth-url ...auth-url...
                                     :client-id ...client-id...
-                                    :client-secret ...client-secret...}) => ...stonecutter-config-m...
+                                    :client-secret ...client-secret...
+                                    :stub-user ...stub-user...}) => ...stonecutter-config-m...
       (provided
-        (soc/configure ...auth-url... ...client-id... ...client-secret... anything :protocol :openid)
+        (soc/configure ...auth-url... ...client-id... ...client-secret... anything :protocol :openid :stub-user ...stub-user...)
         => ...stonecutter-config-m...))
 
 (fact "sign-in handler renders the sign-in view when the user is not signed in"
@@ -35,6 +36,11 @@
       (h/stonecutter-sign-in ...stonecutter-config... ...request...) => ...stonecutter-sign-in-redirect...
       (provided
         (soc/authorisation-redirect-response ...stonecutter-config...) => ...stonecutter-sign-in-redirect...))
+
+(fact "stonecutter-sign-in redirects to feed if stub-user is enabled"
+      (let [response (h/stonecutter-sign-in {:stub-user "STUB_USER"} {})]
+        response => (eh/check-redirects-to (routes/absolute-path {} :feed))
+        (-> response :session :username) => "STUB_USER"))
 
 (def openid-test-config (soc/configure "ISSUER" "CLIENT_ID" "<client-secret>" "<callback-uri>"
                                        :protocol :openid))
