@@ -35,7 +35,6 @@
 (defn activity-types-swtiched-on [activity-source-id activity-source-types posted-parameters]
   (map (partial is-activity-type-switched-on? activity-source-id posted-parameters) activity-source-types))
 
-
 (defn has-any-activity-type-been-switched-on [activity-source-id activity-source-types posted-parameters]
   (any-true? (activity-types-swtiched-on activity-source-id activity-source-types posted-parameters)))
 
@@ -85,7 +84,7 @@
 (defn find-feed-preferences-for-activity-type [user-feed-activity-type-settings activity-type]
   (if-let [feed-preferences-for-activity-type (first (filter (fn[v] (= (:id v) activity-type)) user-feed-activity-type-settings))]
     feed-preferences-for-activity-type
-    { :id activity-type :selected true}))
+    {:id activity-type :selected true}))
 
 (defn generate-activity-type-preferences [avaiable-acitivty-type-from-source user-feed-activity-type-settings is-feed-selected?]
   (map (fn [v] {:name v

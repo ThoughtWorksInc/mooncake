@@ -13,7 +13,7 @@
 (fact "retrieve activities retrieves activities from multiple sources, sorts them by published time and assocs activity source into each activity"
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]
-        (a/retrieve-activities {:an-activity-src      {:url an-activity-src-url}
+        (a/poll-activity-sources {:an-activity-src      {:url an-activity-src-url}
                                 :another-activity-src {:url another-activity-src-url}}) => [{"activity-src" :an-activity-src
                                                                                       "actor"       {"displayName" "KCat"}
                                                                                       "published"   twelve-oclock}
@@ -39,7 +39,10 @@
                                                                                          :activity-types  '("TestActivityType-1-1" "TestActivityType-1-2")}
                                                                 :test-activity-source-2 {:url  "https://another-test-activity.src"
                                                                                          :name "Test Activity Source 2"
-                                                                                         :activity-types  '("TestActivityType-2-1")}})
+                                                                                         :activity-types  '("TestActivityType-2-1")}
+                                                                :test-activity-source-3 {:url "https://yet-another-test-activity.src"
+                                                                                         :name "Test Activity Source 3"
+                                                                                         :activity-types '("Question" "Create")}})
 
 (fact "get-json-from-activity-source gracefully handles exceptions caused by bad/missing responses"
       (a/get-json-from-activity-source ...invalid-activity-src-url...) => nil

@@ -12,3 +12,10 @@ test-activity-source-2:
   name: Test Activity Source 2
   activity-types:
       - TestActivityType-2-1
+
+test-activity-source-3:
+  url: https://yet-another-test-activity.src
+  name: Test Activity Source 3
+  activity-types:
+      - Question
+      - Create

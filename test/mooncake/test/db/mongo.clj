@@ -17,9 +17,9 @@
 
 (facts "about value-map-list->mongo-or-query-map"
        (fact "joins elements with mongo $or keyword"
-             (mongo/value-map-list->mongo-or-query-map [{:a "1"} {:b "2"}]) => {mop/$or [{:a "1"} {:b "2"}]})
+             (mongo/value-map-vector->or-mongo-query-map [{:a "1"} {:b "2"}]) => {mop/$or [{:a "1"} {:b "2"}]})
        (fact "converts elements to mongo queries"
-             (mongo/value-map-list->mongo-or-query-map [{:a ["1", "2"]} {:b "2"}]) => {mop/$or [{:a {mop/$in ["1" "2"]}} {:b "2"}]}))
+             (mongo/value-map-vector->or-mongo-query-map [{:a ["1", "2"]} {:b "2"}]) => {mop/$or [{:a {mop/$in ["1" "2"]}} {:b "2"}]}))
 
 
 

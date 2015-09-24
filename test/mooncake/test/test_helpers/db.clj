@@ -19,7 +19,7 @@
     (walk/stringify-keys collection)))
 
 (defn find-by-map-query [database coll single-query-map keywordise?]
-  (reduce (fn [result query-key] (let [query-value (query-key single-query-map)
+  (reduce (fn [result query-key] (let [query-value (get single-query-map query-key)
                                        search-result (mongo/find-items-by-key-values database coll query-key (to-vector query-value) keywordise?)]
                                    (filter (fn [item] (some #{item} search-result)) result)))
           (keywordise (mongo/fetch-all database coll keywordise?) keywordise?)
@@ -29,10 +29,15 @@
   mongo/Database
   (fetch [this coll id keywordise?]
     (-> (get-in @data [coll id])
-        (dissoc :_id)))
+        (dissoc :_id)
+        (keywordise keywordise?)))
+
   (fetch-all [this coll keywordise?]
-    (->> (vals (get @data coll))
-         (map #(dissoc % :_id))))
+    (keywordise
+      (->> (vals (get @data coll))
+          (map #(dissoc % :_id)))
+      keywordise?))
+
   (find-item [this coll query-m keywordise?]
     (when query-m
       (if keywordise?
@@ -40,23 +45,30 @@
             (dissoc :_id))
         (-> (mongo/find-item this coll query-m true)
             (walk/stringify-keys)))))
+
   (find-items-by-key-values [this coll k values keywordise?]
-    (->> (for [value values]
-           (mongo/find-item this coll {k value} keywordise?))
-         (remove nil?)) )
+    (-> (for [value values]
+          (->> (mongo/fetch-all this coll keywordise?)
+               (filter #(clojure.set/subset? (set {k value}) (set %)))))
+        flatten
+        distinct))
+
   (find-items-by-alternatives [this coll value-map-vector keywordise?]
     (reduce (fn [result single-query] (let [query-result (find-by-map-query this coll single-query keywordise?)]
                                         (distinct (concat result query-result))))
             [] value-map-vector))
+
   (store! [this coll item]
     (->> (assoc item :_id (UUID/randomUUID))
          (mongo/store-with-id! this coll :_id)))
+
   (store-with-id! [this coll key-param item]
     (if (mongo/fetch this coll (key-param item) true)
       (throw (Exception. "Duplicate ID!!"))
       (do
         (swap! data assoc-in [coll (key-param item)] item)
         (dissoc item :_id))))
+
   (upsert! [this coll query item]
     (let [id (or (-> (find-item-with-id @data coll query) :_id) (UUID/randomUUID))]
       (swap! data assoc-in [coll id] (assoc item :_id id)))))

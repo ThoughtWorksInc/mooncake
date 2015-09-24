@@ -129,12 +129,15 @@
       (kh/selector-has-attribute-with-content ks/feed-page-activity-item-link :href link position))
   state)
 
+
+
 (against-background
   [(before :contents (start-server))
    (after :contents (stop-server))]
   (facts "Stub activities are rendered"
          (drop-db!)
-         (-> (k/session (h/create-app (c/create-config) database {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
+         (-> (k/session (h/create-app (c/create-config) database {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"
+                                                                                         :activity-types ["Create" "Question"]}}))
              sign-in!
              (k/visit (routes/path :feed))
              (kh/check-page-is "/" ks/feed-page-body)
@@ -239,30 +242,38 @@
 
 (facts "User can customise feed preferences - activities from disabled sources are not shown on the 'feed' page"
        (drop-db!)
-       (populate-db-with-stub-activities! [{:object       {"displayName" "Activity Source 1 Title"}
+       (populate-db-with-stub-activities! [{:object       {"displayName" "Activity 1 Title"}
                                             :published    ten-oclock
-                                            :activity-src "test-activity-source-1"}
-                                           {:object       {"displayName" "Activity Source 2 Title"}
+                                            :activity-src "test-activity-source-1"
+                                            "@type"       "TestActivityType-1-1"}
+                                           {:object       {"displayName" "Activity 2 Title"}
+                                            :published    ten-oclock
+                                            :activity-src "test-activity-source-1"
+                                            "@type"       "TestActivityType-1-2"}
+                                           {:object       {"displayName" "Activity 3 Title"}
                                             :published    eleven-oclock
-                                            :activity-src "test-activity-source-2"}])
+                                            :activity-src "test-activity-source-2"
+                                            "@type"       "TestActivityType-2-1"}])
 
        (-> (k/session app-with-activity-sources-from-yaml)
            sign-in!
            (k/visit (routes/path :feed))
            (kh/check-page-is "/" ks/feed-page-body)
-           (kh/selector-includes-content ks/feed-page-activity-list "Activity Source 1 Title")
-           (kh/selector-includes-content ks/feed-page-activity-list "Activity Source 2 Title")
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 1 Title")
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 2 Title")
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 3 Title")
            (kh/check-and-follow ks/header-customise-feed-link)
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
            (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")])
            (kh/check-and-press ks/customise-feed-page-submit-button)
            (kh/check-and-follow-redirect "to /")
            (kh/check-page-is "/" ks/feed-page-body)
-           (kh/selector-includes-content ks/feed-page-activity-list "Activity Source 1 Title")
-           (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity Source 2 Title")))
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 1 Title")
+           (kh/selector-includes-content ks/feed-page-activity-list "Activity 2 Title")
+           (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity 3 Title")))
 
 
-(future-facts "User can customise feed preferences - activities of disabled types are not shown on the 'feed' page"
+(facts "User can customise feed preferences - activities of disabled types are not shown on the 'feed' page"
        (drop-db!)
        (populate-db-with-stub-activities! [{:object       {"displayName" "Activity 1 Title"}
                                             :published    ten-oclock
@@ -303,6 +314,7 @@
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
            (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")])
            (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")])
+           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-3")])
            (kh/check-and-press ks/customise-feed-page-submit-button)
            (kh/check-and-follow-redirect "to /")
            (kh/check-page-is "/" ks/feed-page-body)
@@ -350,7 +362,7 @@
                                                                               "amet, tincidunt ac augue. Mauris pellentesque sed.")}
                                             :actor        {"displayName" "John Doe"}
                                             :published    eleven-oclock
-                                            :activity-src "test-activity-source-1"}
+                                            :activity-src "test-activity-source-3"}
                                            {"@type"       "Question"
                                             :object       {"@type"       "Objective Question"
                                                            "displayName" (str "Nullam fermentum, magna et pellentesque "
@@ -358,7 +370,7 @@
                                                                               "ultrices quam. Mauris id commodo nequeamat. Fusce posuere.")}
                                             :actor        {"displayName" "Jane Q Public"}
                                             :published    ten-oclock
-                                            :activity-src "test-activity-source-2"}])
+                                            :activity-src "test-activity-source-3"}])
        (let [expected-objective-title (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "
                                            "eleifend et egestas sit amet, tincidunt ac augue. Mauris\u2026")
              expected-question-title (str "Nullam fermentum, magna et pellentesque ultrices, libero arcu elementum diam, "

@@ -33,22 +33,18 @@
         activities (get-json-from-activity-source (:url source-attributes))]
     (map #(assoc % "activity-src" source-key) activities)))
 
-(defn retrieve-activities [activity-sources]
+(defn poll-activity-sources [activity-sources]
   (->> activity-sources
        (map retrieve-activities-from-source)
        flatten
        sort-by-published-time))
 
-(defn retrieve-activities-from-database-by-activity-source [database activity-source-keys]
-  (->> (a/fetch-activities-by-activity-source database activity-source-keys)
+(defn retrieve-activities [database activity-source-keys]
+  (->> (a/fetch-activities-by-activity-sources-and-types database activity-source-keys)
        sort-by-published-time))
 
-(defn retrieve-activities-from-database [database]
-  (->> (a/fetch-activities database)
-          sort-by-published-time))
-
 (defn sync-activities [db activity-sources]
-  (let [activities (retrieve-activities activity-sources)]
+  (let [activities (poll-activity-sources activity-sources)]
     (doall (map (partial a/store-activity! db) (reverse activities)))))
 
 (defn sync-activities-task [db activity-sources]
