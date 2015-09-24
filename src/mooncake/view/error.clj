@@ -4,11 +4,10 @@
 
 (defn modify-error-translation-keys [enlive-map error-page-key]
   (html/at enlive-map
-           [:title] (html/set-attr :data-l8n (str "content:" error-page-key "/title"))
            [:body] (html/set-attr :class (str "func--" error-page-key "-page"))
+           [:title] (html/set-attr :data-l8n (str "content:" error-page-key "/title"))
            [:.clj--error-page-header] (html/set-attr :data-l8n (str "content:" error-page-key "/page-header"))
-           [:.clj--error-page-intro] (html/set-attr :data-l8n (str "content:" error-page-key "/page-intro"))
-           [:.clj--error-page-content] (html/set-attr :data-l8n (str "html:" error-page-key "/page-content"))))
+           [:.clj--error-page-intro] (html/set-attr :data-l8n (str "content:" error-page-key "/page-intro"))))
 
 (defn internal-server-error [request]
   (vh/load-template "public/error-500.html"))

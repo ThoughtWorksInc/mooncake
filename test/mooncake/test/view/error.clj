@@ -4,11 +4,11 @@
             [mooncake.view.error :as e]))
 
 (fact "modify error translation keys updates the data-l8n tags of the correct elements"
-      (let [enlive-m (e/modify-error-translation-keys (e/internal-server-error ...request...) "oops-error-page")]
-        enlive-m => (eh/has-attr? [:title] :data-l8n "content:oops-error-page/title")
-        enlive-m => (eh/has-attr? [:.clj--error-page-header] :data-l8n "content:oops-error-page/page-header")
-        enlive-m => (eh/has-attr? [:.clj--error-page-intro] :data-l8n "content:oops-error-page/page-intro")
-        enlive-m => (eh/has-attr? [:.clj--error-page-content] :data-l8n "html:oops-error-page/page-content")))
+      (let [enlive-m (e/modify-error-translation-keys (e/internal-server-error ..request...) "oops-error")]
+        enlive-m => (eh/has-attr? [:body] :class "func--oops-error-page")
+        enlive-m => (eh/has-attr? [:title] :data-l8n "content:oops-error/title")
+        enlive-m => (eh/has-attr? [:.clj--error-page-header] :data-l8n "content:oops-error/page-header")
+        enlive-m => (eh/has-attr? [:.clj--error-page-intro] :data-l8n "content:oops-error/page-intro")))
 
 (fact "internal-server-error should return html with the correct body class"
       (let [page (e/internal-server-error ...request...)]
