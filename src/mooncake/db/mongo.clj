@@ -10,7 +10,7 @@
     "Find the item based on a key.")
   (fetch-all [this coll]
     "Find all items based on a collection.")
-  (find-item [this coll query-m keywordise?]
+  (find-item [this coll query-m]
     "Find an item matching the query-map.")
   (find-items-by-key-values [this coll k values]
     "Find items whose key 'k' matches one of the given values.")
@@ -23,11 +23,8 @@
   (upsert! [this coll query item]
     "Update item that corresponds to query, or if none exist insert item."))
 
-(defn dissoc-id
-  ([item]
-   (dissoc-id item true))
-  ([item keywordise?]
-   (dissoc item (if keywordise? :_id "_id"))))
+(defn dissoc-id [item]
+  (dissoc item :_id))
 
 (defn key-values->mongo-query-map [k values]
   {k {mop/$in values}})
@@ -43,35 +40,50 @@
 (defn value-map-vector->or-mongo-query-map [value-map-vector]
   {mop/$or (map value-map->mongo-query-map value-map-vector)})
 
-(defn keywordise [collection keywordise?]
-  (if keywordise?
-    collection
-    (walk/stringify-keys collection)))
-
 (defrecord MongoDatabase [mongo-db]
   Database
+
+  (fetch [this coll k]
     (when k
-  (find-item [this coll query-m keywordise?]
+      (-> (mcoll/find-map-by-id mongo-db coll k [] true)
+          dissoc-id)))
+
+  (fetch-all [this coll]
+    (->> (mcoll/find-maps mongo-db coll)
+         (map dissoc-id)))
+
+  (find-item [this coll query-m]
     (when query-m
-      (-> (mcoll/find-one-as-map mongo-db coll query-m [] keywordise?)
-          (dissoc-id keywordise?))))
+      (-> (mcoll/find-one-as-map mongo-db coll query-m [] true)
+          dissoc-id)))
+
+  (find-items-by-key-values [this coll k values]
     (if values
       (let [mongo-key-in-query (key-values->mongo-query-map k values)
             result-m (->> (mcoll/find-maps mongo-db coll mongo-key-in-query)
                           (map dissoc-id))]
+        result-m)
       []))
+
+  (find-items-by-alternatives [this coll value-map-vector]
     (if (not-empty value-map-vector)
       (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
             result-m (->> (mcoll/find-maps mongo-db coll mongo-query-map)
                           (map dissoc-id))]
+        result-m)
       []))
+
   (store! [this coll item]
     (-> (mcoll/insert-and-return mongo-db coll item)
         (dissoc :_id)))
+
   (store-with-id! [this coll key-param item]
+    (->> (assoc item :_id (get item key-param))
          (store! this coll)))
+
   (upsert! [this coll query item]
     (mcoll/upsert mongo-db coll query item)))
+
 
 (defn create-database [mongodb]
   (MongoDatabase. mongodb))
