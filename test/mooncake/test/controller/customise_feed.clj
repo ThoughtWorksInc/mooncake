@@ -18,31 +18,31 @@
                                      :params  {:activity-src            "foobar"
                                                "activity-src::Question" "anything"
                                                :some-other-param        "something-else"}
-                                     :session {:username ...username...}}
+                                     :session {:username "username"}}
              db (dbh/create-in-memory-db)
-             stored-user (user/create-user! db ...user-id... ...username...)
+             stored-user (user/create-user! db ...user-id... "username")
              response (cf/customise-feed db customise-feed-request)]
          (fact "it should update the user's feed settings for all activity sources"
 
-               (user/find-user db ...username...) => {:auth-provider-user-id ...user-id...
-                                                      :username              ...username...
-                                                      :feed-settings         {:activity-src         {:selected true
-                                                                                                     :types    [{:id       "Create"
-                                                                                                                 :selected false}
-                                                                                                                {:id       "Question"
-                                                                                                                 :selected true}]}
-                                                                              :another-activity-src {:selected false
-                                                                                                     :types    [{:id       "Question"
-                                                                                                                 :selected false}]}}})
+               (user/find-user db "username") => {:auth-provider-user-id ...user-id...
+                                                  :username              "username"
+                                                  :feed-settings         {:activity-src         {:selected true
+                                                                                                 :types    [{:id       "Create"
+                                                                                                             :selected false}
+                                                                                                            {:id       "Question"
+                                                                                                             :selected true}]}
+                                                                          :another-activity-src {:selected false
+                                                                                                 :types    [{:id       "Question"
+                                                                                                             :selected false}]}}})
          (fact "it should redirect to /"
                response => (eh/check-redirects-to (routes/absolute-path {} :feed)))))
 
 
 (facts "about how activity source and activity type settings interact"
        (let [activity-sources-m {:activity-src {:name           "A. Activity Source"
-                                                                                 :url            "some url"
-                                                                                 :activity-types '("Create" "Question")}}
-             session-state {:username ...username...}]
+                                                :url            "some url"
+                                                :activity-types '("Create" "Question")}}
+             session-state {:username "username"}]
          (fact "activity types are disabled if parent activity source is disabled"
                (let [customise-feed-request {:context {:activity-sources activity-sources-m}
                                              :params  {"activity-src::before"   "true"
@@ -51,10 +51,10 @@
                                                        :some-other-param        "something-else"}
                                              :session session-state}
                      db (dbh/create-in-memory-db)
-                     _ (user/create-user! db ...user-id... ...username...)
+                     _ (user/create-user! db ...user-id... "username")
                      _ (cf/customise-feed db customise-feed-request)]
-                 (user/find-user db ...username...) => {:auth-provider-user-id ...user-id...
-                                                        :username              ...username...
+                 (user/find-user db "username") => {:auth-provider-user-id ...user-id...
+                                                        :username              "username"
                                                         :feed-settings         {:activity-src {:selected false
                                                                                                :types    [{:id       "Create"
                                                                                                            :selected false}
@@ -62,16 +62,16 @@
                                                                                                            :selected false}]}}}))
          (fact "activity types are disabled if parent activity source is disabled"
                (let [customise-feed-request {:context {:activity-sources activity-sources-m}
-                                             :params  {"activity-src::before" ""
-                                                       "activity-src::Question" "anything"
+                                             :params  {"activity-src::before"           ""
+                                                       "activity-src::Question"         "anything"
                                                        "activity-src::Question::before" ""
-                                                       :some-other-param        "something-else"}
+                                                       :some-other-param                "something-else"}
                                              :session session-state}
                      db (dbh/create-in-memory-db)
-                     _ (user/create-user! db ...user-id... ...username...)
+                     _ (user/create-user! db ...user-id... "username")
                      _ (cf/customise-feed db customise-feed-request)]
-                 (user/find-user db ...username...) => {:auth-provider-user-id ...user-id...
-                                                        :username              ...username...
+                 (user/find-user db "username") => {:auth-provider-user-id ...user-id...
+                                                        :username              "username"
                                                         :feed-settings         {:activity-src {:selected true
                                                                                                :types    [{:id       "Create"
                                                                                                            :selected false}
@@ -89,10 +89,10 @@
                                                                                                   :url            "yet another url"
                                                                                                   :activity-types '("Add")}}
                                                     :translator       {}}
-                                          :session {:username ...username...}}
+                                          :session {:username "username"}}
              db (dbh/create-in-memory-db)
-             _ (user/create-user! db ...user-id... ...username...)
-             _ (user/update-feed-settings! db ...username... {:activity-src         {:selected true
+             _ (user/create-user! db ...user-id... "username")
+             _ (user/update-feed-settings! db "username" {:activity-src         {:selected true
                                                                                      :types    [{:id       "Create"
                                                                                                  :selected false}
                                                                                                 {:id       "Question"
@@ -141,7 +141,7 @@
          (fact "it should select activity types which are not explicitly set in user preferences according to state of the parent feed source"
 
                (let [
-                     _ (user/update-feed-settings! db ...username... {:activity-src         {:selected true
+                     _ (user/update-feed-settings! db "username" {:activity-src         {:selected true
                                                                                              :types    [{:id       "Add"
                                                                                                          :selected false}
                                                                                                         ]}
@@ -217,11 +217,11 @@
 (tabular
   (fact "about selected-feed? - true if not set"
         (cf/selected-feed? ?feed-setting-input) => ?feed-setting-output)
-  ?feed-setting-input    ?feed-setting-output
-  true                   true
-  false                  false
-  nil                    true
-  ...anything-else...    true)
+  ?feed-setting-input   ?feed-setting-output
+  true                  true
+  false                 false
+  nil                   true
+  ...anything-else...   true)
 
 (facts "about create-user-feed-settings-for-source"
        (let [single-activity-source-configuration {:name           "A. Activity Source"
@@ -236,8 +236,8 @@
 
                  (cf/create-user-feed-settings-for-source :activity-src single-activity-source-configuration {}) => expected-user-feed-settings))
          (fact "selects activity types which match submitted parameters"
-               (let [submitted-parameters {:activity-src          "foo"
-                                           "activity-src::Create" "bar"
+               (let [submitted-parameters {:activity-src                    "foo"
+                                           "activity-src::Create"           "bar"
                                            "activity-src::Question::before" ""}
                      expected-user-feed-settings {:selected true
                                                   :types    [{:id       "Create"
@@ -260,46 +260,46 @@
 (tabular
   (fact "about has-any-activity-type-been-switched-on"
         (cf/has-any-activity-type-been-switched-on :activity-source-1 ["Type1" "Type2"] ?posted-parameters) => ?result)
-  ?posted-parameters                                     ?result
-  {"activity-source-1"                 "true"
-   "activity-source-1::before"         "true"
-   "activity-source-1::Type1"          "true"
-   "activity-source-1::Type1::before"  "true"
-   "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "true"}          false
-  {"activity-source-1"                  "true"
-   "activity-source-1::before"         "true"
-   "activity-source-1::Type1"          "true"
-   "activity-source-1::Type1::before"  "false"
-   "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "true"}          true
+  ?posted-parameters                            ?result
+  {"activity-source-1"                "true"
+   "activity-source-1::before"        "true"
+   "activity-source-1::Type1"         "true"
+   "activity-source-1::Type1::before" "true"
+   "activity-source-1::Type2"         "true"
+   "activity-source-1::Type2::before" "true"}   false
+  {"activity-source-1"                "true"
+   "activity-source-1::before"        "true"
+   "activity-source-1::Type1"         "true"
+   "activity-source-1::Type1::before" "false"
+   "activity-source-1::Type2"         "true"
+   "activity-source-1::Type2::before" "true"}   true
   )
 
 (tabular
   (fact "about activity-types-swtiched-on"
-    (cf/activity-types-swtiched-on :activity-source-1 ["Type1" "Type2"] ?posted-parameters) => ?result)
-  ?posted-parameters                                     ?result
-  {"activity-source-1::Type1"          "true"
-   "activity-source-1::Type1::before"  "true"
-   "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "true"}          [false false]
-  {"activity-source-1::Type1"          "true"
-   "activity-source-1::Type1::before"  "false"
-   "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "true"}          [true false]
+        (cf/activity-types-swtiched-on :activity-source-1 ["Type1" "Type2"] ?posted-parameters) => ?result)
+  ?posted-parameters                            ?result
+  {"activity-source-1::Type1"         "true"
+   "activity-source-1::Type1::before" "true"
+   "activity-source-1::Type2"         "true"
+   "activity-source-1::Type2::before" "true"}  [false false]
+  {"activity-source-1::Type1"         "true"
+   "activity-source-1::Type1::before" "false"
+   "activity-source-1::Type2"         "true"
+   "activity-source-1::Type2::before" "true"}  [true false]
 
 
-  {"activity-source-1::Type1::before"  "true"
-   "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "false"}         [false true])
+  {"activity-source-1::Type1::before" "true"
+   "activity-source-1::Type2"         "true"
+   "activity-source-1::Type2::before" "false"} [false true])
 
 (tabular
   (fact "about has-activity-source-been-switched-off"
         (cf/has-activity-source-been-switched-off :activity-source-1 ?posted-parameters) => ?result)
-  ?posted-parameters                                     ?result
-  {"activity-source-1::before"         "true"}           true
-  {"activity-source-1"                 "true"
-   "activity-source-1::before"         "true"}           false
-  {"activity-source-1::before"         "false"}          false
-  {"activity-source-1"                 "true"
-   "activity-source-1::before"         "false"}          false)
+  ?posted-parameters                      ?result
+  {"activity-source-1::before" "true"}    true
+  {"activity-source-1"         "true"
+   "activity-source-1::before" "true"}    false
+  {"activity-source-1::before" "false"}   false
+  {"activity-source-1"         "true"
+   "activity-source-1::before" "false"}   false)

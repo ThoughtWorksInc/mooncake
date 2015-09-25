@@ -24,7 +24,8 @@
 
 (defn sort-by-published-time [activities]
   (let [published-time (fn [activity]
-                         (mh/datetime-str->datetime (get activity "published")))]
+                         (mh/datetime-str->datetime (or (get activity :published)
+                                                        (get activity "published"))))]
     (->> activities
          (sort-by published-time mh/after?))))
 

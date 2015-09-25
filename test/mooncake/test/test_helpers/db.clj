@@ -18,43 +18,39 @@
     collection
     (walk/stringify-keys collection)))
 
-(defn find-by-map-query [database coll single-query-map keywordise?]
+(defn find-by-map-query [database coll single-query-map]
   (reduce (fn [result query-key] (let [query-value (get single-query-map query-key)
-                                       search-result (mongo/find-items-by-key-values database coll query-key (to-vector query-value) keywordise?)]
+                                       search-result (mongo/find-items-by-key-values database coll query-key (to-vector query-value))]
                                    (filter (fn [item] (some #{item} search-result)) result)))
-          (keywordise (mongo/fetch-all database coll keywordise?) keywordise?)
+          (mongo/fetch-all database coll)
           (keys single-query-map)))
 
 (defrecord MemoryDatabase [data]
   mongo/Database
-  (fetch [this coll id keywordise?]
+
+  (fetch [this coll id]
     (-> (get-in @data [coll id])
-        (dissoc :_id)
-        (keywordise keywordise?)))
+        (dissoc :_id)))
 
-  (fetch-all [this coll keywordise?]
-    (keywordise
-      (->> (vals (get @data coll))
-          (map #(dissoc % :_id)))
-      keywordise?))
+  (fetch-all [this coll]
+    (->> (vals (get @data coll))
+         clojure.walk/keywordize-keys
+         (map #(dissoc % :_id))))
 
-  (find-item [this coll query-m keywordise?]
+  (find-item [this coll query-m]
     (when query-m
-      (if keywordise?
-        (-> (find-item-with-id @data coll query-m)
-            (dissoc :_id))
-        (-> (mongo/find-item this coll query-m true)
-            (walk/stringify-keys)))))
+      (-> (find-item-with-id @data coll (clojure.walk/keywordize-keys query-m))
+          (dissoc :_id))))
 
-  (find-items-by-key-values [this coll k values keywordise?]
+  (find-items-by-key-values [this coll k values]
     (-> (for [value values]
-          (->> (mongo/fetch-all this coll keywordise?)
-               (filter #(clojure.set/subset? (set {k value}) (set %)))))
+          (->> (mongo/fetch-all this coll)
+               (filter #(clojure.set/subset? (set {(keyword k) value}) (set %)))))
         flatten
         distinct))
 
-  (find-items-by-alternatives [this coll value-map-vector keywordise?]
-    (reduce (fn [result single-query] (let [query-result (find-by-map-query this coll single-query keywordise?)]
+  (find-items-by-alternatives [this coll value-map-vector]
+    (reduce (fn [result single-query] (let [query-result (find-by-map-query this coll single-query)]
                                         (distinct (concat result query-result))))
             [] value-map-vector))
 
@@ -63,10 +59,10 @@
          (mongo/store-with-id! this coll :_id)))
 
   (store-with-id! [this coll key-param item]
-    (if (mongo/fetch this coll (key-param item) true)
-      (throw (Exception. "Duplicate ID!!"))
+    (if (mongo/fetch this coll (get item key-param))
+      (throw (Exception. "Duplicate ID!"))
       (do
-        (swap! data assoc-in [coll (key-param item)] item)
+        (swap! data assoc-in [coll (get item key-param)] item)
         (dissoc item :_id))))
 
   (upsert! [this coll query item]

@@ -23,19 +23,19 @@
                                                                                :latest-activity-datetime date}))
 
 (defn fetch-most-recent-activity-date [db activity-src]
-  (when-let [item (mongo/find-item db activity-metadata-collection {:activity-src activity-src} true)]
+  (when-let [item (mongo/find-item db activity-metadata-collection {:activity-src activity-src})]
     (-> item
         :latest-activity-datetime
         (time-coerce/from-string))))
 
 (defn fetch-activities [db]
-  (mongo/fetch-all db activity-collection false))
+  (mongo/fetch-all db activity-collection))
 
 (defn fetch-activities-by-activity-source [db activity-source-keys]
-  (mongo/find-items-by-key-values db activity-collection :activity-src activity-source-keys false))
+  (mongo/find-items-by-key-values db activity-collection :activity-src activity-source-keys))
 
 (defn fetch-activities-by-activity-sources-and-types [db activity-sources-and-types]
-  (mongo/find-items-by-alternatives db activity-collection activity-sources-and-types false))
+  (mongo/find-items-by-alternatives db activity-collection activity-sources-and-types))
 
 (defn store-activity! [db activity]
   (let [activity-src (domain/activity->activity-src activity)
