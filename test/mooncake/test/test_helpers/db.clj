@@ -40,11 +40,9 @@
 
   (find-item [this coll query-m keywordise?]
     (when query-m
-      (if keywordise?
-        (-> (find-item-with-id @data coll query-m)
-            (dissoc :_id))
-        (-> (mongo/find-item this coll query-m true)
-            (walk/stringify-keys)))))
+      (-> (find-item-with-id @data coll query-m)
+          (dissoc :_id)
+          (keywordise keywordise?))))
 
   (find-items-by-key-values [this coll k values keywordise?]
     (-> (for [value values]
@@ -64,7 +62,7 @@
 
   (store-with-id! [this coll key-param item]
     (if (mongo/fetch this coll (key-param item) true)
-      (throw (Exception. "Duplicate ID!!"))
+      (throw (Exception. "Duplicate ID!"))
       (do
         (swap! data assoc-in [coll (key-param item)] item)
         (dissoc item :_id))))
