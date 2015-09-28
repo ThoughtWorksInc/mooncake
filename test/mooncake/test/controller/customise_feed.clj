@@ -40,8 +40,8 @@
 
 (facts "about how activity source and activity type settings interact"
        (let [activity-sources-m {:activity-src {:name           "A. Activity Source"
-                                                                                 :url            "some url"
-                                                                                 :activity-types '("Create" "Question")}}
+                                                :url            "some url"
+                                                :activity-types '("Create" "Question")}}
              session-state {:username ...username...}]
          (fact "activity types are disabled if parent activity source is disabled"
                (let [customise-feed-request {:context {:activity-sources activity-sources-m}
@@ -266,14 +266,13 @@
    "activity-source-1::Type1"          "true"
    "activity-source-1::Type1::before"  "true"
    "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "true"}          false
+   "activity-source-1::Type2::before"  "true"}           false
   {"activity-source-1"                  "true"
    "activity-source-1::before"         "true"
    "activity-source-1::Type1"          "true"
    "activity-source-1::Type1::before"  "false"
    "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "true"}          true
-  )
+   "activity-source-1::Type2::before"  "true"}           true)
 
 (tabular
   (fact "about activity-types-swtiched-on"
@@ -282,16 +281,16 @@
   {"activity-source-1::Type1"          "true"
    "activity-source-1::Type1::before"  "true"
    "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "true"}          [false false]
+   "activity-source-1::Type2::before"  "true"}           [false false]
   {"activity-source-1::Type1"          "true"
    "activity-source-1::Type1::before"  "false"
    "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "true"}          [true false]
+   "activity-source-1::Type2::before"  "true"}           [true false]
 
 
   {"activity-source-1::Type1::before"  "true"
    "activity-source-1::Type2"          "true"
-   "activity-source-1::Type2::before"  "false"}         [false true])
+   "activity-source-1::Type2::before"  "false"}          [false true])
 
 (tabular
   (fact "about has-activity-source-been-switched-off"

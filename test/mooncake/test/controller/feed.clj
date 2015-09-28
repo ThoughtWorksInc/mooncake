@@ -12,31 +12,18 @@
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 
-
-
-;(def str-source-a-activity (w/stringify-keys source-a-type-1-activity))
-;(def str-source-b-activity (w/stringify-keys source-b-activity))
-;(def str-source-c-activity (w/stringify-keys source-c-activity))
-
-; retrieve all activities of the type that user has expl requested
-; don't retrieve activities of the type tha user has expl hidden
-; retrieve all activities of type that user has not expressed preferences about for sources the user has requested
-
-; don't retrieve any activities for a source that user has explicitly hidden
-; retrieve all activities for a source that user has not expressed the pref about
-
 (fact "feed handler displays activities retrieved from activity sources"
       (let [database (dbh/create-in-memory-db)]
-        (mongo/store! database a/activity-collection {:actor        {"@type"       "Person"
+        (mongo/store! database a/activity-collection {"actor"       {"@type"       "Person"
                                                                      "displayName" "JDog"}
-                                                      :published    ten-oclock
-                                                      :activity-src "OpenAhjo"
+                                                      "published"   ten-oclock
+                                                      "activity-src" "OpenAhjo"
                                                       "@type"       "Activity"})
-        (mongo/store! database a/activity-collection {:actor            {"@type"       "Person"
-                                                                         "displayName" "KCat"}
-                                                      :published        twelve-oclock
-                                                      :activity-src     "objective8"
-                                                      (keyword "@type") "Activity"})
+        (mongo/store! database a/activity-collection {"actor"       {"@type"       "Person"
+                                                                     "displayName" "KCat"}
+                                                      "published"   twelve-oclock
+                                                      "activity-src" "objective8"
+                                                      "@type"       "Activity"})
         (fc/feed database {:context
                            {:activity-sources {:OpenAhjo   {:activity-types ["Activity"]}
                                                :objective8 {:activity-types ["Activity"]}}
@@ -49,38 +36,38 @@
       (fc/feed (dbh/create-in-memory-db) {:context {:translator (constantly "")}
                                           :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
-(def enabled-source--enabled-type {:actor        {"@type"       "Person"
+(def enabled-source--enabled-type {"actor"        {"@type"       "Person"
                                                   "displayName" "Enabled source: enabled type"}
-                                   :published    ten-oclock
-                                   :activity-src "enabled"
+                                   "published"    ten-oclock
+                                   "activity-src" "enabled"
                                    "@type"       "Enabled"})
-(def enabled-source--disabled-type {:actor        {"@type"       "Person"
+(def enabled-source--disabled-type {"actor"        {"@type"       "Person"
                                                    "displayName" "Enabled source: disabled type"}
-                                    :published    eleven-oclock
-                                    :activity-src "enabled"
+                                    "published"    eleven-oclock
+                                    "activity-src" "enabled"
                                     "@type"       "Disabled"})
-(def enabled-source--no-preference-type {:actor        {"@type"       "Person"
+(def enabled-source--no-preference-type {"actor"        {"@type"       "Person"
                                                         "displayName" "Enabled source: no preference expressed"}
-                                         :published    twelve-oclock
-                                         :activity-src "enabled"
+                                         "published"    twelve-oclock
+                                         "activity-src" "enabled"
                                          "@type"       "No-preference"})
 
-(def disabled-source--disabled-type {:actor        {"@type"       "Person"
+(def disabled-source--disabled-type {"actor"        {"@type"       "Person"
                                                     "displayName" "Disabled source"}
-                                     :published    ten-oclock
-                                     :activity-src "disabled"
+                                     "published"    ten-oclock
+                                     "activity-src" "disabled"
                                      "@type"       "Disabled"})
 
-(def disabled-source--no-preference-type {:actor        {"@type"       "Person"
+(def disabled-source--no-preference-type {"actor"        {"@type"       "Person"
                                                          "displayName" "Disabled source"}
-                                          :published    eleven-oclock
-                                          :activity-src "disabled"
+                                          "published"    eleven-oclock
+                                          "activity-src" "disabled"
                                           "@type"       "No-preference"})
 
-(def no-preference-source--some-type {:actor        {"@type"       "Person"
+(def no-preference-source--some-type {"actor"        {"@type"       "Person"
                                                      "displayName" "No preference expressed: any type"}
-                                      :published    ten-oclock
-                                      :activity-src "no-preference"
+                                      "published"    ten-oclock
+                                      "activity-src" "no-preference"
                                       "@type"       "Some-type"})
 
 (facts "about which activities feed handler displays"

@@ -1,15 +1,11 @@
 (ns mooncake.test.handler
   (:require [midje.sweet :refer :all]
-            [cheshire.core :as json]
             [stonecutter-oauth.client :as soc]
             [stonecutter-oauth.jwt :as so-jwt]
             [mooncake.db.user :as user]
             [mooncake.handler :as h]
             [mooncake.routes :as routes]
-            [mooncake.test.test-helpers.enlive :as eh]
-            [mooncake.test.test-helpers.db :as dbh]
-            [mooncake.db.mongo :as mongo]
-            [mooncake.db.activity :as a]))
+            [mooncake.test.test-helpers.enlive :as eh]))
 
 (facts "about site-handlers"
        (fact "throws an exception when stonecutter oauth configuration is invalid"

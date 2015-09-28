@@ -242,17 +242,17 @@
 
 (facts "User can customise feed preferences - activities from disabled sources are not shown on the 'feed' page"
        (drop-db!)
-       (populate-db-with-stub-activities! [{:object       {"displayName" "Activity 1 Title"}
-                                            :published    ten-oclock
-                                            :activity-src "test-activity-source-1"
+       (populate-db-with-stub-activities! [{"object"       {"displayName" "Activity 1 Title"}
+                                            "published"    ten-oclock
+                                            "activity-src" "test-activity-source-1"
                                             "@type"       "TestActivityType-1-1"}
-                                           {:object       {"displayName" "Activity 2 Title"}
-                                            :published    ten-oclock
-                                            :activity-src "test-activity-source-1"
+                                           {"object"       {"displayName" "Activity 2 Title"}
+                                            "published"    ten-oclock
+                                            "activity-src" "test-activity-source-1"
                                             "@type"       "TestActivityType-1-2"}
-                                           {:object       {"displayName" "Activity 3 Title"}
-                                            :published    eleven-oclock
-                                            :activity-src "test-activity-source-2"
+                                           {"object"       {"displayName" "Activity 3 Title"}
+                                            "published"    eleven-oclock
+                                            "activity-src" "test-activity-source-2"
                                             "@type"       "TestActivityType-2-1"}])
 
        (-> (k/session app-with-activity-sources-from-yaml)
@@ -275,17 +275,17 @@
 
 (facts "User can customise feed preferences - activities of disabled types are not shown on the 'feed' page"
        (drop-db!)
-       (populate-db-with-stub-activities! [{:object       {"displayName" "Activity 1 Title"}
-                                            :published    ten-oclock
-                                            :activity-src "test-activity-source-1"
+       (populate-db-with-stub-activities! [{"object"       {"displayName" "Activity 1 Title"}
+                                            "published"    ten-oclock
+                                            "activity-src" "test-activity-source-1"
                                             "@type"       "TestActivityType-1-1"}
-                                           {:object       {"displayName" "Activity 2 Title"}
-                                            :published    ten-oclock
-                                            :activity-src "test-activity-source-1"
+                                           {"object"       {"displayName" "Activity 2 Title"}
+                                            "published"    ten-oclock
+                                            "activity-src" "test-activity-source-1"
                                             "@type"       "TestActivityType-1-2"}
-                                           {:object       {"displayName" "Activity 3 Title"}
-                                            :published    eleven-oclock
-                                            :activity-src "test-activity-source-2"
+                                           {"object"       {"displayName" "Activity 3 Title"}
+                                            "published"    eleven-oclock
+                                            "activity-src" "test-activity-source-2"
                                             "@type"       "TestActivityType-2-1"}])
 
        (-> (k/session app-with-activity-sources-from-yaml)
@@ -356,21 +356,21 @@
 (facts "Displayed content length of activities is limited to 140 characters"
        (drop-db!)
        (populate-db-with-stub-activities! [{"@type"       "Create"
-                                            :object       {"@type"       "Objective"
+                                            "object"       {"@type"       "Objective"
                                                            "displayName" (str "Lorem ipsum dolor sit amet, consectetur "
                                                                               "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
                                                                               "amet, tincidunt ac augue. Mauris pellentesque sed.")}
-                                            :actor        {"displayName" "John Doe"}
-                                            :published    eleven-oclock
-                                            :activity-src "test-activity-source-3"}
+                                            "actor"        {"displayName" "John Doe"}
+                                            "published"    eleven-oclock
+                                            "activity-src" "test-activity-source-3"}
                                            {"@type"       "Question"
-                                            :object       {"@type"       "Objective Question"
+                                            "object"       {"@type"       "Objective Question"
                                                            "displayName" (str "Nullam fermentum, magna et pellentesque "
                                                                               "ultrices, libero arcu elementum diam, id molestie urna velit "
                                                                               "ultrices quam. Mauris id commodo nequeamat. Fusce posuere.")}
-                                            :actor        {"displayName" "Jane Q Public"}
-                                            :published    ten-oclock
-                                            :activity-src "test-activity-source-3"}])
+                                            "actor"        {"displayName" "Jane Q Public"}
+                                            "published"    ten-oclock
+                                            "activity-src" "test-activity-source-3"}])
        (let [expected-objective-title (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "
                                            "eleifend et egestas sit amet, tincidunt ac augue. Mauris\u2026")
              expected-question-title (str "Nullam fermentum, magna et pellentesque ultrices, libero arcu elementum diam, "

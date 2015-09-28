@@ -1,10 +1,8 @@
 (ns mooncake.test.db.mongo
   (:require
     [midje.sweet :refer :all]
-    [monger.collection :as c]
     [monger.operators :as mop]
-    [mooncake.db.mongo :as mongo]
-    [mooncake.test.test-helpers.db :as dbh]))
+    [mooncake.db.mongo :as mongo]))
 
 (facts "about value-map->mongo-query-map"
        (fact "creates query map with the same values if provided map has no nested collections"
