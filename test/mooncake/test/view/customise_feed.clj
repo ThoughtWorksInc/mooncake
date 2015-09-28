@@ -43,16 +43,14 @@
        (let [activity-source-preferences [{:id       "activity-src"
                                            :name     "Activity Source"
                                            :url      "some url"
-                                           :selected true
-                                           :activity-types [{:name "activity-src-activity-type-1"
+                                           :activity-types [{:id "activity-src-activity-type-1"
                                                              :selected false}
-                                                            {:name "activity-src-activity-type-2"
+                                                            {:id "activity-src-activity-type-2"
                                                              :selected true}]}
                                           {:id       "another-activity-src"
                                            :name     "Another Source"
                                            :url      "other url"
-                                           :selected false
-                                           :activity-types [{:name "another-activity-src-activity-type-1"
+                                           :activity-types [{:id "another-activity-src-activity-type-1"
                                                              :selected false}]}]
              context {:activity-source-preferences activity-source-preferences}
              page (cf/customise-feed {:context context})]
@@ -106,12 +104,12 @@
                  (-> third-activity-type-label :attrs :for) => (-> third-label-checkbox :attrs :id)
                  (-> first-label-checkbox :attrs :id) =not=> (-> second-label-checkbox :attrs :id)))
 
-         (fact "selected activity sources are checked"
+         (future-fact "selected activity sources are checked"
                (let [[first-activity-source-checkbox second-activity-source-checkbox] (html/select page [:.clj--feed-item__checkbox])]
                  (:attrs first-activity-source-checkbox) => (contains {:checked "checked"})
                  (contains? (:attrs second-activity-source-checkbox) :checked) => falsey))
 
-         (fact "initial values of activity sources are present on the page"
+         (future-fact "initial values of activity sources are present on the page"
                (let [[first-activity-source-initial-value-input second-activity-source-initial-value-input]
                      (html/select page [:.clj--feed-item__input_hidden])]
                  (:attrs first-activity-source-initial-value-input) => (contains {:name "activity-src::before"})

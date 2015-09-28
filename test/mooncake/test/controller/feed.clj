@@ -36,143 +36,67 @@
       (fc/feed (dbh/create-in-memory-db) {:context {:translator (constantly "")}
                                           :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
-(def enabled-source--enabled-type {"actor"        {"@type"       "Person"
-                                                  "displayName" "Enabled source: enabled type"}
+(def activity-src-1--enabled-type {"actor"        {"@type"       "Person"
+                                                   "displayName" "Activity source 1: enabled type"}
                                    "published"    ten-oclock
-                                   "activity-src" "enabled"
-                                   "@type"       "Enabled"})
-(def enabled-source--disabled-type {"actor"        {"@type"       "Person"
-                                                   "displayName" "Enabled source: disabled type"}
+                                   "activity-src" "activity-src-1"
+                                   "@type"        "Enabled"})
+(def activity-src-1--disabled-type {"actor"        {"@type"       "Person"
+                                                    "displayName" "Activity source 1: disabled type"}
                                     "published"    eleven-oclock
-                                    "activity-src" "enabled"
-                                    "@type"       "Disabled"})
-(def enabled-source--no-preference-type {"actor"        {"@type"       "Person"
-                                                        "displayName" "Enabled source: no preference expressed"}
+                                    "activity-src" "activity-src-1"
+                                    "@type"        "Disabled"})
+(def activity-src-2--no-preference-type {"actor"        {"@type"       "Person"
+                                                         "displayName" "Activity source 2: no preference expressed"}
                                          "published"    twelve-oclock
-                                         "activity-src" "enabled"
-                                         "@type"       "No-preference"})
-
-(def disabled-source--disabled-type {"actor"        {"@type"       "Person"
-                                                    "displayName" "Disabled source"}
-                                     "published"    ten-oclock
-                                     "activity-src" "disabled"
-                                     "@type"       "Disabled"})
-
-(def disabled-source--no-preference-type {"actor"        {"@type"       "Person"
-                                                         "displayName" "Disabled source"}
-                                          "published"    eleven-oclock
-                                          "activity-src" "disabled"
-                                          "@type"       "No-preference"})
-
-(def no-preference-source--some-type {"actor"        {"@type"       "Person"
-                                                     "displayName" "No preference expressed: any type"}
-                                      "published"    ten-oclock
-                                      "activity-src" "no-preference"
-                                      "@type"       "Some-type"})
+                                         "activity-src" "activity-src-2"
+                                         "@type"        "No-preference"})
 
 (facts "about which activities feed handler displays"
        (let [database (dbh/create-in-memory-db)
-             _ (mongo/store! database a/activity-collection enabled-source--enabled-type)
-             _ (mongo/store! database a/activity-collection enabled-source--disabled-type)
-             _ (mongo/store! database a/activity-collection enabled-source--no-preference-type)
-             _ (mongo/store! database a/activity-collection disabled-source--disabled-type)
-             _ (mongo/store! database a/activity-collection disabled-source--no-preference-type)
-             _ (mongo/store! database a/activity-collection no-preference-source--some-type)
+             _ (mongo/store! database a/activity-collection activity-src-1--enabled-type)
+             _ (mongo/store! database a/activity-collection activity-src-1--disabled-type)
+             _ (mongo/store! database a/activity-collection activity-src-2--no-preference-type)
              _ (user/create-user! database ...user-id... ...username...)
-             _ (user/update-feed-settings! database ...username... {:enabled  {:selected true
-                                                                               :types    [{:id "Enabled" :selected true}
-                                                                                          {:id "Disabled" :selected false}]}
-                                                                    :disabled {:selected false
-                                                                               :types    [{:id "Type-1" :selected false}]}})
-             request {:context {:activity-sources {:enabled       {:activity-types ["Enabled" "Disabled" "No-preference"]}
-                                                   :disabled      {:activity-types ["Disabled" "No-preference"]}
-                                                   :no-preference {:activity-types ["Some-type"]}}
+             _ (user/update-feed-settings! database ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
+                                                                                             {:id "Disabled" :selected false}]}})
+             request {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
+                                                   :activity-src-2 {:activity-types ["No-preference"]}}
                                 :translator       (constantly "")}
                       :session {:username ...username...}}
              response (fc/feed database request)]
 
 
-         (facts "activities from explicitly enabled sources"
-                (fact "with explicitly enabled type are displayed"
-                      (:body response) => (contains "Enabled source: enabled type"))
-                (fact "with explicitly hidden type are not displayed"
-                      (:body response) =not=> (contains "Enabled source: disabled type"))
-                (fact "with types for which the user has not expressed a preference are displayed"
-                      (:body response) => (contains "Enabled source: no preference expressed")))
+         (fact "enabled activity types are shown"
+               (:body response) => (contains "Activity source 1: enabled type"))
 
-         (fact "activities from explicitly disabled activity sources are not shown"
-               (:body response) =not=> (contains "Disabled source"))
+         (fact "disabled activity types are not shown"
+               (:body response) =not=> (contains "Activity source 1: disabled type"))
 
-         (fact "all activities from sources user has not expressed preferences about are displayed"
-               (:body response) => (contains "No preference expressed: any type"))
+         (fact "no-preference activity types are shown"
+               (:body response) => (contains "Activity source 2: no preference expressed"))
 
-         (fact "custom message is not shown if any activity sources are enabled"
-               (let [response (fc/feed database request)]
-                 (:body response) =not=> (contains "clj--empty-activity-item")))
+         (fact "custom message is not shown when there are activities on the page"
+               (:body response) =not=> (contains "clj--empty-activity-item"))
 
-         (fact "custom message is shown if all activity sources are disabled"
-               (user/update-feed-settings! database ...username... {:enabled       {:selected false}
-                                                                    :disabled      {:selected false}
-                                                                    :no-preference {:selected false}})
-               (let [response (fc/feed database request)]
-                 (:body response) => (contains "clj--empty-activity-item")))))
-
-(tabular
-    (fact "about retrieve-activities-from-user-sources"
-          (let [activity-sources {:source-a {} :source-b {} :source-c {}}]
-            (fc/get-active-activity-source-keys ?user-feed-settings activity-sources) => ?active-activity-source-keys))
-    ?user-feed-settings ?active-activity-source-keys
-    nil ["source-a" "source-b" "source-c"]
-    {} ["source-a" "source-b" "source-c"]
-    {:source-c {:selected true}} ["source-a" "source-b" "source-c"]
-    {:source-a {:selected true} :source-b {:selected true}} ["source-a" "source-b" "source-c"]
-    {:source-a {:selected true} :source-b {:selected true} :source-c {:selected true}} ["source-a" "source-b" "source-c"]
-    {:source-a {:selected true} :source-b {:selected false} :source-c {:selected true}} ["source-a" "source-c"]
-    {:source-a {:selected false} :source-b {:selected false} :source-c {:selected false}} [])
+         (fact "custom message is shown if all activity types are disabled"
+               (user/update-feed-settings! database ...username... {:activity-src-1 {:types [{:id "Disabled" :selected false}]}})
+               (let [no-activities-request {:context {:activity-sources {:activity-src-1 {:activity-types ["Disabled"]}}
+                                                      :translator       (constantly "")}
+                                            :session {:username ...username...}}
+                     no-activities-response (fc/feed database no-activities-request)]
+                 (:body no-activities-response) => (contains "clj--empty-activity-item")))))
 
 (facts "about generating the activity query map"
-       (let [feed-settings {:enabled  {:selected true
-                                       :types    [{:id "Enabled" :selected true}
-                                                  {:id "Disabled" :selected false}]}
-                            :disabled {:selected false
-                                       :types    [{:id "Type-1" :selected false}]}}
+       (let [feed-settings {:activity-src-1  {:types    [{:id "Enabled" :selected true}
+                                                         {:id "Disabled" :selected false}]}
+                            :activity-src-2 {:types    [{:id "Disabled" :selected false}]}}
 
-             activity-sources {:enabled       {:activity-types ["Enabled" "Disabled" "No-preference"]}
-                               :disabled      {:activity-types ["Disabled" "No-preference"]}
-                               :no-preference {:activity-types ["Some-type"]}}]
+             activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled" "No-preference"]}
+                               :activity-src-2 {:activity-types ["Disabled"]}
+                               :activity-src-3 {:activity-types ["No-preference"]}}]
 
-         (fc/generate-feed-query feed-settings activity-sources) => (just [{"activity-src" "enabled"
+         (fc/generate-feed-query feed-settings activity-sources) => (just [{"activity-src" "activity-src-1"
                                                                             "@type" ["Enabled" "No-preference"]}
-                                                                           {"activity-src" "no-preference"
-                                                                            "@type" ["Some-type"]}] :in-any-order)
-
-         (facts "for enabled sources"
-                (fact "enabled activity types are present"
-                      (fc/generate-feed-query {:enabled {:selected true :types [{:id "Enabled" :selected true}]}}
-                                              {:enabled {:activity-types ["Enabled"]}})
-                      => (just [{"activity-src" "enabled"
-                                 "@type"        ["Enabled"]}]))
-
-                (fact "no-preference activity types are present"
-                      (fc/generate-feed-query {:enabled {:selected true :types []}}
-                                              {:enabled {:activity-types ["No-preference"]}})
-                      => (just [{"activity-src" "enabled"
-                                 "@type"        ["No-preference"]}]))
-
-                (fact "disabled activity types are not present"
-                      (fc/generate-feed-query {:enabled {:selected true :types [{:id "Disabled" :selected false}]}}
-                                              {:enabled {:activity-types ["Disabled"]}})
-                      => (just [{"activity-src" "enabled"
-                                 "@type"       []}])))
-
-         (fact "for disabled sources, activity types are not present"
-               (fc/generate-feed-query {:disabled {:selected false :types [{:id "A-type" :selected false}]}}
-                                       {:disabled {:activity-types ["A-type"]}})
-               => empty?)
-
-
-         (fact "for no-preference sources, activity types are present"
-               (fc/generate-feed-query {}
-                                       {:no-preference {:activity-types ["A-type"]}})
-               => (just [{"activity-src" "no-preference"
-                          "@type"        ["A-type"]}]))))
+                                                                           {"activity-src" "activity-src-3"
+                                                                            "@type" ["No-preference"]}] :in-any-order)))

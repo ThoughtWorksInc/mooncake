@@ -161,36 +161,15 @@
                                           (html/attr= :for "test-activity-source-2")] "Test Activity Source 2")
            (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label
                                           (html/attr= :for "test-activity-source-2::TestActivityType-2-1")] "TestActivityType-2-1")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox
-                                                      (html/attr= :id "test-activity-source-1")] :checked "checked")
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
                                                     (html/attr= :id "test-activity-source-1::TestActivityType-1-1")] :checked "checked")
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
                                                     (html/attr= :id "test-activity-source-1::TestActivityType-1-2")] :checked "checked")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox
-                                                    (html/attr= :id "test-activity-source-2")] :checked "checked")
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
                                                     (html/attr= :id "test-activity-source-2::TestActivityType-2-1")] :checked "checked")
            (kh/selector-exists [ks/customise-feed-page-feed-item-child-checkbox
                                 (html/attr= :id "test-activity-source-2::TestActivityType-2-1")])))
 
-(facts "User can customise feed preferences - changes to activity sources are reflected on the 'customise feed' form"
-       (drop-db!)
-       (-> (k/session app-with-activity-sources-from-yaml)
-           sign-in!
-           (k/visit (routes/path :show-customise-feed))
-           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")])
-           (kh/check-and-press ks/customise-feed-page-submit-button)
-           (kh/check-and-follow-redirect "to /")
-           (kh/check-page-is "/" ks/feed-page-body)
-           (k/visit (routes/path :show-customise-feed))
-           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked)
-           (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-1")] :checked)
-           (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-2")] :checked)
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-2::TestActivityType-2-1")] :checked "checked")))
 
 (facts "User can customise feed preferences - changes to activity types for feeds are reflected on the 'customise feed' form"
        (drop-db!)
@@ -205,73 +184,9 @@
            (kh/check-page-is "/" ks/feed-page-body)
            (k/visit (routes/path :show-customise-feed))
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked "checked")
            (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-1")] :checked)
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-2")] :checked "checked")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")] :checked "checked")
            (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-2::TestActivityType-2-1")] :checked)))
-
-(facts "User can customise feed preferences - child activity type is switched off when parent activity source is switched off"
-       (drop-db!)
-       (-> (k/session app-with-activity-sources-from-yaml)
-           sign-in!
-           (k/visit (routes/path :show-customise-feed))
-           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")])
-           (kh/check-and-press ks/customise-feed-page-submit-button)
-           (kh/check-and-follow-redirect "to /")
-           (k/visit (routes/path :show-customise-feed))
-           (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-1")] :checked)
-           (kh/selector-does-not-have-attribute [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-2")] :checked)))
-
-(facts "User can customise feed preferences - parent feed source is swiched on if child activity is switched on"
-       (drop-db!)
-       (-> (k/session app-with-activity-sources-from-yaml)
-           sign-in!
-           (k/visit (routes/path :show-customise-feed))
-           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")])
-           (kh/check-and-press ks/customise-feed-page-submit-button)
-           (kh/check-and-follow-redirect "to /")
-           (k/visit (routes/path :show-customise-feed))
-           (k/check [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-1")])
-           (kh/check-and-press ks/customise-feed-page-submit-button)
-           (kh/check-and-follow-redirect "to /")
-           (k/visit (routes/path :show-customise-feed))
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")] :checked "checked")))
-
-(facts "User can customise feed preferences - activities from disabled sources are not shown on the 'feed' page"
-       (drop-db!)
-       (populate-db-with-stub-activities! [{"object"       {"displayName" "Activity 1 Title"}
-                                            "published"    ten-oclock
-                                            "activity-src" "test-activity-source-1"
-                                            "@type"       "TestActivityType-1-1"}
-                                           {"object"       {"displayName" "Activity 2 Title"}
-                                            "published"    ten-oclock
-                                            "activity-src" "test-activity-source-1"
-                                            "@type"       "TestActivityType-1-2"}
-                                           {"object"       {"displayName" "Activity 3 Title"}
-                                            "published"    eleven-oclock
-                                            "activity-src" "test-activity-source-2"
-                                            "@type"       "TestActivityType-2-1"}])
-
-       (-> (k/session app-with-activity-sources-from-yaml)
-           sign-in!
-           (k/visit (routes/path :feed))
-           (kh/check-page-is "/" ks/feed-page-body)
-           (kh/selector-includes-content ks/feed-page-activity-list "Activity 1 Title")
-           (kh/selector-includes-content ks/feed-page-activity-list "Activity 2 Title")
-           (kh/selector-includes-content ks/feed-page-activity-list "Activity 3 Title")
-           (kh/check-and-follow ks/header-customise-feed-link)
-           (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")])
-           (kh/check-and-press ks/customise-feed-page-submit-button)
-           (kh/check-and-follow-redirect "to /")
-           (kh/check-page-is "/" ks/feed-page-body)
-           (kh/selector-includes-content ks/feed-page-activity-list "Activity 1 Title")
-           (kh/selector-includes-content ks/feed-page-activity-list "Activity 2 Title")
-           (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity 3 Title")))
-
 
 (facts "User can customise feed preferences - activities of disabled types are not shown on the 'feed' page"
        (drop-db!)
@@ -306,7 +221,7 @@
            (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity 1 Title")
            (kh/selector-does-not-include-content ks/feed-page-activity-list "Activity 3 Title")))
 
-(facts "A message is displayed on feed page if user disables all activity sources"
+(facts "A message is displayed on feed page if user disables all activity types"
        (drop-db!)
        (-> (k/session app-with-activity-sources-from-yaml)
            sign-in!

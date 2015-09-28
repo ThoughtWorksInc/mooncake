@@ -17,9 +17,9 @@
   (let [feed-item-child-snippet (first (html/select enlive-m [:.clj--feed-item-child]))]
     (html/at feed-item-child-snippet [html/root]
              (html/clone-for [activity-type (:activity-types activity-source)
-                              :let [activity-type-id (create-activity-type-id (:id activity-source) (:name activity-type))]]
+                              :let [activity-type-id (create-activity-type-id (:id activity-source) (:id activity-type))]]
                              [:.clj--feed-item-child__label] (html/set-attr :for activity-type-id)
-                             [:.clj--feed-item-child__name] (html/content (:name activity-type))
+                             [:.clj--feed-item-child__name] (html/content (:id activity-type))
                              [:.clj--feed-item-child__checkbox] (html/do->
                                                                   (html/set-attr :name activity-type-id)
                                                                   (html/set-attr :id activity-type-id)

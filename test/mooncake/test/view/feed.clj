@@ -70,8 +70,7 @@
                                        "object"       {"@type"       "Objective Question"
                                                        "displayName" "QUESTION 6 TITLE"
                                                        "description" "Yes."
-                                                       "url"         "http://objective8.dcentproject.eu/objectives/6/questions/23"}}]
-                                     :active-activity-source-keys [...active-activity-source-key...]}})
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/6/questions/23"}}]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
         (count (html/select page [:.clj--activity-item])) => 3
@@ -105,8 +104,7 @@
                                                        "displayName" "Bobby"}}
                                       {"activity-src" "an-activity-src"
                                        "actor"        {"@type"       "Person"
-                                                       "displayName" "2k12carlos"}}]
-                                     :active-activity-source-keys [...active-activity-source-key...]}})
+                                                       "displayName" "2k12carlos"}}]}})
             initials-elements (-> (html/select page [:.clj--avatar__initials]))]
         (html/text (first initials-elements)) => "A"
         (html/text (second initials-elements)) => "B"
@@ -116,8 +114,7 @@
       (let [page (fv/feed {:context {:activities
                                      [{"activity-src" "an-activity-src"}
                                       {"activity-src" "another-activity-src"}
-                                      {"activity-src" "an-activity-src"}]
-                                     :active-activity-source-keys [...active-activity-source-key...]}})
+                                      {"activity-src" "an-activity-src"}]}})
             first-activity-item-class (-> (html/select page [:.clj--activity-item])
                                           first :attrs :class)
             second-activity-item-class (-> (html/select page [:.clj--activity-item])
@@ -134,18 +131,18 @@
         third-activity-item-class =not=> (contains "activity-src-1")
         (count (re-seq #"activity-src-" third-activity-item-class)) => 1))
 
-(facts "about active-activity-source-keys"
-       (facts "about when empty"
-              (let [page (fv/feed {:context {:activities [] :active-activity-source-keys []}})]
-                (fact "message indicating no selected activity sources is shown"
+(facts "about activities"
+       (facts "when empty"
+              (let [page (fv/feed {:context {:activities []}})]
+                (fact "message indicating no retrieved activities"
                       (-> page (html/select [:.clj--empty-activity-item]) first) =not=> nil?)
-                (fact "message indicating no selected activity sources links to the customise feed page"
+                (fact "message indicating no retrieved activities links to the customise feed page"
                       page => (eh/links-to? [:.clj--empty-stream__link] (routes/path :show-customise-feed)))
-                (fact "message indicating no selected activity sources is translated"
+                (fact "message indicating no retrieved activities is translated"
                       (eh/test-translations "feed page - no activity sources message" (constantly page)))))
-       (facts "about when not empty"
-              (let [page (fv/feed {:context {:activities [] :active-activity-source-keys [:some-activity-source]}})]
-                (fact "message indicating no selected activity sources is not shown"
+       (facts "when not empty"
+              (let [page (fv/feed {:context {:activities [...something...]}})]
+                (fact "message indicating no retrieved activities is not shown"
                       (-> page (html/select [:.clj--empty-activity-item]) first) => nil?))))
 
 (fact "activities are rendered on the page"

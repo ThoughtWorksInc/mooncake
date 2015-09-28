@@ -68,16 +68,15 @@
 (defn render-username [enlive-m username]
   (html/at enlive-m [:.clj--username] (html/content username)))
 
-(defn render-activity-stream [enlive-m activities active-activity-source-keys]
-  (if (empty? active-activity-source-keys)
+(defn render-activity-stream [enlive-m activities]
+  (if (empty? activities)
     (add-no-active-activity-sources-message enlive-m)
     (add-activities enlive-m activities)))
 
 (defn feed [request]
-  (let [activities (get-in request [:context :activities])
-        active-activity-source-keys (get-in request [:context :active-activity-source-keys])]
+  (let [activities (get-in request [:context :activities])]
     (-> (vh/load-template "public/feed.html")
         (render-username (get-in request [:session :username]))
         (render-customise-feed-link (mh/signed-in? request))
         (render-sign-out-link (mh/signed-in? request))
-        (render-activity-stream activities active-activity-source-keys))))
+        (render-activity-stream activities))))
