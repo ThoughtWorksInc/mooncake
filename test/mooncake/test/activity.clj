@@ -14,15 +14,15 @@
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"]
         (a/poll-activity-sources {:an-activity-src      {:url an-activity-src-url}
-                                  :another-activity-src {:url another-activity-src-url}}) => [{"activity-src" :an-activity-src
-                                                                                               "actor"        {"displayName" "KCat"}
-                                                                                               "published"    twelve-oclock}
-                                                                                              {"activity-src" :another-activity-src
-                                                                                               "actor"        {"displayName" "LSheep"}
-                                                                                               "published"    eleven-oclock}
-                                                                                              {"activity-src" :an-activity-src
-                                                                                               "actor"        {"displayName" "JDog"}
-                                                                                               "published"    ten-oclock}]
+                                :another-activity-src {:url another-activity-src-url}}) => [{"activity-src" :an-activity-src
+                                                                                      "actor"       {"displayName" "KCat"}
+                                                                                      "published"   twelve-oclock}
+                                                                                     {"activity-src" :another-activity-src
+                                                                                      "actor"       {"displayName" "LSheep"}
+                                                                                      "published"   eleven-oclock}
+                                                                                     {"activity-src" :an-activity-src
+                                                                                      "actor"       {"displayName" "JDog"}
+                                                                                      "published"   ten-oclock}]
         (provided
           (http/get an-activity-src-url {:accept :json
                                          :as     :json-string-keys}) => {:body [{"actor"     {"displayName" "JDog"}
@@ -34,14 +34,14 @@
                                                                                       "published" eleven-oclock}]})))
 
 (fact "can load activity sources from a resource"
-      (a/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 {:url            "https://test-activity.src/activities"
-                                                                                         :name           "Test Activity Source 1"
-                                                                                         :activity-types '("TestActivityType-1-1" "TestActivityType-1-2")}
-                                                                :test-activity-source-2 {:url            "https://another-test-activity.src"
-                                                                                         :name           "Test Activity Source 2"
-                                                                                         :activity-types '("TestActivityType-2-1")}
-                                                                :test-activity-source-3 {:url            "https://yet-another-test-activity.src"
-                                                                                         :name           "Test Activity Source 3"
+      (a/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 {:url  "https://test-activity.src/activities"
+                                                                                         :name "Test Activity Source 1"
+                                                                                         :activity-types  '("TestActivityType-1-1" "TestActivityType-1-2")}
+                                                                :test-activity-source-2 {:url  "https://another-test-activity.src"
+                                                                                         :name "Test Activity Source 2"
+                                                                                         :activity-types  '("TestActivityType-2-1")}
+                                                                :test-activity-source-3 {:url "https://yet-another-test-activity.src"
+                                                                                         :name "Test Activity Source 3"
                                                                                          :activity-types '("Question" "Create")}})
 
 (fact "get-json-from-activity-source gracefully handles exceptions caused by bad/missing responses"
@@ -61,14 +61,14 @@
                         "published" eleven-oclock}]
             db (dbh/create-in-memory-db)]
         (fact
-          (a/sync-activities db {:an-activity-src      {:url an-activity-src-url}
-                                 :another-activity-src {:url another-activity-src-url}})
+          (a/sync-activities db {:an-activity-src       {:url an-activity-src-url}
+                                 :another-activity-src  {:url another-activity-src-url}})
           (count (activity/fetch-activities db)) => 3
           (a/sync-activities db {:an-activity-src      {:url an-activity-src-url}
                                  :another-activity-src {:url another-activity-src-url}})
           (count (activity/fetch-activities db)) => 3
           (against-background
             (http/get an-activity-src-url {:accept :json
-                                           :as     :json-string-keys}) => {:body json-src1}
+                                              :as     :json-string-keys}) => {:body json-src1}
             (http/get another-activity-src-url {:accept :json
                                                 :as     :json-string-keys}) => {:body json-src2}))))

@@ -27,16 +27,16 @@
 
 (fact "feed handler displays activities retrieved from activity sources"
       (let [database (dbh/create-in-memory-db)]
-        (mongo/store! database a/activity-collection {"actor"        {"@type"       "Person"
-                                                                      "displayName" "JDog"}
-                                                      "published"    ten-oclock
-                                                      "activity-src" "OpenAhjo"
-                                                      "@type"        "Activity"})
-        (mongo/store! database a/activity-collection {"actor"        {"@type"       "Person"
-                                                                      "displayName" "KCat"}
-                                                      "published"    twelve-oclock
-                                                      "activity-src" "objective8"
-                                                      "@type"        "Activity"})
+        (mongo/store! database a/activity-collection {:actor        {"@type"       "Person"
+                                                                     "displayName" "JDog"}
+                                                      :published    ten-oclock
+                                                      :activity-src "OpenAhjo"
+                                                      "@type"       "Activity"})
+        (mongo/store! database a/activity-collection {:actor            {"@type"       "Person"
+                                                                         "displayName" "KCat"}
+                                                      :published        twelve-oclock
+                                                      :activity-src     "objective8"
+                                                      (keyword "@type") "Activity"})
         (fc/feed database {:context
                            {:activity-sources {:OpenAhjo   {:activity-types ["Activity"]}
                                                :objective8 {:activity-types ["Activity"]}}
@@ -91,8 +91,8 @@
              _ (mongo/store! database a/activity-collection disabled-source--disabled-type)
              _ (mongo/store! database a/activity-collection disabled-source--no-preference-type)
              _ (mongo/store! database a/activity-collection no-preference-source--some-type)
-             _ (user/create-user! database ...user-id... "username")
-             _ (user/update-feed-settings! database "username" {:enabled  {:selected true
+             _ (user/create-user! database ...user-id... ...username...)
+             _ (user/update-feed-settings! database ...username... {:enabled  {:selected true
                                                                                :types    [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}
                                                                     :disabled {:selected false
@@ -101,7 +101,7 @@
                                                    :disabled      {:activity-types ["Disabled" "No-preference"]}
                                                    :no-preference {:activity-types ["Some-type"]}}
                                 :translator       (constantly "")}
-                      :session {:username "username"}}
+                      :session {:username ...username...}}
              response (fc/feed database request)]
 
 
@@ -124,24 +124,24 @@
                  (:body response) =not=> (contains "clj--empty-activity-item")))
 
          (fact "custom message is shown if all activity sources are disabled"
-               (user/update-feed-settings! database "username" {:enabled       {:selected false}
+               (user/update-feed-settings! database ...username... {:enabled       {:selected false}
                                                                     :disabled      {:selected false}
                                                                     :no-preference {:selected false}})
                (let [response (fc/feed database request)]
                  (:body response) => (contains "clj--empty-activity-item")))))
 
 (tabular
-  (fact "about retrieve-activities-from-user-sources"
-        (let [activity-sources {:source-a {} :source-b {} :source-c {}}]
-          (fc/get-active-activity-source-keys ?user-feed-settings activity-sources) => ?active-activity-source-keys))
-  ?user-feed-settings                                                                   ?active-activity-source-keys
-  nil                                                                                   ["source-a" "source-b" "source-c"]
-  {}                                                                                    ["source-a" "source-b" "source-c"]
-  {:source-c {:selected true}}                                                          ["source-a" "source-b" "source-c"]
-  {:source-a {:selected true} :source-b {:selected true}}                               ["source-a" "source-b" "source-c"]
-  {:source-a {:selected true} :source-b {:selected true} :source-c {:selected true}}    ["source-a" "source-b" "source-c"]
-  {:source-a {:selected true} :source-b {:selected false} :source-c {:selected true}}   ["source-a" "source-c"]
-  {:source-a {:selected false} :source-b {:selected false} :source-c {:selected false}} [])
+    (fact "about retrieve-activities-from-user-sources"
+          (let [activity-sources {:source-a {} :source-b {} :source-c {}}]
+            (fc/get-active-activity-source-keys ?user-feed-settings activity-sources) => ?active-activity-source-keys))
+    ?user-feed-settings ?active-activity-source-keys
+    nil ["source-a" "source-b" "source-c"]
+    {} ["source-a" "source-b" "source-c"]
+    {:source-c {:selected true}} ["source-a" "source-b" "source-c"]
+    {:source-a {:selected true} :source-b {:selected true}} ["source-a" "source-b" "source-c"]
+    {:source-a {:selected true} :source-b {:selected true} :source-c {:selected true}} ["source-a" "source-b" "source-c"]
+    {:source-a {:selected true} :source-b {:selected false} :source-c {:selected true}} ["source-a" "source-c"]
+    {:source-a {:selected false} :source-b {:selected false} :source-c {:selected false}} [])
 
 (facts "about generating the activity query map"
        (let [feed-settings {:enabled  {:selected true
@@ -155,9 +155,9 @@
                                :no-preference {:activity-types ["Some-type"]}}]
 
          (fc/generate-feed-query feed-settings activity-sources) => (just [{"activity-src" "enabled"
-                                                                            "@type"        ["Enabled" "No-preference"]}
+                                                                            "@type" ["Enabled" "No-preference"]}
                                                                            {"activity-src" "no-preference"
-                                                                            "@type"        ["Some-type"]}] :in-any-order)
+                                                                            "@type" ["Some-type"]}] :in-any-order)
 
          (facts "for enabled sources"
                 (fact "enabled activity types are present"
@@ -176,7 +176,7 @@
                       (fc/generate-feed-query {:enabled {:selected true :types [{:id "Disabled" :selected false}]}}
                                               {:enabled {:activity-types ["Disabled"]}})
                       => (just [{"activity-src" "enabled"
-                                 "@type"        []}])))
+                                 "@type"       []}])))
 
          (fact "for disabled sources, activity types are not present"
                (fc/generate-feed-query {:disabled {:selected false :types [{:id "A-type" :selected false}]}}

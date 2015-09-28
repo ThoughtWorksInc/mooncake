@@ -7,7 +7,6 @@
             [mooncake.test.test-helpers.enlive :as eh]
             [mooncake.view.feed :as fv]))
 
-
 (fact "feed page should return feed template"
       (let [page (fv/feed :request)]
         page => (eh/has-class? [:body] "func--feed-page")))
@@ -40,38 +39,38 @@
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
             ten-minutes-ago-str (f/unparse (f/formatters :date-time) ten-minutes-ago)
             page (fv/feed {:context {:activities
-                                                                  [{:activity-src        "an-objective8-activity-src"
-                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :published           ten-minutes-ago-str
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "JDog"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      "OBJECTIVE 7 TITLE"
-                                                                                          :content          "We want to establish Activity Types for Objective8"
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}}
-                                                                   {:activity-src        "a-helsinki-activity-src"
-                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Add"
-                                                                    :published           "2015-09-06T11:05:53+03:00"
-                                                                    :actor               {(keyword "@type") "Group"
-                                                                                          :displayName      "Kaupunginjohtaja/J"
-                                                                                          (keyword "@id")   "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
-                                                                    :object              {(keyword "@id")   "http://dev.hel.fi/paatokset/v1/agenda_item/52359/"
-                                                                                          :displayName      "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
-                                                                                          (keyword "@type") "Content"
-                                                                                          :url              "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
-                                                                                          :content          "some Finnish HTML"}}
-                                                                   {:activity-src        "another-objective8-activity-src"
-                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Question"
-                                                                    :published           "2015-08-04T14:49:38.407Z"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "Lala"}
-                                                                    :object              {(keyword "@type") "Objective Question"
-                                                                                          :displayName      "QUESTION 6 TITLE"
-                                                                                          :description      "Yes."
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/6/questions/23"}}]
+                                     [{"activity-src" "an-objective8-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Create"
+                                       "published"    ten-minutes-ago-str
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "JDog"}
+                                       "object"       {"@type"       "Objective"
+                                                       "displayName" "OBJECTIVE 7 TITLE"
+                                                       "content"     "We want to establish Activity Types for Objective8"
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/7"}}
+                                      {"activity-src" "a-helsinki-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Add"
+                                       "published"    "2015-09-06T11:05:53+03:00"
+                                       "actor"        {"@type"       "Group"
+                                                       "displayName" "Kaupunginjohtaja/J"
+                                                       "@id"         "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
+                                       "object"       {"@id"         "http://dev.hel.fi/paatokset/v1/agenda_item/52359/"
+                                                       "displayName" "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
+                                                       "@type"       "Content"
+                                                       "url"         "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
+                                                       "content"     "some Finnish HTML"}}
+                                      {"activity-src" "another-objective8-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Question"
+                                       "published"    "2015-08-04T14:49:38.407Z"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "Lala"}
+                                       "object"       {"@type"       "Objective Question"
+                                                       "displayName" "QUESTION 6 TITLE"
+                                                       "description" "Yes."
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/6/questions/23"}}]
                                      :active-activity-source-keys [...active-activity-source-key...]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
@@ -98,15 +97,15 @@
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (fv/feed {:context {:activities
-                                                                  [{:activity-src "an-activity-src"
-                                                                    :actor        {(keyword "@type") "Person"
-                                                                                   :displayName      "abby"}}
-                                                                   {:activity-src "an-activity-src"
-                                                                    :actor        {(keyword "@type") "Person"
-                                                                                   :displayName      "Bobby"}}
-                                                                   {:activity-src "an-activity-src"
-                                                                    :actor        {(keyword "@type") "Person"
-                                                                                   :displayName      "2k12carlos"}}]
+                                     [{"activity-src" "an-activity-src"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "abby"}}
+                                      {"activity-src" "an-activity-src"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "Bobby"}}
+                                      {"activity-src" "an-activity-src"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "2k12carlos"}}]
                                      :active-activity-source-keys [...active-activity-source-key...]}})
             initials-elements (-> (html/select page [:.clj--avatar__initials]))]
         (html/text (first initials-elements)) => "A"
@@ -115,9 +114,9 @@
 
 (fact "activity item avatars are assigned the correct classes so they can be colour-coded by activity source"
       (let [page (fv/feed {:context {:activities
-                                                                  [{:activity-src "an-activity-src"}
-                                                                   {:activity-src "another-activity-src"}
-                                                                   {:activity-src "an-activity-src"}]
+                                     [{"activity-src" "an-activity-src"}
+                                      {"activity-src" "another-activity-src"}
+                                      {"activity-src" "an-activity-src"}]
                                      :active-activity-source-keys [...active-activity-source-key...]}})
             first-activity-item-class (-> (html/select page [:.clj--activity-item])
                                           first :attrs :class)
@@ -151,26 +150,26 @@
 
 (fact "activities are rendered on the page"
       (let [page (fv/feed {:context {:activities
-                                                                  [{:activity-src        "an-objective8-activity-src"
-                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "JDog"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      (str "Lorem ipsum dolor sit amet, consectetur "
-                                                                                                                 "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
-                                                                                                                 "amet, tincidunt ac augue. Mauris pellentesque sed.")
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}}
-                                                                   {:activity-src        "an-objective8-activity-src"
-                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "HCat"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      (str "Loremxipsumxdolorxsitxametyxconsecteturx"
-                                                                                                                 "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
-                                                                                                                 "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}}]
+                                     [{"activity-src" "an-objective8-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Create"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "JDog"}
+                                       "object"       {"@type"       "Objective"
+                                                       "displayName" (str "Lorem ipsum dolor sit amet, consectetur "
+                                                                          "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
+                                                                          "amet, tincidunt ac augue. Mauris pellentesque sed.")
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/7"}}
+                                      {"activity-src" "an-objective8-activity-src"
+                                       "@context"     "http://www.w3.org/ns/activitystreams"
+                                       "@type"        "Create"
+                                       "actor"        {"@type"       "Person"
+                                                       "displayName" "HCat"}
+                                       "object"       {"@type"       "Objective"
+                                                       "displayName" (str "Loremxipsumxdolorxsitxametyxconsecteturx"
+                                                                          "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
+                                                                          "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
+                                                       "url"         "http://objective8.dcentproject.eu/objectives/7"}}]
                                      :active-activity-source-keys [...active-activity-source-key...]}})
             [first-activity-item second-activity-item] (html/select page [:.clj--activity-item])]
 

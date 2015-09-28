@@ -9,10 +9,10 @@
     (mongo/store-with-id! db collection :auth-provider-user-id user)))
 
 (defn find-user [db username]
-  (mongo/find-item db collection {:username username}))
+  (mongo/find-item db collection {:username username} true))
 
 (defn fetch-user [db auth-provider-user-id]
-  (mongo/fetch db collection auth-provider-user-id))
+  (mongo/fetch db collection auth-provider-user-id true))
 
 (defn update-feed-settings! [db username feed-settings]
   (let [user (find-user db username)
