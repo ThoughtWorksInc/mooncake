@@ -12,20 +12,31 @@
   &:last-child {
     border-bottom-color: transparent;
   }
+  &__fieldset {
+    position: relative;
+    padding: 0;
+    border: 0;
+  }
   &__children-list {
     @include reset-list;
-    margin-top: -15px;
+    //margin-top: -15px;
     padding-bottom: 15px;
-    padding-left: 15px;
+    padding-left: 0;
     font-weight: normal;
     //border-top: 1px solid $grey_light;
+  }
+  &__toggle-checkbox {
+    position: absolute;
+    top: 11px;
+    right: 0;
   }
 }
 
 .feed-item__name {
+  display: block;
   @include font-size(17px);
-  line-height: 3.0;
-  padding: 30px 20px;
+  line-height: 1.1;
+  padding: 10px 0 10px 0;
   color: $grey_blue;
   @include width-from($medium_device) {
     @include font-size(19px);
@@ -54,7 +65,7 @@
   position: relative;
   display: block;
   margin: 0;
-  padding: 15px 20px;
+  padding: 15px;
 }
 
 .feed-item-child__name {
@@ -68,6 +79,7 @@
 
 .feed-item-child__checkbox {
   position: absolute;
-  right: 20px;
+  right: 0;
   @include vertical-middle-me;
+  cursor: pointer;
 }

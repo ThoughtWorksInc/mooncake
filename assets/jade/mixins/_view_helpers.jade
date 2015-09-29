@@ -46,12 +46,10 @@ mixin feedItemChild(feedName, activityType, isOn)
 mixin feedItem(feedName, isOn, isTrusted)
   - var feedInputID = feedName.replace(/ /g, "").toLowerCase();
   li.feed-item.clj--feed-item
-    span.feed-item__name.clj--feed-item__name #{feedName}
-    span.feed-item__trusted.clj--STRIP(data-l8n="content:customised-feed/feed-digitally-signed-false")
-      if !isTrusted
-        | !Unconfirmed source
-      else
-        | !Confirmed trusted source
-    if block
-      ul.feed-item__children-list.clj--feed-item__children-list
-        block
+    fieldset.feed-item__fieldset
+      legend.feed-item__name.clj--feed-item__name #{feedName}
+      .feed-item__toggle-checkbox.clj--STRIP
+        .checkbox.checkbox--off
+      if block
+        ul.feed-item__children-list.clj--feed-item__children-list
+          block
