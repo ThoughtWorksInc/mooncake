@@ -1,34 +1,33 @@
 (ns mooncake.integration.db.mongo
   (:require
     [midje.sweet :refer :all]
-    [monger.collection :as c]
     [mooncake.db.mongo :as mongo]
     [mooncake.test.test-helpers.db :as dbh]))
 
 (def collection-name "stuff")
 
-(defn test-fetch [database db-type]
-  (fact {:midje/name "creating mongo store from mongo uri creates a MongoDatabase which can be used to store-with-id! and fetch"}
+(defn test-fetch [database]
+  (fact {:midje/name (str (type database) " -- creating mongo store from mongo uri creates a MongoDatabase which can be used to store-with-id! and fetch")}
         (mongo/store-with-id! database collection-name :some-index-key {:some-index-key "barry" :some-other-key "other"})
-        (mongo/fetch database collection-name "barry" true) => {:some-index-key "barry" :some-other-key "other"}
+        (mongo/fetch database collection-name "barry" true) => {:some-index-key "arry" :some-other-key "other"}
         (mongo/fetch database collection-name "barry" false) => {"some-index-key" "barry" "some-other-key" "other"}))
 
-(defn test-store-with-id [database db-type]
-  (fact {:midje/name "storing an item in an empty collection results in just that item being in the collection"}
+(defn test-store-with-id [database]
+  (fact {:midje/name (str (type database) " -- storing an item in an empty collection results in just that item being in the collection")}
         (let [item {:some-index-key "barry" :some-other-key "other"}]
           (mongo/fetch-all database collection-name true) => empty?
           (mongo/store-with-id! database collection-name :some-index-key item) => item
           (count (mongo/fetch-all database collection-name true)) => 1
           (mongo/find-item database collection-name {:some-index-key "barry"} true) => item)))
 
-(defn test-duplicate-key [database db-type]
-  (fact {:midje/name "storing an item with a duplicate key throws an exception"}
+(defn test-duplicate-key [database]
+  (fact {:midje/name (str (type database) " -- storing an item with a duplicate key throws an exception")}
         (let [item {:some-index-key "barry" :some-other-key "other"}]
           (mongo/store-with-id! database collection-name :some-index-key item) => item
           (mongo/store-with-id! database collection-name :some-index-key item) => (throws Exception))))
 
-(defn test-find-item [database db-type]
-  (fact {:midje/name "find-item queries items based on a query map and returns one if a match is found"}
+(defn test-find-item [database]
+  (fact {:midje/name (str (type database) " -- find-item queries items based on a query map and returns one if a match is found")}
         (let [item1 {:some-index-key "barry" :some-other-key "other"}
               item2 {:some-index-key "rebecca" :some-other-key "bsaa"}
               item3 {:some-index-key "zane" :some-other-key "foo" :a-third-key "bar"}
@@ -45,8 +44,8 @@
           (fact "can turn off keywordisation of keys"
                 (mongo/find-item database collection-name {:some-other-key "other"} false) => {"some-index-key" "barry" "some-other-key" "other"}))))
 
-(defn test-find-items-by-key-values [database db-type]
-  (fact {:midje/name (str "find-items-by-key-values queries items based on values of a single key and returns all matching items" " -- " db-type)}
+(defn test-find-items-by-key-values [database]
+  (fact {:midje/name (str (type database) " -- find-items-by-key-values queries items based on values of a single key and returns all matching items")}
         (let [item1 {:some-index-key "barry" :some-other-key "other"}
               item2 {:some-index-key "rebecca" :some-other-key "bsaa"}
               item3 {:some-index-key "zane" :some-other-key "foo" :a-third-key "bar"}
@@ -67,8 +66,8 @@
           (fact "can turn off keywordisation of keys"
                 (mongo/find-items-by-key-values database collection-name "some-other-key" ["other"] false) => [{"some-index-key" "barry" "some-other-key" "other"}]))))
 
-(defn test-find-items-by-alternatives [database db-type]
-  (fact {:midje/name (str "test-find-items-by-alternatives queries items based on values of provided maps -- " db-type)}
+(defn test-find-items-by-alternatives [database]
+  (fact {:midje/name (str (type database) " -- test-find-items-by-alternatives queries items based on values of provided maps")}
         (let [item1 {:some-index-key "rebecca" :some-other-key "other"}
               item2 {:some-index-key "barry" :some-other-key "bsaa"}
               item3 {:some-index-key "zane" :some-other-key "foo" :a-third-key "bar"}
@@ -96,24 +95,24 @@
           (fact "can retrieve results in batches"
                 (mongo/find-items-by-alternatives database collection-name [{}] {:stringify? false :limit 2}) => (two-of anything)))))
 
-(defn test-fetch-all-items-with-stringified-keys [database db-type]
-  (fact {:midje/name "can fetch all items in a collection with stringified keys"}
+(defn test-fetch-all-items-with-stringified-keys [database]
+  (fact {:midje/name (str (type database) " -- can fetch all items in a collection with stringified keys")}
         (let [item1 {:a-key1 1}
               item2 {:a-key2 2}]
           (mongo/store! database collection-name item1)
           (mongo/store! database collection-name item2)
           (mongo/fetch-all database collection-name false) => (just [{"a-key1" 1} {"a-key2" 2}] :in-any-order))))
 
-(defn test-fetch-all-items-with-keywordised-keys [database db-type]
-  (fact {:midje/name "can fetch all items in a collection with keywordised keys"}
+(defn test-fetch-all-items-with-keywordised-keys [database]
+  (fact {:midje/name (str (type database) " -- can fetch all items in a collection with keywordised keys")}
         (let [keywordised-item1 {:keywordised1 1}
               keywordised-item2 {:keywordised2 2}]
           (mongo/store! database collection-name keywordised-item1)
           (mongo/store! database collection-name keywordised-item2)
           (mongo/fetch-all database collection-name true) => (just [{:keywordised1 1} {:keywordised2 2}] :in-any-order))))
 
-(defn test-upsert [database db-type]
-  (fact {:midje/name (format "Implementation: [%s]: upsert inserts a record if it doesn't exist, or replaces it if found with query. " (type database))}
+(defn test-upsert [database]
+  (fact {:midje/name (str (type database) " -- upsert inserts a record if it doesn't exist, or replaces it if found with query")}
         (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "white"})
         (mongo/fetch-all database collection-name true) => [{:name "Gandalf" :colour "white"}]
         (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "grey"})
@@ -135,5 +134,5 @@
           (fn [mongo-db]
             (let [mongo-version (mongo/create-database mongo-db)
                   in-memory-version (dbh/create-in-memory-db)]
-              (test mongo-version "mongo")
-              (test in-memory-version "in-memory"))))))
+              (test mongo-version)
+              (test in-memory-version))))))

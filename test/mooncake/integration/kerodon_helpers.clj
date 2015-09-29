@@ -1,8 +1,7 @@
 (ns mooncake.integration.kerodon-helpers
   (:require [midje.sweet :refer :all]
             [net.cgrand.enlive-html :as html]
-            [kerodon.core :as k]
-            [clojure.string :as string]))
+            [kerodon.core :as k]))
 
 (defn page-title [state]
   (-> state :enlive (html/select [:title]) first html/text))
@@ -37,7 +36,7 @@
         (let [enlive-selector [kerodon-selector]]
           (-> state :enlive (html/select enlive-selector) first :attrs) => (contains {:href anything})))
   (try (k/follow state kerodon-selector)
-       (catch Exception state)))
+       (catch Exception e)))
 
 (defn check-and-follow-redirect
   ([state description]
@@ -45,7 +44,7 @@
    (fact {:midje/name (format "Attempting to follow redirect - %s" description)}
          (-> state :response :status) => 302)
    (try (k/follow-redirect state)
-        (catch Exception state)))
+        (catch Exception e)))
   ([state]
    (check-and-follow-redirect state "")))
 
@@ -54,14 +53,14 @@
         (let [enlive-selector [kerodon-selector]]
           (-> state :enlive (html/select enlive-selector) first :tag) => :input))
   (try (k/fill-in state kerodon-selector value)
-       (catch Exception state)))
+       (catch Exception e)))
 
 (defn check-and-press [state kerodon-selector]
   (fact {:midje/name (format "Attempting to press submit button with selector: %s" kerodon-selector)}
         (let [enlive-selector [kerodon-selector]]
           (-> state :enlive (html/select enlive-selector) first :attrs :type) => "submit"))
   (try (k/press state kerodon-selector)
-       (catch Exception state)))
+       (catch Exception e)))
 
 (defn selector-exists [state kerodon-selector]
   (fact {:midje/name (str "Check element exists with " kerodon-selector)}

@@ -1,6 +1,5 @@
 (ns mooncake.test.controller.feed
   (:require [midje.sweet :refer :all]
-            [clojure.walk :as w]
             [mooncake.controller.feed :as fc]
             [mooncake.test.test-helpers.enlive :as eh]
             [mooncake.test.test-helpers.db :as dbh]

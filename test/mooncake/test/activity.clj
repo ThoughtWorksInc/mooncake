@@ -3,7 +3,8 @@
             [clj-http.client :as http]
             [mooncake.activity :as a]
             [mooncake.test.test-helpers.db :as dbh]
-            [mooncake.db.activity :as activity]))
+            [mooncake.db.activity :as activity])
+  (:import (java.net ConnectException)))
 
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
@@ -48,7 +49,7 @@
       (a/get-json-from-activity-source ...invalid-activity-src-url...) => nil
       (provided
         (http/get ...invalid-activity-src-url...
-                  {:accept :json :as :json-string-keys}) =throws=> (java.net.ConnectException.)))
+                  {:accept :json :as :json-string-keys}) =throws=> (ConnectException.)))
 
 (fact "sync activities retrieves activities from api and stores in database"
       (let [an-activity-src-url "https://an-activity.src"
