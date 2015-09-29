@@ -92,7 +92,9 @@
                 (mongo/find-items-by-alternatives database collection-name [{}] {:stringify? false :sort {:some-index-key :ascending}}) => (just [item2 item1 item3])
                 (mongo/find-items-by-alternatives database collection-name [{}] {:stringify? false :sort {:some-index-key :descending}}) => (just [item3 item1 item2]))
           (fact "only supports sorting by one key"
-                (mongo/find-items-by-alternatives database collection-name [{}] {:stringify? false :sort {:some-index-key :ascending :other-index-key :descending}}) => (throws anything)))))
+                (mongo/find-items-by-alternatives database collection-name [{}] {:stringify? false :sort {:some-index-key :ascending :other-index-key :descending}}) => (throws anything))
+          (fact "can retrieve results in batches"
+                (mongo/find-items-by-alternatives database collection-name [{}] {:stringify? false :limit 2}) => (two-of anything)))))
 
 (defn test-fetch-all-items-with-stringified-keys [database db-type]
   (fact {:midje/name "can fetch all items in a collection with stringified keys"}

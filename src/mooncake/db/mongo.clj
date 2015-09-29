@@ -84,10 +84,12 @@
     (if (not-empty value-map-vector)
       (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
             sort-query-map (options-m->sort-query-map options-m)
+            batch-size (:limit options-m)
             stringify? (:stringify? options-m)
             aggregation-pipeline (cond-> []
                                          :always (conj {mop/$match mongo-query-map})
-                                         (not (empty? sort-query-map)) (conj {mop/$sort sort-query-map}))
+                                         (not (empty? sort-query-map)) (conj {mop/$sort sort-query-map})
+                                         (not (nil? batch-size)) (conj {mop/$limit batch-size}))
             result-m (->> (mcoll/aggregate mongo-db coll aggregation-pipeline)
                           (map dissoc-id))]
         (keywordise result-m (not stringify?)))

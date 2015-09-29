@@ -37,6 +37,11 @@
             (* ordering-multiplier))))
     neutral-comp-fn))
 
+(defn options-m->batch-fn [options-m]
+  (if-let [batch-size (:limit options-m)]
+    (partial take batch-size)
+    identity))
+
 (defrecord MemoryDatabase [data]
   mongo/Database
   (fetch [this coll id keywordise?]
@@ -65,11 +70,13 @@
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
     (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
-    (let [comp-fn (options-m->comp-fn options-m)]
+    (let [comp-fn (options-m->comp-fn options-m)
+          batch-fn (options-m->batch-fn options-m)]
       (->> value-map-vector
            (map #(find-by-map-query this coll % (not (:stringify? options-m))))
            (apply set/union)
-           (sort comp-fn))))
+           (sort comp-fn)
+           batch-fn)))
 
   (store! [this coll item]
     (->> (assoc item :_id (UUID/randomUUID))
