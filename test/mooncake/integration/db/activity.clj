@@ -28,7 +28,6 @@
                   (activity/store-activity! database activity2)
                   (activity/fetch-activities database) => [activity1])))))
 
-
 (fact "can fetch a collection of activities"
       (dbh/with-mongo-do
         (fn [db]

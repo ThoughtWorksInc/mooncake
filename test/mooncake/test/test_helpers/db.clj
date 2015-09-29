@@ -44,10 +44,10 @@
 
 (defrecord MemoryDatabase [data]
   mongo/Database
-  (fetch [this coll id keywordise?]
+  (fetch [this coll id options-m]
     (-> (get-in @data [coll id])
         (dissoc :_id)
-        (keywordise keywordise?)))
+        (keywordise (not (:stringify? options-m)))))
 
   (fetch-all [this coll keywordise?]
     (keywordise

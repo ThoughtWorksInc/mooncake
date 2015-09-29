@@ -55,11 +55,12 @@
 
 (defrecord MongoDatabase [mongo-db]
   Database
-  (fetch [this coll k keywordise?]
-    (when k
-      (-> (mcoll/find-map-by-id mongo-db coll k [] keywordise?)
-          (keywordise keywordise?)
-          (dissoc-id keywordise?))))
+  (fetch [this coll k options-m]
+    (let [stringify (:stringify? options-m)]
+      (when k
+        (-> (mcoll/find-map-by-id mongo-db coll k [] (not stringify))
+            (keywordise (not stringify))
+            (dissoc-id (not stringify))))))
 
   (fetch-all [this coll keywordise?]
     (let [result-m (->> (mcoll/find-maps mongo-db coll)
