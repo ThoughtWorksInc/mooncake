@@ -18,7 +18,7 @@ feed:
   error-button: Show hidden items
 
 empty-feed:
-  page-title: You haven't chosen any activity feeds to follow
+  page-title: There are no activities to show
   intro: Customise your feed here
 
 customise-feed:
