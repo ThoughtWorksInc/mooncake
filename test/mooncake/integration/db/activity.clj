@@ -133,3 +133,17 @@
    {:activity-src :source-2 "@type" ["Create" "Add"]}]                  [activity3 activity2 activity1]
   []                                                                    []
   nil                                                                   [])
+
+(fact "activities are fetched in batches of 50"
+      (dbh/with-mongo-do
+        (fn [db]
+          (let [database (mongo/create-database db)]
+            (->> (range 51)
+                 (map (fn [counter]
+                        {"@displayName" (str "KCat" counter)
+                         "published"    (format "2015-08-12T10:20:%02d.000Z" counter)
+                         "activity-src" "source-1"
+                         "@type"        "Create"}))
+                 (map (partial activity/store-activity! database))
+                 doall)
+            (activity/fetch-activities-by-activity-sources-and-types database [{:activity-src :source-1 "@type" ["Create"]}]) => (n-of anything 50)))))
