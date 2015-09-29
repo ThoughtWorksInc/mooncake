@@ -11,13 +11,6 @@
   (-> (domain/activity->published activity)
       (time-coerce/from-string)))
 
-(defn get-most-recent-activity-date [activities]
-  (->>
-    activities
-    (map activity->published-datetime)
-    sort
-    last))
-
 (defn store-most-recent-activity-date! [db activity-src date]
   (mongo/upsert! db activity-metadata-collection {:activity-src activity-src} {:activity-src activity-src
                                                                                :latest-activity-datetime date}))
@@ -30,9 +23,6 @@
 
 (defn fetch-activities [db]
   (mongo/fetch-all db activity-collection false))
-
-(defn fetch-activities-by-activity-source [db activity-source-keys]
-  (mongo/find-items-by-key-values db activity-collection :activity-src activity-source-keys false))
 
 (defn fetch-activities-by-activity-sources-and-types [db activity-sources-and-types]
   (mongo/find-items-by-alternatives db activity-collection activity-sources-and-types {:stringify? true :sort {"published" :descending} :limit 50}))
