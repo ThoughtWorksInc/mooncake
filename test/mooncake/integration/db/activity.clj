@@ -12,7 +12,7 @@
                 activity {"@displayName" "KCat"
                           "published" "2015-08-12T10:20:41.000Z"}]
             (activity/store-activity! database activity)
-            (mongo/find-item database activity/activity-collection {"@displayName" "KCat"} false) => activity))))
+            (mongo/find-item database activity/activity-collection {"@displayName" "KCat"} {:stringify? true}) => activity))))
 
 (fact "will not store the existing activity"
       (dbh/with-mongo-do

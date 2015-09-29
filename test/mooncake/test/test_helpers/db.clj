@@ -55,11 +55,11 @@
            (map #(dissoc % :_id)))
       (not (:stringify? options-m))))
 
-  (find-item [this coll query-m keywordise?]
+  (find-item [this coll query-m options-m]
     (when query-m
       (-> (find-item-with-id @data coll query-m)
           (dissoc :_id)
-          (keywordise keywordise?))))
+          (keywordise (not (:stringify? options-m))))))
 
   (find-items-by-key-values [this coll k values keywordise?]
     (-> (for [value values]

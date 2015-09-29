@@ -16,7 +16,7 @@
                                                                                :latest-activity-datetime date}))
 
 (defn fetch-most-recent-activity-date [db activity-src]
-  (when-let [item (mongo/find-item db activity-metadata-collection {:activity-src activity-src} true)]
+  (when-let [item (mongo/find-item db activity-metadata-collection {:activity-src activity-src} {:stringify? false})]
     (-> item
         :latest-activity-datetime
         (time-coerce/from-string))))

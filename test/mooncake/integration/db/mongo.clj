@@ -18,7 +18,7 @@
           (mongo/fetch-all database collection-name {:stringify? false}) => empty?
           (mongo/store-with-id! database collection-name :some-index-key item) => item
           (count (mongo/fetch-all database collection-name {:stringify? false})) => 1
-          (mongo/find-item database collection-name {:some-index-key "barry"} true) => item)))
+          (mongo/find-item database collection-name {:some-index-key "barry"} {:stringify? false}) => item)))
 
 (defn test-duplicate-key [database]
   (fact {:midje/name (str (type database) " -- storing an item with a duplicate key throws an exception")}
@@ -34,15 +34,15 @@
               _ (mongo/store-with-id! database collection-name :some-index-key item1)
               _ (mongo/store-with-id! database collection-name :some-index-key item2)
               _ (mongo/store-with-id! database collection-name :some-index-key item3)]
-          (mongo/find-item database collection-name {:some-other-key "other"} true) => item1
-          (mongo/find-item database collection-name {:some-other-key "bsaa"} true) => item2
-          (mongo/find-item database collection-name {:some-other-key "foo" :a-third-key "bar"} true) => item3
+          (mongo/find-item database collection-name {:some-other-key "other"} {:stringify? false}) => item1
+          (mongo/find-item database collection-name {:some-other-key "bsaa"} {:stringify? false}) => item2
+          (mongo/find-item database collection-name {:some-other-key "foo" :a-third-key "bar"} {:stringify? false}) => item3
           (fact {:midje/name "check that non-existant item returns nil"}
-                (mongo/find-item database collection-name {:some-other-key "nonExisty"} true) => nil)
+                (mongo/find-item database collection-name {:some-other-key "nonExisty"} {:stringify? false}) => nil)
           (fact {:midje/name "returns nil if query is nil"}
-                (mongo/find-item database collection-name nil true) => nil)
+                (mongo/find-item database collection-name nil {:stringify? false}) => nil)
           (fact "can turn off keywordisation of keys"
-                (mongo/find-item database collection-name {:some-other-key "other"} false) => {"some-index-key" "barry" "some-other-key" "other"}))))
+                (mongo/find-item database collection-name {:some-other-key "other"} {:stringify? true}) => {"some-index-key" "barry" "some-other-key" "other"}))))
 
 (defn test-find-items-by-key-values [database]
   (fact {:midje/name (str (type database) " -- find-items-by-key-values queries items based on values of a single key and returns all matching items")}
@@ -60,7 +60,7 @@
           (mongo/find-items-by-key-values database collection-name :a-third-key ["bar"] true) => (just [item3 item4] :in-any-order)
 
           (fact {:midje/name "check that non-existant item returns an empty vector"}
-                 (mongo/find-items-by-key-values database collection-name :some-other-key ["nonExisty"] true) => [])
+                (mongo/find-items-by-key-values database collection-name :some-other-key ["nonExisty"] true) => [])
           (fact {:midje/name "check that non-existant key returns an empty vector"}
                 (mongo/find-items-by-key-values database collection-name :non-existing-key ["nonExisty"] true) => [])
           (fact "can turn off keywordisation of keys"

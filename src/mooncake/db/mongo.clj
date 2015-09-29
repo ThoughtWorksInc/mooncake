@@ -7,11 +7,11 @@
             [mooncake.helper :as mh]))
 
 (defprotocol Database
-  (fetch [this coll k keywordise?]
+  (fetch [this coll k options-m]
     "Find the item based on a key.")
-  (fetch-all [this coll keywordise?]
+  (fetch-all [this coll options-m]
     "Find all items based on a collection.")
-  (find-item [this coll query-m keywordise?]
+  (find-item [this coll query-m options-m]
     "Find an item matching the query-map.")
   (find-items-by-key-values [this coll k values keywordise?]
     "Find items whose key 'k' matches one of the given values.")
@@ -67,10 +67,11 @@
                         (map dissoc-id))]
       (keywordise result-m (not (:stringify? options-m)))))
 
-  (find-item [this coll query-m keywordise?]
-    (when query-m
-      (-> (mcoll/find-one-as-map mongo-db coll query-m [] keywordise?)
-          (dissoc-id keywordise?))))
+  (find-item [this coll query-m options-m]
+    (let [stringify? (:stringify? options-m)]
+      (when query-m
+        (-> (mcoll/find-one-as-map mongo-db coll query-m [] (not stringify?))
+            (dissoc-id (not stringify?))))))
 
   (find-items-by-key-values [this coll k values keywordise?]
     (if values
