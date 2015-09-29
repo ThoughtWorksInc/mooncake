@@ -9,7 +9,7 @@
 (defn test-fetch [database]
   (fact {:midje/name (str (type database) " -- creating mongo store from mongo uri creates a MongoDatabase which can be used to store-with-id! and fetch")}
         (mongo/store-with-id! database collection-name :some-index-key {:some-index-key "barry" :some-other-key "other"})
-        (mongo/fetch database collection-name "barry" true) => {:some-index-key "arry" :some-other-key "other"}
+        (mongo/fetch database collection-name "barry" true) => {:some-index-key "barry" :some-other-key "other"}
         (mongo/fetch database collection-name "barry" false) => {"some-index-key" "barry" "some-other-key" "other"}))
 
 (defn test-store-with-id [database]
