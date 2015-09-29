@@ -40,8 +40,7 @@
        sort-by-published-time))
 
 (defn retrieve-activities [database activity-source-keys]
-  (->> (a/fetch-activities-by-activity-sources-and-types database activity-source-keys)
-       sort-by-published-time))
+  (a/fetch-activities-by-activity-sources-and-types database activity-source-keys))
 
 (defn sync-activities [db activity-sources]
   (let [activities (poll-activity-sources activity-sources)]

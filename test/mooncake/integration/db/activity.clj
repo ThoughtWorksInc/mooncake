@@ -128,8 +128,8 @@
 
   ?activity-sources-and-types                                           ?result
   [{:activity-src :source-1 "@type" ["Create"]}]                        [activity1]
-  [{:activity-src :source-1 "@type" ["Create" "Question"]}]             [activity1 activity2]
+  [{:activity-src :source-1 "@type" ["Create" "Question"]}]             [activity2 activity1]
   [{:activity-src :source-1 "@type" ["Create" "Question"]}
-   {:activity-src :source-2 "@type" ["Create" "Add"]}]                  [activity1 activity2 activity3]
+   {:activity-src :source-2 "@type" ["Create" "Add"]}]                  [activity3 activity2 activity1]
   []                                                                    []
   nil                                                                   [])

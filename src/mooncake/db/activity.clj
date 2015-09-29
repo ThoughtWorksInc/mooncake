@@ -35,7 +35,7 @@
   (mongo/find-items-by-key-values db activity-collection :activity-src activity-source-keys false))
 
 (defn fetch-activities-by-activity-sources-and-types [db activity-sources-and-types]
-  (mongo/find-items-by-alternatives db activity-collection activity-sources-and-types {:stringify? true}))
+  (mongo/find-items-by-alternatives db activity-collection activity-sources-and-types {:stringify? true :sort {"published" :descending}}))
 
 (defn store-activity! [db activity]
   (let [activity-src (domain/activity->activity-src activity)
