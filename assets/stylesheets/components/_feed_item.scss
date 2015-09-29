@@ -22,16 +22,10 @@
   }
 }
 
-.feed-item__label {
-  position: relative;
-  display: block;
-  margin: 0;
-  padding: 30px 20px;
-}
-
 .feed-item__name {
   @include font-size(17px);
-  line-height: 1.1;
+  line-height: 3.0;
+  padding: 30px 20px;
   color: $grey_blue;
   @include width-from($medium_device) {
     @include font-size(19px);
@@ -40,8 +34,7 @@
 
 .feed-item__trusted {
   display: block;
-  padding-top: 0.1rem;
-  padding-bottom: 0.1rem;
+  padding: 5px 20px 20px 20px;
   @include font-size(12px);
   font-weight: normal;
   line-height: 1.1;
@@ -49,12 +42,6 @@
   @include width-from($medium_device) {
     @include font-size(13px);
   }
-}
-
-.feed-item__checkbox {
-  position: absolute;
-  right: 20px;
-  @include vertical-middle-me;
 }
 
 .feed-item-child {

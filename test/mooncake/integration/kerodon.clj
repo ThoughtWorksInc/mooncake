@@ -151,14 +151,10 @@
            sign-in!
            (k/visit (routes/path :show-customise-feed))
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label
-                                          (html/attr= :for "test-activity-source-1")] "Test Activity Source 1")
            (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label
                                           (html/attr= :for "test-activity-source-1::TestActivityType-1-1")] "TestActivityType-1-1")
            (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label
                                           (html/attr= :for "test-activity-source-1::TestActivityType-1-2")] "TestActivityType-1-2")
-           (kh/selector-includes-content [ks/customise-feed-page-feed-item-list-item-label
-                                          (html/attr= :for "test-activity-source-2")] "Test Activity Source 2")
            (kh/selector-includes-content [ks/customise-feed-page-feed-item-child-list-item-label
                                           (html/attr= :for "test-activity-source-2::TestActivityType-2-1")] "TestActivityType-2-1")
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
@@ -223,13 +219,15 @@
 
 (facts "A message is displayed on feed page if user disables all activity types"
        (drop-db!)
+       (populate-db-with-stub-activities! [{"object"       {"displayName" "Activity 1 Title"}
+                                            "published"    ten-oclock
+                                            "activity-src" "test-activity-source-1"
+                                            "@type"        "TestActivityType-1-1"}])
        (-> (k/session app-with-activity-sources-from-yaml)
            sign-in!
            (k/visit (routes/path :show-customise-feed))
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-1")])
-           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-2")])
-           (k/uncheck [ks/customise-feed-page-feed-item-checkbox (html/attr= :id "test-activity-source-3")])
+           (k/uncheck [ks/customise-feed-page-feed-item-child-checkbox (html/attr= :id "test-activity-source-1::TestActivityType-1-1")])
            (kh/check-and-press ks/customise-feed-page-submit-button)
            (kh/check-and-follow-redirect "to /")
            (kh/check-page-is "/" ks/feed-page-body)

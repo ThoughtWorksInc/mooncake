@@ -17,7 +17,6 @@
 (def create-account-page-username-input :.func--username__input)
 (def create-account-page-submit-button :.func--create-account__button)
 (def customise-feed-page-body :.func--customise-feed-page)
-(def customise-feed-page-feed-item-list-item-label :.func--feed-item__label)
 (def customise-feed-page-feed-item-checkbox :.func--feed-item__checkbox)
 (def customise-feed-page-submit-button :.func--customise-feed__submit)
 (def customise-feed-page-feed-item-child-list-item-label :.func--feed-item-child__label)

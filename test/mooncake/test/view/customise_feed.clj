@@ -73,26 +73,12 @@
                  (html/text second-activity-type-label-name) => "activity-src-activity-type-2"
                  (html/text third-activity-type-label-name) => "another-activity-src-activity-type-1"))
 
-         (fact "name attributes for activity source selection checkboxes are set correctly"
-               (let [[first-activity-source-checkbox second-activity-source-checkbox]
-                     (html/select page [:.clj--feed-item__checkbox])]
-                 (:attrs first-activity-source-checkbox) => (contains {:name "activity-src"})
-                 (:attrs second-activity-source-checkbox) => (contains {:name "another-activity-src"})))
-
          (fact "name attributes for provided activity types of activity sources selection checkboxes are set correctly"
                (let [[first-activity-type-checkbox second-activity-type-checkbox third-activity-type-checkbox]
                      (html/select page [:.clj--feed-item-child__checkbox])]
                  (:attrs first-activity-type-checkbox) => (contains {:name "activity-src::activity-src-activity-type-1"})
                  (:attrs second-activity-type-checkbox) => (contains {:name "activity-src::activity-src-activity-type-2"})
                  (:attrs third-activity-type-checkbox) => (contains {:name "another-activity-src::another-activity-src-activity-type-1"})))
-
-         (fact "'for' attributes of activity source labels match 'id' attributes of activity source inputs"
-               (let [[first-activity-source-label second-activity-source-label] (html/select page [:.clj--feed-item__label])
-                     first-label-checkbox (first (html/select first-activity-source-label [:.clj--feed-item__checkbox]))
-                     second-label-checkbox (first (html/select second-activity-source-label [:.clj--feed-item__checkbox]))]
-                 (-> first-activity-source-label :attrs :for) => (-> first-label-checkbox :attrs :id)
-                 (-> second-activity-source-label :attrs :for) => (-> second-label-checkbox :attrs :id)
-                 (-> first-label-checkbox :attrs :id) =not=> (-> second-label-checkbox :attrs :id)))
 
          (fact "'for' attributes of activity types labels match 'id' attributes of activity types inputs"
                (let [[first-activity-type-label second-activity-type-label third-activity-type-label] (html/select page [:.clj--feed-item-child__label])
@@ -104,36 +90,12 @@
                  (-> third-activity-type-label :attrs :for) => (-> third-label-checkbox :attrs :id)
                  (-> first-label-checkbox :attrs :id) =not=> (-> second-label-checkbox :attrs :id)))
 
-         (future-fact "selected activity sources are checked"
-               (let [[first-activity-source-checkbox second-activity-source-checkbox] (html/select page [:.clj--feed-item__checkbox])]
-                 (:attrs first-activity-source-checkbox) => (contains {:checked "checked"})
-                 (contains? (:attrs second-activity-source-checkbox) :checked) => falsey))
-
-         (future-fact "initial values of activity sources are present on the page"
-               (let [[first-activity-source-initial-value-input second-activity-source-initial-value-input]
-                     (html/select page [:.clj--feed-item__input_hidden])]
-                 (:attrs first-activity-source-initial-value-input) => (contains {:name "activity-src::before"})
-                 (:attrs first-activity-source-initial-value-input) => (contains {:value "true"})
-                 (:attrs second-activity-source-initial-value-input) => (contains {:name "another-activity-src::before"})
-                 (:attrs second-activity-source-initial-value-input) => (contains {:value "false"})))
-
          (fact "selected activity types are checked"
                (let [[first-activity-type-checkbox second-activity-type-checkbox third-activity-type-checkbox]
                      (html/select page [:.clj--feed-item-child__checkbox])]
                  (contains? (:attrs first-activity-type-checkbox) :checked) => falsey
                  (:attrs second-activity-type-checkbox) => (contains {:checked "checked"})
-                 (contains? (:attrs third-activity-type-checkbox) :checked) => falsey))
-
-         (fact "initial values of activity types are present on the page"
-               (let [[first-activity-type-initial-value-input second-activity-type-initial-value-input third-activity-type-initial-value-input]
-                     (html/select page [:.clj--feed-item-child__input_hidden])]
-                 (:attrs first-activity-type-initial-value-input) => (contains {:name "activity-src::activity-src-activity-type-1::before"})
-                 (:attrs first-activity-type-initial-value-input) => (contains {:value "false"})
-                 (:attrs second-activity-type-initial-value-input) => (contains {:name "activity-src::activity-src-activity-type-2::before"})
-                 (:attrs second-activity-type-initial-value-input) => (contains {:value "true"})
-                 (:attrs third-activity-type-initial-value-input) => (contains {:name "another-activity-src::another-activity-src-activity-type-1::before"})
-                 (:attrs third-activity-type-initial-value-input) => (contains {:value "false"})))))
-
+                 (contains? (:attrs third-activity-type-checkbox) :checked) => falsey))))
 
 (facts "available feed sources are displayed if no activity types are available"
        (let [activity-source-preferences [{:id       "activity-src"

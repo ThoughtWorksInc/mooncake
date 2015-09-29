@@ -7,11 +7,8 @@
 (defn set-form-action [enlive-m]
   (html/at enlive-m [:.clj--customise-feed__form] (html/set-attr :action (r/path :customise-feed))))
 
-(defn create-activity-type-id [activity-source-id activity-type-name]
+(defn- create-activity-type-id [activity-source-id activity-type-name]
   (str activity-source-id "::" activity-type-name))
-
-(defn- element-id->element-before-id [activity-element-id]
-  (str (name activity-element-id) "::before"))
 
 (defn generate-feed-item-children [enlive-m activity-source]
   (let [feed-item-child-snippet (first (html/select enlive-m [:.clj--feed-item-child]))]
@@ -25,26 +22,13 @@
                                                                   (html/set-attr :id activity-type-id)
                                                                   (if (:selected activity-type)
                                                                     (html/set-attr :checked "checked")
-                                                                    (html/remove-attr :checked)))
-                             [:.clj--feed-item-child__input_hidden] (html/do->
-                                                                     (html/set-attr :name (element-id->element-before-id activity-type-id))
-                                                                     (html/set-attr :value (str (:selected activity-type))))))))
+                                                                    (html/remove-attr :checked)))))))
 
 (defn generate-feed-items [enlive-m activity-source-preferences]
   (let [feed-item-snippet (first (html/select enlive-m [:.clj--feed-item]))]
     (html/at feed-item-snippet [html/root]
              (html/clone-for [activity-source activity-source-preferences]
-                             [:.clj--feed-item__label] (html/set-attr :for (:id activity-source))
                              [:.clj--feed-item__name] (html/content (:name activity-source))
-                             [:.clj--feed-item__checkbox] (html/do->
-                                                            (html/set-attr :name (:id activity-source))
-                                                            (html/set-attr :id (:id activity-source))
-                                                            (if (:selected activity-source)
-                                                              (html/set-attr :checked "checked")
-                                                              (html/remove-attr :checked)))
-                             [:.clj--feed-item__input_hidden] (html/do->
-                                                            (html/set-attr :name (element-id->element-before-id (:id activity-source)))
-                                                            (html/set-attr :value (str (:selected activity-source))))
                              [:.clj--feed-item__children-list] (html/content (generate-feed-item-children enlive-m activity-source))))))
 
 (defn add-feed-items [enlive-m activity-source-preferences]
