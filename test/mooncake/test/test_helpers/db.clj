@@ -51,8 +51,8 @@
         flatten
         distinct))
 
-  (find-items-by-alternatives [this coll value-map-vector keywordise?]
-    (reduce (fn [result single-query] (let [query-result (find-by-map-query this coll single-query keywordise?)]
+  (find-items-by-alternatives [this coll value-map-vector options-m]
+    (reduce (fn [result single-query] (let [query-result (find-by-map-query this coll single-query (not (:stringify? options-m)))]
                                         (distinct (concat result query-result))))
             [] value-map-vector))
 

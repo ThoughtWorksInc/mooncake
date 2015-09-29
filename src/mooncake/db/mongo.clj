@@ -14,7 +14,7 @@
     "Find an item matching the query-map.")
   (find-items-by-key-values [this coll k values keywordise?]
     "Find items whose key 'k' matches one of the given values.")
-  (find-items-by-alternatives [this coll value-map-vector keywordise?]
+  (find-items-by-alternatives [this coll value-map-vector options-m]
     "Find items whose properties match properties of at least one of the provided maps.")
   (store! [this coll item]
     "Store the given map and return it.")
@@ -74,12 +74,13 @@
         (keywordise result-m keywordise?))
       []))
 
-  (find-items-by-alternatives [this coll value-map-vector keywordise?]
+  (find-items-by-alternatives [this coll value-map-vector options-m]
     (if (not-empty value-map-vector)
       (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
+            stringify? (:stringify? options-m)
             result-m (->> (mcoll/find-maps mongo-db coll mongo-query-map)
                           (map dissoc-id))]
-        (keywordise result-m keywordise?))
+        (keywordise result-m (not stringify?)))
       []))
 
   (store! [this coll item]

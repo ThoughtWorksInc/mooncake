@@ -68,26 +68,26 @@
                 (mongo/find-items-by-key-values database collection-name "some-other-key" ["other"] false) => [{"some-index-key" "barry" "some-other-key" "other"}]))))
 
 (defn test-find-items-by-alternatives [database db-type]
-  (fact {:midje/name "test-find-items-by-alternatives queries items based on values of provided maps"}
+  (fact {:midje/name (str "test-find-items-by-alternatives queries items based on values of provided maps -- " db-type)}
         (let [item1 {:some-index-key "barry" :some-other-key "other"}
               item2 {:some-index-key "rebecca" :some-other-key "bsaa"}
               item3 {:some-index-key "zane" :some-other-key "foo" :a-third-key "bar"}
               _ (mongo/store-with-id! database collection-name :some-index-key item1)
               _ (mongo/store-with-id! database collection-name :some-index-key item2)
               _ (mongo/store-with-id! database collection-name :some-index-key item3)]
-          (mongo/find-items-by-alternatives database collection-name [{:some-other-key "other"}] true) => [item1]
-          (mongo/find-items-by-alternatives database collection-name [{:some-other-key "other" :some-index-key "rebecca"}] true) => []
-          (mongo/find-items-by-alternatives database collection-name [{:some-index-key ["rebecca"]}] true) => [item2]
-          (mongo/find-items-by-alternatives database collection-name [{:some-other-key ["other" "foo"]}] true) => (just [item1 item3] :in-any-order)
+          (mongo/find-items-by-alternatives database collection-name [{:some-other-key "other"}] {:stringify? false}) => [item1]
+          (mongo/find-items-by-alternatives database collection-name [{:some-other-key "other" :some-index-key "rebecca"}] {:stringify? false}) => []
+          (mongo/find-items-by-alternatives database collection-name [{:some-index-key ["rebecca"]}] {:stringify? false}) => [item2]
+          (mongo/find-items-by-alternatives database collection-name [{:some-other-key ["other" "foo"]}] {:stringify? false}) => (just [item1 item3] :in-any-order)
 
           (fact {:midje/name "check that non-existant item returns an empty vector"}
-                (mongo/find-items-by-alternatives database collection-name [{:some-other-key ["nonExisty"]}] true) => [])
+                (mongo/find-items-by-alternatives database collection-name [{:some-other-key ["nonExisty"]}] {:stringify? false}) => [])
           (fact {:midje/name "check that non-existant key returns an empty vector"}
-                (mongo/find-items-by-alternatives database collection-name [{:non-existing-key ["nonExisty"]}] true) => [])
+                (mongo/find-items-by-alternatives database collection-name [{:non-existing-key ["nonExisty"]}] {:stringify? false}) => [])
           (fact "can turn off keywordisation of keys"
-                (mongo/find-items-by-alternatives database collection-name [{"some-other-key" ["other"]}] false) => [{"some-index-key" "barry" "some-other-key" "other"}])
+                (mongo/find-items-by-alternatives database collection-name [{"some-other-key" ["other"]}] {:stringify? true}) => [{"some-index-key" "barry" "some-other-key" "other"}])
           (fact "can query by multiple alternatives"
-                (mongo/find-items-by-alternatives database collection-name [{:some-other-key ["other"]} {:some-index-key ["rebecca"]}] true) => (just [item1 item2] :in-any-order)))))
+                (mongo/find-items-by-alternatives database collection-name [{:some-other-key ["other"]} {:some-index-key ["rebecca"]}] {:stringify? false}) => (just [item1 item2] :in-any-order)))))
 
 (defn test-fetch-all-items-with-stringified-keys [database db-type]
   (fact {:midje/name "can fetch all items in a collection with stringified keys"}
