@@ -22,7 +22,7 @@
         (time-coerce/from-string))))
 
 (defn fetch-activities [db]
-  (mongo/fetch-all db activity-collection false))
+  (mongo/fetch-all db activity-collection {:stringify? true}))
 
 (defn fetch-activities-by-activity-sources-and-types [db activity-sources-and-types]
   (mongo/find-items-by-alternatives db activity-collection activity-sources-and-types {:stringify? true :sort {"published" :descending} :limit 50}))

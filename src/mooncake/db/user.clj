@@ -12,7 +12,7 @@
   (mongo/find-item db collection {:username username} true))
 
 (defn fetch-user [db auth-provider-user-id]
-  (mongo/fetch db collection auth-provider-user-id true))
+  (mongo/fetch db collection auth-provider-user-id {:stringify? false}))
 
 (defn update-feed-settings! [db username feed-settings]
   (let [user (find-user db username)

@@ -23,7 +23,7 @@
   (reduce (fn [result query-key] (let [query-value (get single-query-map query-key)
                                        search-result (mongo/find-items-by-key-values database coll query-key (to-vector query-value) keywordise?)]
                                    (filter (fn [item] (some #{item} search-result)) result)))
-          (keywordise (mongo/fetch-all database coll keywordise?) keywordise?)
+          (keywordise (mongo/fetch-all database coll {:stringify? (not keywordise?)}) keywordise?)
           (keys single-query-map)))
 
 (def neutral-comp-fn (constantly 0))
@@ -49,11 +49,11 @@
         (dissoc :_id)
         (keywordise (not (:stringify? options-m)))))
 
-  (fetch-all [this coll keywordise?]
+  (fetch-all [this coll options-m]
     (keywordise
       (->> (vals (get @data coll))
            (map #(dissoc % :_id)))
-      keywordise?))
+      (not (:stringify? options-m))))
 
   (find-item [this coll query-m keywordise?]
     (when query-m
@@ -63,7 +63,7 @@
 
   (find-items-by-key-values [this coll k values keywordise?]
     (-> (for [value values]
-          (->> (mongo/fetch-all this coll keywordise?)
+          (->> (mongo/fetch-all this coll {:stringify? (not keywordise?)})
                (filter #(set/subset? (set {k value}) (set %)))))
         flatten
         distinct))
@@ -83,7 +83,7 @@
          (mongo/store-with-id! this coll :_id)))
 
   (store-with-id! [this coll key-param item]
-    (if (mongo/fetch this coll (key-param item) true)
+    (if (mongo/fetch this coll (key-param item) {:stringify? false})
       (throw (Exception. "Duplicate ID!"))
       (do
         (swap! data assoc-in [coll (key-param item)] item)

@@ -62,10 +62,10 @@
             (keywordise (not stringify))
             (dissoc-id (not stringify))))))
 
-  (fetch-all [this coll keywordise?]
+  (fetch-all [this coll options-m]
     (let [result-m (->> (mcoll/find-maps mongo-db coll)
                         (map dissoc-id))]
-      (keywordise result-m keywordise?)))
+      (keywordise result-m (not (:stringify? options-m)))))
 
   (find-item [this coll query-m keywordise?]
     (when query-m

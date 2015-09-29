@@ -15,9 +15,9 @@
 (defn test-store-with-id [database]
   (fact {:midje/name (str (type database) " -- storing an item in an empty collection results in just that item being in the collection")}
         (let [item {:some-index-key "barry" :some-other-key "other"}]
-          (mongo/fetch-all database collection-name true) => empty?
+          (mongo/fetch-all database collection-name {:stringify? false}) => empty?
           (mongo/store-with-id! database collection-name :some-index-key item) => item
-          (count (mongo/fetch-all database collection-name true)) => 1
+          (count (mongo/fetch-all database collection-name {:stringify? false})) => 1
           (mongo/find-item database collection-name {:some-index-key "barry"} true) => item)))
 
 (defn test-duplicate-key [database]
@@ -101,7 +101,7 @@
               item2 {:a-key2 2}]
           (mongo/store! database collection-name item1)
           (mongo/store! database collection-name item2)
-          (mongo/fetch-all database collection-name false) => (just [{"a-key1" 1} {"a-key2" 2}] :in-any-order))))
+          (mongo/fetch-all database collection-name {:stringify? true}) => (just [{"a-key1" 1} {"a-key2" 2}] :in-any-order))))
 
 (defn test-fetch-all-items-with-keywordised-keys [database]
   (fact {:midje/name (str (type database) " -- can fetch all items in a collection with keywordised keys")}
@@ -109,14 +109,14 @@
               keywordised-item2 {:keywordised2 2}]
           (mongo/store! database collection-name keywordised-item1)
           (mongo/store! database collection-name keywordised-item2)
-          (mongo/fetch-all database collection-name true) => (just [{:keywordised1 1} {:keywordised2 2}] :in-any-order))))
+          (mongo/fetch-all database collection-name {:stringify? false}) => (just [{:keywordised1 1} {:keywordised2 2}] :in-any-order))))
 
 (defn test-upsert [database]
   (fact {:midje/name (str (type database) " -- upsert inserts a record if it doesn't exist, or replaces it if found with query")}
         (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "white"})
-        (mongo/fetch-all database collection-name true) => [{:name "Gandalf" :colour "white"}]
+        (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :colour "white"}]
         (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "grey"})
-        (mongo/fetch-all database collection-name true) => [{:name "Gandalf" :colour "grey"}]))
+        (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :colour "grey"}]))
 
 (def tests [test-fetch
             test-store-with-id
