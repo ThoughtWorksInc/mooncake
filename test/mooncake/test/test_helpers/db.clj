@@ -1,12 +1,13 @@
 (ns mooncake.test.test-helpers.db
-  (:require [mooncake.db.mongo :as mongo]
-            [monger.db :as mdb]
+  (:require [monger.db :as mdb]
             [monger.core :as m]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            [clojure.set :as set]
+            [mooncake.db.mongo :as mongo])
   (:import (java.util UUID)))
 
 (defn find-item-with-id [data-map coll query-m]
-  (some #(when (clojure.set/subset? (set query-m) (set %)) %) (vals (get data-map coll))))
+  (some #(when (set/subset? (set query-m) (set %)) %) (vals (get data-map coll))))
 
 (defn to-vector [value]
   (if (sequential? value)
@@ -25,6 +26,17 @@
           (keywordise (mongo/fetch-all database coll keywordise?) keywordise?)
           (keys single-query-map)))
 
+(def neutral-comp-fn (constantly 0))
+
+(defn options-m->comp-fn [options-m]
+  (if-let [sort-key (first (keys (:sort options-m)))]
+    (let [ordering-key (get-in options-m [:sort sort-key])
+          ordering-multiplier (get {:ascending 1 :descending -1} ordering-key 0)]
+      (fn [value-1 value-2]
+        (-> (compare (get value-1 sort-key) (get value-2 sort-key))
+            (* ordering-multiplier))))
+    neutral-comp-fn))
+
 (defrecord MemoryDatabase [data]
   mongo/Database
   (fetch [this coll id keywordise?]
@@ -35,7 +47,7 @@
   (fetch-all [this coll keywordise?]
     (keywordise
       (->> (vals (get @data coll))
-          (map #(dissoc % :_id)))
+           (map #(dissoc % :_id)))
       keywordise?))
 
   (find-item [this coll query-m keywordise?]
@@ -47,14 +59,17 @@
   (find-items-by-key-values [this coll k values keywordise?]
     (-> (for [value values]
           (->> (mongo/fetch-all this coll keywordise?)
-               (filter #(clojure.set/subset? (set {k value}) (set %)))))
+               (filter #(set/subset? (set {k value}) (set %)))))
         flatten
         distinct))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
-    (reduce (fn [result single-query] (let [query-result (find-by-map-query this coll single-query (not (:stringify? options-m)))]
-                                        (distinct (concat result query-result))))
-            [] value-map-vector))
+    (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
+    (let [comp-fn (options-m->comp-fn options-m)]
+      (->> value-map-vector
+           (map #(find-by-map-query this coll % (not (:stringify? options-m))))
+           (apply set/union)
+           (sort comp-fn))))
 
   (store! [this coll item]
     (->> (assoc item :_id (UUID/randomUUID))

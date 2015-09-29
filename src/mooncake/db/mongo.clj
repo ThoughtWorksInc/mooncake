@@ -3,7 +3,8 @@
             [monger.operators :as mop]
             [monger.collection :as mcoll]
             [clojure.tools.logging :as log]
-            [clojure.walk :as walk]))
+            [clojure.walk :as walk]
+            [mooncake.helper :as mh]))
 
 (defprotocol Database
   (fetch [this coll k keywordise?]
@@ -43,6 +44,10 @@
 (defn value-map-vector->or-mongo-query-map [value-map-vector]
   {mop/$or (map value-map->mongo-query-map value-map-vector)})
 
+(defn options-m->sort-query-map [options-m]
+  (-> (:sort options-m)
+      (mh/map-over-values {:ascending 1 :descending -1})))
+
 (defn keywordise [collection keywordise?]
   (if keywordise?
     collection
@@ -75,10 +80,15 @@
       []))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
+    (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
     (if (not-empty value-map-vector)
       (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
+            sort-query-map (options-m->sort-query-map options-m)
             stringify? (:stringify? options-m)
-            result-m (->> (mcoll/find-maps mongo-db coll mongo-query-map)
+            aggregation-pipeline (cond-> []
+                                         :always (conj {mop/$match mongo-query-map})
+                                         (not (empty? sort-query-map)) (conj {mop/$sort sort-query-map}))
+            result-m (->> (mcoll/aggregate mongo-db coll aggregation-pipeline)
                           (map dissoc-id))]
         (keywordise result-m (not stringify?)))
       []))

@@ -37,3 +37,6 @@
 
 (defn redirect-to [request route-key]
   (r/redirect (routes/absolute-path (request->config-m request) route-key)))
+
+(defn map-over-values [m f]
+  (into {} (for [[k v] m] [k (f v)])))
