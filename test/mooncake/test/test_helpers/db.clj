@@ -21,7 +21,7 @@
 
 (defn find-by-map-query [database coll single-query-map keywordise?]
   (reduce (fn [result query-key] (let [query-value (get single-query-map query-key)
-                                       search-result (mongo/find-items-by-key-values database coll query-key (to-vector query-value) keywordise?)]
+                                       search-result (mongo/find-items-by-key-values database coll query-key (to-vector query-value) {:stringify? (not keywordise?)})]
                                    (filter (fn [item] (some #{item} search-result)) result)))
           (keywordise (mongo/fetch-all database coll {:stringify? (not keywordise?)}) keywordise?)
           (keys single-query-map)))
@@ -61,9 +61,9 @@
           (dissoc :_id)
           (keywordise (not (:stringify? options-m))))))
 
-  (find-items-by-key-values [this coll k values keywordise?]
+  (find-items-by-key-values [this coll k values options-m]
     (-> (for [value values]
-          (->> (mongo/fetch-all this coll {:stringify? (not keywordise?)})
+          (->> (mongo/fetch-all this coll options-m)
                (filter #(set/subset? (set {k value}) (set %)))))
         flatten
         distinct))
