@@ -77,11 +77,13 @@
          (mongo/store-with-id! this coll :_id)))
 
   (store-with-id! [this coll key-param item]
-    (if (mongo/fetch this coll (key-param item) {:stringify? false})
-      (throw (Exception. "Duplicate ID!"))
-      (do
-        (swap! data assoc-in [coll (key-param item)] item)
-        (dissoc item :_id))))
+    (let [item-key (key-param item)]
+      (if (mongo/fetch this coll item-key {:stringify? false})
+        (throw (Exception. "Duplicate ID!"))
+        (do
+          (swap! data assoc-in [coll item-key] (assoc item :_id item-key))
+          (dissoc item :_id))))
+    )
 
   (upsert! [this coll query item]
     (let [id (or (-> (find-item-with-id @data coll query) :_id) (UUID/randomUUID))]

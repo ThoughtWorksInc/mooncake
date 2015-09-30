@@ -95,6 +95,15 @@
         (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "grey"})
         (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :colour "grey"}]))
 
+(defn bugfix-test-store-with-id-and-then-upsert [database]
+  (fact {:midje/name (str (type database) " -- upsert works correctly after first storing with id")}
+        (mongo/store-with-id! database collection-name :name {:name "Gandalf"})
+        (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf"}]
+        (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "grey"})
+        (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :colour "grey"}])
+
+  )
+
 (def tests [test-fetch
             test-store-with-id
             test-upsert
@@ -102,7 +111,8 @@
             test-find-items-by-alternatives
             test-duplicate-key
             test-fetch-all-items-with-stringified-keys
-            test-fetch-all-items-with-keywordised-keys])
+            test-fetch-all-items-with-keywordised-keys
+            bugfix-test-store-with-id-and-then-upsert])
 
 (fact "test both implementations of database"
       (doseq [test tests]
