@@ -13,8 +13,6 @@
     "Find all items based on a collection.")
   (find-item [this coll query-m options-m]
     "Find an item matching the query-map.")
-  (find-items-by-key-values [this coll k values options-m]
-    "Find items whose key 'k' matches one of the given values.")
   (find-items-by-alternatives [this coll value-map-vector options-m]
     "Find items whose properties match properties of at least one of the provided maps.")
   (store! [this coll item]
@@ -72,14 +70,6 @@
       (when query-m
         (-> (mcoll/find-one-as-map mongo-db coll query-m [] (not stringify?))
             (dissoc-id (not stringify?))))))
-
-  (find-items-by-key-values [this coll k values options-m]
-    (if values
-      (let [mongo-key-in-query (key-values->mongo-query-map k values)
-            result-m (->> (mcoll/find-maps mongo-db coll mongo-key-in-query)
-                          (map dissoc-id))]
-        (keywordise result-m (not (:stringify? options-m))))
-      []))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
     (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))

@@ -20,7 +20,8 @@
     (walk/stringify-keys collection)))
 
 (defn find-by-map-query [database coll single-query-map keywordise?]
-  (let [search-function (fn [[k vs]] (set (mongo/find-items-by-key-values database coll k (to-vector vs) {:stringify? (not keywordise?)})))
+  (let [search-function (fn [[k vs]] (set (let [filter-function (fn [document] ((set (to-vector vs)) (get document k)))]
+                                            (filter filter-function (mongo/fetch-all database coll {:stringify? (not keywordise?)})))))
         search-result-sets (map search-function single-query-map)]
     (if (empty? search-result-sets)
       (mongo/fetch-all database coll {:stringify? (not keywordise?)})
@@ -60,10 +61,6 @@
       (-> (find-item-with-id @data coll query-m)
           (dissoc :_id)
           (keywordise (not (:stringify? options-m))))))
-
-  (find-items-by-key-values [this coll k values options-m]
-    (let [filter-function (fn [document] ((set values) (get document k)))]
-      (filter filter-function (mongo/fetch-all this coll options-m))))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
     (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
