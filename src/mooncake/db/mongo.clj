@@ -28,9 +28,6 @@
   ([item keywordise?]
    (dissoc item (if keywordise? :_id "_id"))))
 
-(defn key-values->mongo-query-map [k values]
-  {k {mop/$in values}})
-
 (defn value->mongo-query-value [value]
   (if (sequential? value)
     {mop/$in value}
@@ -46,24 +43,23 @@
   (-> (:sort options-m)
       (mh/map-over-values {:ascending 1 :descending -1})))
 
-(defn keywordise [collection keywordise?]
-  (if keywordise?
-    collection
-    (walk/stringify-keys collection)))
+(defn stringify [collection stringify?]
+  (cond-> collection
+          stringify? walk/stringify-keys))
 
 (defrecord MongoDatabase [mongo-db]
   Database
   (fetch [this coll k options-m]
-    (let [stringify (:stringify? options-m)]
+    (let [stringify? (:stringify? options-m)]
       (when k
-        (-> (mcoll/find-map-by-id mongo-db coll k [] (not stringify))
-            (keywordise (not stringify))
-            (dissoc-id (not stringify))))))
+        (-> (mcoll/find-map-by-id mongo-db coll k [] (not stringify?))
+            (stringify stringify?)
+            (dissoc-id (not stringify?))))))
 
   (fetch-all [this coll options-m]
     (let [result-m (->> (mcoll/find-maps mongo-db coll)
                         (map dissoc-id))]
-      (keywordise result-m (not (:stringify? options-m)))))
+      (stringify result-m (:stringify? options-m))))
 
   (find-item [this coll query-m options-m]
     (let [stringify? (:stringify? options-m)]
@@ -84,7 +80,7 @@
                                          (not (nil? batch-size)) (conj {mop/$limit batch-size}))
             result-m (->> (mcoll/aggregate mongo-db coll aggregation-pipeline)
                           (map dissoc-id))]
-        (keywordise result-m (not stringify?)))
+        (stringify result-m stringify?))
       []))
 
   (store! [this coll item]

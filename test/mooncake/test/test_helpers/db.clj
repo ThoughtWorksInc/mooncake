@@ -14,13 +14,8 @@
     value
     [value]))
 
-(defn keywordise [collection keywordise?]
-  (if keywordise?
-    collection
-    (walk/stringify-keys collection)))
-
-(defn find-by-map-query [database coll single-query-map keywordise?]
-  (let [all-documents (mongo/fetch-all database coll {:stringify? (not keywordise?)})
+(defn find-by-map-query [database coll single-query-map options-m]
+  (let [all-documents (mongo/fetch-all database coll options-m)
         documents-with-matching-key-values (fn [[k vs]] (filter #((set (to-vector vs)) (get % k)) all-documents))
         search-result-sets (->> single-query-map
                                 (map documents-with-matching-key-values)
@@ -50,26 +45,26 @@
   (fetch [this coll id options-m]
     (-> (get-in @data [coll id])
         (dissoc :_id)
-        (keywordise (not (:stringify? options-m)))))
+        (mongo/stringify (:stringify? options-m))))
 
   (fetch-all [this coll options-m]
-    (keywordise
+    (mongo/stringify
       (->> (vals (get @data coll))
            (map #(dissoc % :_id)))
-      (not (:stringify? options-m))))
+      (:stringify? options-m)))
 
   (find-item [this coll query-m options-m]
     (when query-m
       (-> (find-item-with-id @data coll query-m)
           (dissoc :_id)
-          (keywordise (not (:stringify? options-m))))))
+          (mongo/stringify (:stringify? options-m)))))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
     (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
     (let [comp-fn (options-m->comp-fn options-m)
           batch-fn (options-m->batch-fn options-m)]
       (->> value-map-vector
-           (map #(find-by-map-query this coll % (not (:stringify? options-m))))
+           (map #(find-by-map-query this coll % options-m))
            (apply set/union)
            (sort comp-fn)
            batch-fn)))
@@ -84,8 +79,7 @@
         (throw (Exception. "Duplicate ID!"))
         (do
           (swap! data assoc-in [coll item-key] (assoc item :_id item-key))
-          (dissoc item :_id))))
-    )
+          (dissoc item :_id)))))
 
   (upsert! [this coll query item]
     (let [id (or (-> (find-item-with-id @data coll query) :_id) (UUID/randomUUID))]
