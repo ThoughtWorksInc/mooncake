@@ -20,11 +20,13 @@
     (walk/stringify-keys collection)))
 
 (defn find-by-map-query [database coll single-query-map keywordise?]
-  (let [search-function (fn [[k vs]] (set (let [filter-function (fn [document] ((set (to-vector vs)) (get document k)))]
-                                            (filter filter-function (mongo/fetch-all database coll {:stringify? (not keywordise?)})))))
-        search-result-sets (map search-function single-query-map)]
+  (let [all-documents (mongo/fetch-all database coll {:stringify? (not keywordise?)})
+        documents-with-matching-key-values (fn [[k vs]] (filter #((set (to-vector vs)) (get % k)) all-documents))
+        search-result-sets (->> single-query-map
+                                (map documents-with-matching-key-values)
+                                (map set))]
     (if (empty? search-result-sets)
-      (mongo/fetch-all database coll {:stringify? (not keywordise?)})
+      all-documents
       (apply set/intersection search-result-sets))))
 
 (def neutral-comp-fn (constantly 0))
