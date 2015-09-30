@@ -43,7 +43,7 @@
                        :aliases        {"stub"       ["with-profile" "dev,stub" "run"]
                                         "cljs-build" ["cljsbuild" "once" "prod"]
                                         "test"       ["do" "clean," "midje," "test-cljs"]
-                                        "test-cljs"  ["do" "clean," "cljsbuild" "once" "test"]
+                                        "test-cljs"  ["do" "clean," "gulp," "cljsbuild" "once" "test"]
                                         "auto-cljs"  ["do" "test-cljs," "cljsbuild" "auto" "test"]
                                         "gulp"       ["shell" "gulp" "build"]
                                         "start"      ["do" "gulp," "cljs-build," "run"]}

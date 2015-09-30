@@ -15,10 +15,11 @@ block content
 
     form.customise-feed-form.clj--customise-feed__form(action="./", method="post")
       ul.customise-feed.clj--customise-feed__list.func--customise-feed__list
-        +feedItem('Objective 8', true, true)
+        +feedItem('Objective 8', true)
           +feedItemChild('Objective 8', 'Create', true)
           +feedItemChild('Objective 8', 'Comment', true)
           +feedItemChild('Objective 8', 'Question', true)
         +feedItem('TFL updates', false)
-        +feedItem('Future 8', true, true)
+          +feedItemChild('TFL Updates', 'Bus', true)
+          +feedItemChild('TFL Updates', 'Train', false)
       button.button.func--customise-feed__submit(type="submit", value="Save") Save
