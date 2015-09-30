@@ -78,7 +78,6 @@
           (mongo/find-items-by-alternatives database collection-name [{:some-other-key "other" :some-index-key "barry"}] {:stringify? false}) => []
           (mongo/find-items-by-alternatives database collection-name [{:some-index-key ["barry"]}] {:stringify? false}) => [item2]
           (mongo/find-items-by-alternatives database collection-name [{:some-other-key ["other" "foo"]}] {:stringify? false}) => (just [item1 item3] :in-any-order)
-
           (fact {:midje/name "check that non-existant item returns an empty vector"}
                 (mongo/find-items-by-alternatives database collection-name [{:some-other-key ["nonExisty"]}] {:stringify? false}) => [])
           (fact {:midje/name "check that non-existant key returns an empty vector"}
