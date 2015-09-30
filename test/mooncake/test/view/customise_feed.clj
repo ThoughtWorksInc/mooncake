@@ -76,9 +76,9 @@
          (fact "name attributes for provided activity types of activity sources selection checkboxes are set correctly"
                (let [[first-activity-type-checkbox second-activity-type-checkbox third-activity-type-checkbox]
                      (html/select page [:.clj--feed-item-child__checkbox])]
-                 (:attrs first-activity-type-checkbox) => (contains {:name "activity-src||activity-src-activity-type-1"})
-                 (:attrs second-activity-type-checkbox) => (contains {:name "activity-src||activity-src-activity-type-2"})
-                 (:attrs third-activity-type-checkbox) => (contains {:name "another-activity-src||another-activity-src-activity-type-1"})))
+                 (:attrs first-activity-type-checkbox) => (contains {:name "activity-src_-_activity-src-activity-type-1"})
+                 (:attrs second-activity-type-checkbox) => (contains {:name "activity-src_-_activity-src-activity-type-2"})
+                 (:attrs third-activity-type-checkbox) => (contains {:name "another-activity-src_-_another-activity-src-activity-type-1"})))
 
          (fact "'for' attributes of activity types labels match 'id' attributes of activity types inputs"
                (let [[first-activity-type-label second-activity-type-label third-activity-type-label] (html/select page [:.clj--feed-item-child__label])

@@ -6,7 +6,7 @@
 (def default-feed-type-selected-value true)
 
 (defn- construct-activity-type-form-parameter [activity-source-id activity-type]
-  (str (name activity-source-id) "||" activity-type))
+  (keyword (str (name activity-source-id) "_-_" activity-type)))
 
 (defn- activity-type-submitted? [activity-source-id activity-type posted-parameters]
   (let [activity-type-form-id (construct-activity-type-form-parameter activity-source-id activity-type)]
