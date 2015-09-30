@@ -56,7 +56,7 @@
               _ (mongo/store-with-id! database collection-name :some-index-key item4)]
           (mongo/find-items-by-key-values database collection-name :some-other-key ["other"] {:stringify? false}) => [item1]
           (mongo/find-items-by-key-values database collection-name :some-index-key ["rebecca"] {:stringify? false}) => [item2]
-          (mongo/find-items-by-key-values database collection-name :some-other-key ["other" "foo"] {:stringify? false}) => [item1 item3]
+          (mongo/find-items-by-key-values database collection-name :some-other-key ["other" "foo"] {:stringify? false}) => (just [item1 item3] :in-any-order)
           (mongo/find-items-by-key-values database collection-name :a-third-key ["bar"] {:stringify? false}) => (just [item3 item4] :in-any-order)
 
           (fact {:midje/name "check that non-existant item returns an empty vector"}

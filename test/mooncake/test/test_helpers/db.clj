@@ -62,11 +62,8 @@
           (keywordise (not (:stringify? options-m))))))
 
   (find-items-by-key-values [this coll k values options-m]
-    (-> (for [value values]
-          (->> (mongo/fetch-all this coll options-m)
-               (filter #(set/subset? (set {k value}) (set %)))))
-        flatten
-        distinct))
+    (let [filter-function (fn [document] ((set values) (get document k)))]
+      (filter filter-function (mongo/fetch-all this coll options-m))))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
     (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
