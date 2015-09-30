@@ -21,21 +21,52 @@
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
                                                     javax.jms/jms
                                                     com.sun.jdmk/jmxtools
-                                                    com.sun.jmx/jmxri]]]
+                                                    com.sun.jmx/jmxri]]
+                 [org.clojure/clojurescript "0.0-3308" :scope "provided"]
+                 [prismatic/dommy "1.1.0"]]
   :main mooncake.handler
   :profiles {:dev     {:dependencies   [[ring-mock "0.1.5"]
                                         [midje "1.7.0"]
                                         [kerodon "0.6.1"]]
                        :plugins        [[lein-environ "1.0.0"]
                                         [lein-midje "3.1.3"]
-                                        [lein-ancient "0.6.7"]]
+                                        [lein-ancient "0.6.7"]
+                                        [lein-cljsbuild "1.0.6"]
+                                        [lein-shell "0.4.1"]
+                                        [com.cemerick/clojurescript.test "0.3.3"]]
                        :resource-paths ["resources" "test-resources"]
                        :env            {:secure        "false"
                                         :client-id     "fake stonecutter client id"
                                         :client-secret "fake stonecutter client secret"
                                         :auth-url      "fake stonecutter auth url"
-                                        :mongo-uri     "mongodb://localhost:27017/mooncake-dev"}}
+                                        :mongo-uri     "mongodb://localhost:27017/mooncake-dev"}
+                       :aliases        {"stub"       ["with-profile" "dev,stub" "run"]
+                                        "cljs-build" ["cljsbuild" "once" "prod"]
+                                        "test"       ["do" "clean," "midje," "test-cljs"]
+                                        "test-cljs"  ["do" "clean," "cljsbuild" "once" "test"]
+                                        "auto-cljs"  ["do" "test-cljs," "cljsbuild" "auto" "test"]
+                                        "gulp"       ["shell" "gulp" "build"]
+                                        "start"      ["do" "gulp," "cljs-build," "run"]}
+                       :cljsbuild      {:builds [{:id           "prod"
+                                                  :source-paths ["src-cljs"]
+                                                  :compiler     {:output-to     "resources/public/js/main.js"
+                                                                 :asset-path    "js/out"
+                                                                 :optimizations :advanced
+                                                                 :pretty-print  false}}
+                                                 {:id             "test"
+                                                  :source-paths   ["src-cljs" "test-cljs"]
+                                                  :notify-command ["phantomjs" :cljs.test/runner "target/cljs/testable.js"]
+                                                  :compiler       {:output-to     "target/cljs/testable.js"
+                                                                   :optimizations :whitespace
+                                                                   :pretty-print  true}}]}}
              :stub    {:env {:stub-user "MRS STUBBY"}}
-             :uberjar {:aot :all}}
-  :aliases {"stub" ["with-profile" "dev,stub" "run"]}
+             :uberjar {:hooks       [leiningen.cljsbuild]
+                       :env         {:production true}
+                       :aot         :all
+                       :omit-source true
+                       :cljsbuild   {:jar    true
+                                     :builds [{:source-paths ["src-cljs"]
+                                               :compiler     {:output-to     "resources/public/js/main.js"
+                                                              :optimizations :advanced
+                                                              :pretty-print  false}}]}}}
   )
