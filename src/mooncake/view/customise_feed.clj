@@ -8,7 +8,7 @@
   (html/at enlive-m [:.clj--customise-feed__form] (html/set-attr :action (r/path :customise-feed))))
 
 (defn- create-activity-type-id [activity-source-id activity-type-name]
-  (str activity-source-id "::" activity-type-name))
+  (str activity-source-id "||" activity-type-name))
 
 (defn generate-feed-item-children [enlive-m activity-source]
   (let [feed-item-child-snippet (first (html/select enlive-m [:.clj--feed-item-child]))]

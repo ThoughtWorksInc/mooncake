@@ -14,7 +14,7 @@
                                                                   :another-activity-src {:name           "B. Another Source"
                                                                                          :url            "another url"
                                                                                          :activity-types ["Question"]}}}
-                                     :params  {"activity-src::Question" "anything"
+                                     :params  {"activity-src||Question" "anything"
                                                :some-other-param        "something-else"}
                                      :session {:username ...username...}}
              db (dbh/create-in-memory-db)
@@ -69,13 +69,13 @@
                (let [[first-child-checkbox second-child-checkbox third-child-checkbox] (-> (html/html-snippet (:body response))
                                                                                            (html/select [:.clj--feed-item-child__checkbox]))]
 
-                 (-> first-child-checkbox :attrs :id) => "activity-src::Create"
+                 (-> first-child-checkbox :attrs :id) => "activity-src||Create"
                  (-> first-child-checkbox :attrs :checked) => nil
 
-                 (-> second-child-checkbox :attrs :id) => "activity-src::Question"
+                 (-> second-child-checkbox :attrs :id) => "activity-src||Question"
                  (-> second-child-checkbox :attrs :checked) => "checked"
 
-                 (-> third-child-checkbox :attrs :id) => "another-activity-src::Add"
+                 (-> third-child-checkbox :attrs :id) => "another-activity-src||Add"
                  (-> third-child-checkbox :attrs :checked) => nil))
 
          (fact "it should select activity types which are not explicitly set in user preferences by default"
@@ -85,16 +85,16 @@
                      [first-child-checkbox second-child-checkbox third-child-checkbox fourth-child-checkbox] (-> (html/html-snippet (:body response))
                                                                                                                  (html/select [:.clj--feed-item-child__checkbox]))]
 
-                 (-> first-child-checkbox :attrs :id) => "activity-src::Create"
+                 (-> first-child-checkbox :attrs :id) => "activity-src||Create"
                  (-> first-child-checkbox :attrs :checked) => "checked"
 
-                 (-> second-child-checkbox :attrs :id) => "activity-src::Question"
+                 (-> second-child-checkbox :attrs :id) => "activity-src||Question"
                  (-> second-child-checkbox :attrs :checked) => nil
 
-                 (-> third-child-checkbox :attrs :id) => "another-activity-src::Add"
+                 (-> third-child-checkbox :attrs :id) => "another-activity-src||Add"
                  (-> third-child-checkbox :attrs :checked) => "checked"
 
-                 (-> fourth-child-checkbox :attrs :id) => "yet-another-activity-src::Add"
+                 (-> fourth-child-checkbox :attrs :id) => "yet-another-activity-src||Add"
                  (-> fourth-child-checkbox :attrs :checked) => "checked"))))
 
 
@@ -174,7 +174,7 @@
                                                               :selected false}]}]
                  (cf/create-user-feed-settings-for-source :activity-src single-activity-source-configuration submitted-parameters) => expected-user-feed-settings))
          (fact "selects activity types which match submitted parameters"
-               (let [submitted-parameters {"activity-src::Create" "bar"}
+               (let [submitted-parameters {"activity-src||Create" "bar"}
                      expected-user-feed-settings {:types    [{:id       "Create"
                                                               :selected true}
                                                              {:id       "Question"
