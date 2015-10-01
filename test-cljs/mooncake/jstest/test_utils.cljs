@@ -14,8 +14,58 @@
 (defn print-html []
   (print (dommy/html (sel1 :html))))
 
+
+;; Assertions
+
+(defn test-field-class-existance [has-class? selector css-class]
+  (is (= has-class? (dommy/has-class? (sel1 selector) css-class))
+      (if has-class?
+        (str "field: " selector " does not contain expected class: " css-class)
+        (str "field: " selector " contains class " css-class " when it shouldn't"))))
+
+(def test-field-does-not-have-class (partial test-field-class-existance false))
+(def test-field-has-class (partial test-field-class-existance true))
+
+(defn test-attr= [elem attr value]
+  (is (= value (dommy/attr elem attr))))
+
+(defn test-does-not-have-attr [elem attr]
+  (is (= nil (dommy/attr elem attr))))
+
+
+;; Getters and setters
+
 (defn set-html! [html-string]
   (dommy/set-html! (sel1 :html) html-string))
+
+(defn set-value [sel text]
+  (dommy/set-value! (sel1 sel) text))
+
+(defn select-all [selector]
+  (sel selector))
+
+(defn add-class! [selector class]
+  (dommy/add-class! (sel1 selector) class))
+
+(defn remove-class! [selector class]
+  (dommy/remove-class! (sel1 selector) class))
+
+(defn set-attr! [selector attr value]
+  (dommy/set-attr! (sel1 selector) attr value))
+
+(defn set-attr-on-all! [selector attr value]
+  (doseq [elem (sel selector)]
+    (dommy/set-attr! elem attr value)))
+
+(defn remove-attr! [selector attr]
+  (dommy/remove-attr! (sel1 selector) attr))
+
+(defn remove-attr-from-all! [selector attr]
+  (doseq [elem (sel selector)]
+      (dommy/remove-attr! elem attr)))
+
+
+;; Events
 
 (defn create-event [event-type]
   (let [event (.createEvent js/document "Event")]
@@ -34,34 +84,8 @@
         (.dispatchEvent node (update-event! event)))
       (.fireEvent node (str "on" (name event-type))
                   (update-event! (.createEventObject js/document))))))
-
-(defn set-value [sel text]
-  (dommy/set-value! (sel1 sel) text))
-
-(defn test-field-class-existance [has-class? selector css-class]
-  (is (= has-class? (dommy/has-class? (sel1 selector) css-class))
-      (if has-class?
-        (str "field: " selector " does not contain expected class: " css-class)
-        (str "field: " selector " contains class " css-class " when it shouldn't"))))
-
-(def test-field-doesnt-have-class (partial test-field-class-existance false))
-(def test-field-has-class (partial test-field-class-existance true))
-
-(defn add-class! [selector class]
-  (dommy/add-class! (sel1 selector) class))
-
-(defn remove-class! [selector class]
-  (dommy/remove-class! (sel1 selector) class))
-
-(defn set-attr! [selector attr value]
-  (dommy/set-attr! (sel1 selector) attr value))
-
-(defn remove-attr! [selector attr]
-  (dommy/remove-attr! (sel1 selector) attr))
-
-(defn remove-attr-from-all! [selector attr]
-  (doseq [elem (sel selector)]
-      (dommy/remove-attr! elem attr)))
+(defn click! [selector]
+  (fire! (sel1 selector) :click))
 
 (defn change! [selector]
   (fire! (sel1 selector) :change))
