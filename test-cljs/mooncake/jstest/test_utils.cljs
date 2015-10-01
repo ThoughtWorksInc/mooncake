@@ -47,10 +47,19 @@
 (def test-field-doesnt-have-class (partial test-field-class-existance false))
 (def test-field-has-class (partial test-field-class-existance true))
 
+(defn add-class! [selector class]
+  (dommy/add-class! (sel1 selector) class))
+
+(defn remove-class! [selector class]
+  (dommy/remove-class! (sel1 selector) class))
+
 (defn set-attr! [selector attr value]
   (dommy/set-attr! (sel1 selector) attr value))
 
-(defn remove-attribute-from-all [selector attr]
+(defn remove-attr! [selector attr]
+  (dommy/remove-attr! (sel1 selector) attr))
+
+(defn remove-attr-from-all! [selector attr]
   (doseq [elem (sel selector)]
       (dommy/remove-attr! elem attr)))
 
@@ -58,5 +67,9 @@
   (fire! (sel1 selector) :change))
 
 (defn check! [selector]
-  (dommy/set-attr! (sel1 selector) :checked)
+  (set-attr! selector :checked "checked")
+  (change! selector))
+
+(defn uncheck! [selector]
+  (remove-attr! selector :checked)
   (change! selector))

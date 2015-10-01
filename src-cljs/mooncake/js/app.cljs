@@ -2,18 +2,25 @@
   (:require [dommy.core :as d])
   (:require-macros [dommy.core :as dm]))
 
+(def checkbox-none-class :checkbox--none)
+(def checkbox-some-class :checkbox--some)
+(def checkbox-all-class :checkbox--all)
+
+(defn- set-src-checkbox-state [src-checkbox-elem state]
+  (d/remove-class! src-checkbox-elem checkbox-all-class checkbox-some-class checkbox-none-class)
+  (d/add-class! src-checkbox-elem (case state :all checkbox-all-class
+                                              :some checkbox-some-class
+                                              :none checkbox-none-class)))
+
 (defn checkbox-changed [e]
-  (let [feed-item-elem (-> (.-target e)
-                           (d/closest :.clj--feed-item))
+  (let [feed-item-elem (d/closest (.-target e) :.clj--feed-item)
         type-checkbox-elems (dm/sel feed-item-elem :.clj--feed-item-child__checkbox)
         checked-attrs (map #(d/attr % :checked) type-checkbox-elems)
-        src-checkbox-elem (-> feed-item-elem
-                              (dm/sel1 :.clj--src-checkbox))]
-    (if (every? identity checked-attrs)
-      (do (d/remove-class! src-checkbox-elem :checkbox--none)
-          (d/add-class! src-checkbox-elem :checkbox--all))
-      (do (d/remove-class! src-checkbox-elem :checkbox--none)
-          (d/add-class! src-checkbox-elem :checkbox--some)))))
+        src-checkbox-elem (dm/sel1 feed-item-elem :.clj--src-checkbox)]
+    (cond
+      (every? identity checked-attrs) (set-src-checkbox-state src-checkbox-elem :all)
+      (every? nil? checked-attrs) (set-src-checkbox-state src-checkbox-elem :none)
+      :else (set-src-checkbox-state src-checkbox-elem :some))))
 
 (defn setup-multi-listeners [selector event function]
   (when-let [elems (dm/sel selector)]
