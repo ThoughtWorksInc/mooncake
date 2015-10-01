@@ -13,8 +13,8 @@
 (eh/test-logo-link cf/customise-feed)
 
 (future-fact "page has script link to javascript file"
-      (let [page (cf/customise-feed ...request...)]
-        (html/select page [[:script (html/attr= :src "js/main.js")]]) =not=> empty?))
+             (let [page (cf/customise-feed ...request...)]
+               (html/select page [[:script (html/attr= :src "js/main.js")]]) =not=> empty?))
 
 (fact "username is rendered"
       (cf/customise-feed {:session {:username "Dave"}}) => (eh/text-is? [:.clj--username] "Dave"))
@@ -44,17 +44,17 @@
                   (eh/has-form-action? (r/path :customise-feed)))))
 
 (facts "available feed sources are displayed with the user's preferences"
-       (let [activity-source-preferences [{:id       "activity-src"
-                                           :name     "Activity Source"
-                                           :url      "some url"
-                                           :activity-types [{:id "activity-src-activity-type-1"
+       (let [activity-source-preferences [{:id             "activity-src"
+                                           :name           "Activity Source"
+                                           :url            "some url"
+                                           :activity-types [{:id       "activity-src-activity-type-1"
                                                              :selected false}
-                                                            {:id "activity-src-activity-type-2"
+                                                            {:id       "activity-src-activity-type-2"
                                                              :selected true}]}
-                                          {:id       "another-activity-src"
-                                           :name     "Another Source"
-                                           :url      "other url"
-                                           :activity-types [{:id "another-activity-src-activity-type-1"
+                                          {:id             "another-activity-src"
+                                           :name           "Another Source"
+                                           :url            "other url"
+                                           :activity-types [{:id       "another-activity-src-activity-type-1"
                                                              :selected false}]}]
              context {:activity-source-preferences activity-source-preferences}
              page (cf/customise-feed {:context context})]
@@ -86,9 +86,9 @@
 
          (fact "'for' attributes of activity types labels match 'id' attributes of activity types inputs"
                (let [[first-activity-type-label second-activity-type-label third-activity-type-label] (html/select page [:.clj--feed-item-child__label])
-                     first-label-checkbox  (first (html/select first-activity-type-label [:.clj--feed-item-child__checkbox]))
+                     first-label-checkbox (first (html/select first-activity-type-label [:.clj--feed-item-child__checkbox]))
                      second-label-checkbox (first (html/select second-activity-type-label [:.clj--feed-item-child__checkbox]))
-                     third-label-checkbox  (first (html/select third-activity-type-label [:.clj--feed-item-child__checkbox]))]
+                     third-label-checkbox (first (html/select third-activity-type-label [:.clj--feed-item-child__checkbox]))]
                  (-> first-activity-type-label :attrs :for) => (-> first-label-checkbox :attrs :id)
                  (-> second-activity-type-label :attrs :for) => (-> second-label-checkbox :attrs :id)
                  (-> third-activity-type-label :attrs :for) => (-> third-label-checkbox :attrs :id)
@@ -101,11 +101,54 @@
                  (:attrs second-activity-type-checkbox) => (contains {:checked "checked"})
                  (contains? (:attrs third-activity-type-checkbox) :checked) => falsey))))
 
+(facts "about setting the class on src-checkboxes"
+       (let [activity-source-preferences [{:id             "activity-src"
+                                           :name           "Activity Source"
+                                           :url            "some url"
+                                           :activity-types [{:id       "activity-src-activity-type-1"
+                                                             :selected true}
+                                                            {:id       "activity-src-activity-type-2"
+                                                             :selected true}]}
+                                          {:id             "another-activity-src"
+                                           :name           "Another Source"
+                                           :url            "another url"
+                                           :activity-types [{:id       "another-activity-src-activity-type-1"
+                                                             :selected false}
+                                                            {:id       "another-activity-src-activity-type-2"
+                                                             :selected false}]}
+                                          {:id             "yet-another-activity-src"
+                                           :name           "Yet Another Source"
+                                           :url            "yet another url"
+                                           :activity-types [{:id       "yet-another-activity-src-activity-type-1"
+                                                             :selected true}
+                                                            {:id       "yet-another-activity-src-activity-type-2"
+                                                             :selected false}]}]
+             context {:activity-source-preferences activity-source-preferences}
+             page (cf/customise-feed {:context context})
+             [first-src-checkbox second-src-checkbox third-src-checkbox] (html/select page [:.clj--src-checkbox])]
+         (fact "when all types are selected, class is checkbox--all"
+               (let [first-src-checkbox-classes (-> first-src-checkbox :attrs :class)]
+                 first-src-checkbox-classes => (contains "checkbox--all")
+                 first-src-checkbox-classes =not=> (contains "checkbox--some")
+                 first-src-checkbox-classes =not=> (contains "checkbox--none")))
+
+         (fact "when no types are selected, class is checkbox--none"
+               (let [second-src-checkbox-classes (-> second-src-checkbox :attrs :class)]
+                 second-src-checkbox-classes => (contains "checkbox--none")
+                 second-src-checkbox-classes =not=> (contains "checkbox--all")
+                 second-src-checkbox-classes =not=> (contains "checkbox--some")))
+
+         (fact "when some types are selected, class is checkbox--some"
+               (let [third-src-checkbox-classes (-> third-src-checkbox :attrs :class)]
+                 third-src-checkbox-classes => (contains "checkbox--some")
+                 third-src-checkbox-classes =not=> (contains "checkbox--all")
+                 third-src-checkbox-classes =not=> (contains "checkbox--none")))))
+
 (facts "available feed sources are displayed if no activity types are available"
-       (let [activity-source-preferences [{:id       "activity-src"
-                                           :name     "Activity Source"
-                                           :url      "some url"
-                                           :selected true
+       (let [activity-source-preferences [{:id             "activity-src"
+                                           :name           "Activity Source"
+                                           :url            "some url"
+                                           :selected       true
                                            :activity-types []}
                                           {:id       "another-activity-src"
                                            :name     "Another Source"

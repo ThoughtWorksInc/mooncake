@@ -24,11 +24,28 @@
                                                                     (html/set-attr :checked "checked")
                                                                     (html/remove-attr :checked)))))))
 
+(defn get-selected-all-some-none [activity-src]
+  (let [activity-types (:activity-types activity-src)
+        selected-values (map :selected activity-types)]
+    (cond
+      (every? true? selected-values) :all
+      (and (some true? selected-values) (some false? selected-values)) :some
+      (every? false? selected-values) :none
+      :default :none)))
+
 (defn generate-feed-items [enlive-m activity-source-preferences]
   (let [feed-item-snippet (first (html/select enlive-m [:.clj--feed-item]))]
     (html/at feed-item-snippet [html/root]
              (html/clone-for [activity-source activity-source-preferences]
                              [:.clj--feed-item__name] (html/content (:name activity-source))
+                             [:.clj--src-checkbox] (html/do->
+                                                     (html/remove-class "checkbox--all")
+                                                     (html/remove-class "checkbox--some")
+                                                     (html/remove-class "checkbox--none")
+                                                     (case (get-selected-all-some-none activity-source)
+                                                       :all (html/add-class "checkbox--all")
+                                                       :some (html/add-class "checkbox--some")
+                                                       :none (html/add-class "checkbox--none")))
                              [:.clj--feed-item__children-list] (html/content (generate-feed-item-children enlive-m activity-source))))))
 
 (defn add-feed-items [enlive-m activity-source-preferences]
