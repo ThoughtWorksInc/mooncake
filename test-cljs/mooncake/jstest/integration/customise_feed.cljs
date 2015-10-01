@@ -7,8 +7,7 @@
 
 (defonce customise-feed-page-template (load-template "public/customise-feed.html"))
 
-; RS + AW + AB | 30 Sept 2015 | WIP - will be removed tomorrow
-#_(deftest checking-a-type-checkbox-sets-source-checkbox-to-the-some-state
+(deftest checking-a-type-checkbox-sets-source-checkbox-to-the-some-state
          (tu/set-html! customise-feed-page-template)
          (app/start)
          (tu/remove-attribute-from-all :.clj--feed-item-child__checkbox :checked)
