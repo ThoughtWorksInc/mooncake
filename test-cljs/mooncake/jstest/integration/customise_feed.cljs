@@ -45,11 +45,11 @@
 
 (defn test-all-checked [checkboxes-selector]
   (doseq [checkbox (tu/select-all checkboxes-selector)]
-    (tu/test-attr= checkbox :checked "checked")))
+    (tu/test-checked checkbox)))
 
 (defn test-none-checked [checkboxes-selector]
   (doseq [checkbox (tu/select-all checkboxes-selector)]
-    (tu/test-does-not-have-attr checkbox :checked)))
+    (tu/test-unchecked checkbox)))
 
 (defn set-initial-state []
   (tu/set-html! customise-feed-page-template)
@@ -57,16 +57,16 @@
 
 (defn set-all-checked-initial-state []
   (set-initial-state)
-  (tu/set-attr-on-all! :.clj--feed-item-child__checkbox :checked "checked"))
+  (tu/check-all-without-firing-change-event! :.clj--feed-item-child__checkbox))
 
 (defn set-some-checked-initial-state []
   (set-initial-state)
-  (tu/set-attr-on-all! :.clj--feed-item-child__checkbox :checked "checked")
-  (tu/remove-attr! :.clj--feed-item-child__checkbox :checked))
+  (tu/check-all-without-firing-change-event! :.clj--feed-item-child__checkbox)
+  (tu/uncheck-without-firing-change-event! :.clj--feed-item-child__checkbox))
 
 (defn set-none-checked-initial-state []
   (set-initial-state)
-  (tu/remove-attr-from-all! :.clj--feed-item-child__checkbox :checked))
+  (tu/uncheck-all-without-firing-change-event! :.clj--feed-item-child__checkbox))
 
 (deftest about-type-checkboxes-setting-src-checkbox-class
          (testing "when all type checkboxes are unchecked - checking a type checkbox sets src checkbox to the 'some' state"
@@ -82,8 +82,8 @@
                   (tu/remove-class! objective8-src-checkbox-selector checkbox-none-class)
                   (test-objective8-src-checkbox-in-some-state)
 
-                  (tu/set-attr! :#objective8_-_Create :checked "checked")
-                  (tu/set-attr! :#objective8_-_Comment :checked "checked")
+                  (tu/check-without-firing-change-event! :#objective8_-_Create)
+                  (tu/check-without-firing-change-event! :#objective8_-_Comment)
                   (tu/check! :#objective8_-_Question)
                   (test-objective8-src-checkbox-in-all-state))
 
@@ -93,8 +93,8 @@
                   (tu/remove-class! objective8-src-checkbox-selector checkbox-none-class)
                   (test-objective8-src-checkbox-in-some-state)
 
-                  (tu/remove-attr! :#objective8_-_Create :checked)
-                  (tu/remove-attr! :#objective8_-_Comment :checked)
+                  (tu/uncheck-without-firing-change-event! :#objective8_-_Create)
+                  (tu/uncheck-without-firing-change-event! :#objective8_-_Comment)
                   (tu/uncheck! :#objective8_-_Question)
                   (test-objective8-src-checkbox-in-none-state))
 

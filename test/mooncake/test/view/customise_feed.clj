@@ -12,6 +12,10 @@
 (eh/test-translations "customise-feed page" cf/customise-feed)
 (eh/test-logo-link cf/customise-feed)
 
+(future-fact "page has script link to javascript file"
+      (let [page (cf/customise-feed ...request...)]
+        (html/select page [[:script (html/attr= :src "js/main.js")]]) =not=> empty?))
+
 (fact "username is rendered"
       (cf/customise-feed {:session {:username "Dave"}}) => (eh/text-is? [:.clj--username] "Dave"))
 

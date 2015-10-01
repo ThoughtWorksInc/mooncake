@@ -40,14 +40,13 @@
                                         :client-secret "fake stonecutter client secret"
                                         :auth-url      "fake stonecutter auth url"
                                         :mongo-uri     "mongodb://localhost:27017/mooncake-dev"}
-                       :aliases        {"stub"       ["with-profile" "dev,stub" "run"]
-                                        "cljs-build" ["cljsbuild" "once" "prod"]
+                       :aliases        {"cljs-build" ["cljsbuild" "once" "prod"]
                                         "cljs-test"  ["cljsbuild" "once" "test"]
                                         "test"       ["do" "clean," "gulp," "midje," "cljs-test"]
                                         "test-cljs"  ["do" "clean," "gulp," "cljs-test"]
                                         "auto-cljs"  ["do" "test-cljs," "cljsbuild" "auto" "test"]
                                         "gulp"       ["shell" "gulp" "build"]
-                                        "start"      ["do" "gulp," "cljs-build," "run"]}
+                                        "stub"       ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]}
                        :cljsbuild      {:builds [{:id           "prod"
                                                   :source-paths ["src-cljs"]
                                                   :compiler     {:output-to     "resources/public/js/main.js"

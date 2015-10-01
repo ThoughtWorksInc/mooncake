@@ -1,7 +1,6 @@
 (ns mooncake.jstest.test-utils
   (:require [cemerick.cljs.test]
-            [dommy.core :as dommy]
-            [clojure.string :as string])
+            [dommy.core :as dommy])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing run-tests]]
                    [dommy.core :refer [sel1 sel]]))
 
@@ -26,20 +25,17 @@
 (def test-field-does-not-have-class (partial test-field-class-existance false))
 (def test-field-has-class (partial test-field-class-existance true))
 
-(defn test-attr= [elem attr value]
-  (is (= value (dommy/attr elem attr))))
+(defn test-checked [elem]
+  (is (= true (.-checked elem))))
 
-(defn test-does-not-have-attr [elem attr]
-  (is (= nil (dommy/attr elem attr))))
+(defn test-unchecked [elem]
+  (is (= false (.-checked elem))))
 
 
 ;; Getters and setters
 
 (defn set-html! [html-string]
   (dommy/set-html! (sel1 :html) html-string))
-
-(defn set-value [sel text]
-  (dommy/set-value! (sel1 sel) text))
 
 (defn select-all [selector]
   (sel selector))
@@ -49,20 +45,6 @@
 
 (defn remove-class! [selector class]
   (dommy/remove-class! (sel1 selector) class))
-
-(defn set-attr! [selector attr value]
-  (dommy/set-attr! (sel1 selector) attr value))
-
-(defn set-attr-on-all! [selector attr value]
-  (doseq [elem (sel selector)]
-    (dommy/set-attr! elem attr value)))
-
-(defn remove-attr! [selector attr]
-  (dommy/remove-attr! (sel1 selector) attr))
-
-(defn remove-attr-from-all! [selector attr]
-  (doseq [elem (sel selector)]
-      (dommy/remove-attr! elem attr)))
 
 
 ;; Events
@@ -90,10 +72,24 @@
 (defn change! [selector]
   (fire! (sel1 selector) :change))
 
+(defn check-without-firing-change-event! [selector]
+  (set! (.-checked (sel1 selector)) true))
+
+(defn check-all-without-firing-change-event! [selector]
+  (doseq [elem (sel selector)]
+    (set! (.-checked elem) true)))
+
+(defn uncheck-without-firing-change-event! [selector]
+  (set! (.-checked (sel1 selector)) false))
+
+(defn uncheck-all-without-firing-change-event! [selector]
+  (doseq [elem (sel selector)]
+    (set! (.-checked elem) false)))
+
 (defn check! [selector]
-  (set-attr! selector :checked "checked")
+  (check-without-firing-change-event! selector)
   (change! selector))
 
 (defn uncheck! [selector]
-  (remove-attr! selector :checked)
+  (uncheck-without-firing-change-event! selector)
   (change! selector))

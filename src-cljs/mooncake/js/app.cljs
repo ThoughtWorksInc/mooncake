@@ -24,22 +24,22 @@
 
 (defn- set-all-checked-state! [src-checkbox-elem type-checkbox-elems]
   (do (doseq [checkbox type-checkbox-elems]
-        (d/set-attr! checkbox :checked "checked"))
+        (set! (.-checked checkbox) true))
       (set-src-checkbox-state! src-checkbox-elem :all)))
 
 (defn- set-none-checked-state! [src-checkbox-elem type-checkbox-elems]
   (do (doseq [checkbox type-checkbox-elems]
-        (d/remove-attr! checkbox :checked))
+        (set! (.-checked checkbox) false))
       (set-src-checkbox-state! src-checkbox-elem :none)))
 
 (defn type-checkbox-changed [e]
   (let [feed-item-elem (d/closest (.-target e) source-container-selector)
         type-checkbox-elems (dm/sel feed-item-elem type-checkbox-selector)
-        checked-attrs (map #(d/attr % :checked) type-checkbox-elems)
+        checked-attrs (map #(.-checked %) type-checkbox-elems)
         src-checkbox-elem (dm/sel1 feed-item-elem src-checkbox-selector)]
     (cond
-      (every? identity checked-attrs) (set-src-checkbox-state! src-checkbox-elem :all)
-      (every? nil? checked-attrs) (set-src-checkbox-state! src-checkbox-elem :none)
+      (every? true? checked-attrs) (set-src-checkbox-state! src-checkbox-elem :all)
+      (every? false? checked-attrs) (set-src-checkbox-state! src-checkbox-elem :none)
       :else (set-src-checkbox-state! src-checkbox-elem :some))))
 
 (defn src-checkbox-clicked [e]

@@ -66,3 +66,7 @@
   (if (> (count text) max-char-count)
     (str (limit-characters max-char-count text) "\u2026")
     text))
+
+(defn add-script [enlive-m script-path]
+  (let [script-tag (html/as-nodes {:tag :script :attrs {:src script-path}})]
+    (html/at enlive-m [:body] (html/append script-tag))))
