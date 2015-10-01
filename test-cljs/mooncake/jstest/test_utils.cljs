@@ -47,6 +47,9 @@
 (def test-field-doesnt-have-class (partial test-field-class-existance false))
 (def test-field-has-class (partial test-field-class-existance true))
 
+(defn set-attr! [selector attr value]
+  (dommy/set-attr! (sel1 selector) attr value))
+
 (defn remove-attribute-from-all [selector attr]
   (doseq [elem (sel selector)]
       (dommy/remove-attr! elem attr)))

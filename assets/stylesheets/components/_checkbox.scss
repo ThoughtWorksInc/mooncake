@@ -10,13 +10,13 @@
       background: transparent;
     }
 
-    &--off {
+    &--none {
         background-color: red;
     }
     &--some {
         background-color: orange;
     }
-    &--on {
+    &--all {
         background-color: green;
     }
 }
