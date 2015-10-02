@@ -72,14 +72,14 @@
 (defn change! [selector]
   (fire! (sel1 selector) :change))
 
-(defn check-without-firing-change-event! [selector]
+(defn check-one-without-firing-change-event! [selector]
   (set! (.-checked (sel1 selector)) true))
 
 (defn check-all-without-firing-change-event! [selector]
   (doseq [elem (sel selector)]
     (set! (.-checked elem) true)))
 
-(defn uncheck-without-firing-change-event! [selector]
+(defn uncheck-one-without-firing-change-event! [selector]
   (set! (.-checked (sel1 selector)) false))
 
 (defn uncheck-all-without-firing-change-event! [selector]
@@ -87,9 +87,9 @@
     (set! (.-checked elem) false)))
 
 (defn check! [selector]
-  (check-without-firing-change-event! selector)
+  (check-one-without-firing-change-event! selector)
   (change! selector))
 
 (defn uncheck! [selector]
-  (uncheck-without-firing-change-event! selector)
+  (uncheck-one-without-firing-change-event! selector)
   (change! selector))
