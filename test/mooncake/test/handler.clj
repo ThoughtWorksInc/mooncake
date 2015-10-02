@@ -9,7 +9,7 @@
 
 (facts "about site-handlers"
        (fact "throws an exception when stonecutter oauth configuration is invalid"
-             (h/site-handlers {} nil) => (throws anything)
+             (h/site-handlers {} nil nil) => (throws anything)
              (provided
                (h/create-stonecutter-config anything) => :invalid-configuration)))
 

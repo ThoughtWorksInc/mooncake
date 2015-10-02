@@ -85,7 +85,7 @@
                  :protocol :openid
                  :stub-user (config/stub-user config-m)))
 
-(defn site-handlers [config-m db]
+(defn site-handlers [config-m db activity-sources]
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid mooncake configuration. Application launch aborted.")))
@@ -102,7 +102,9 @@
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback 
                                      :stub-activities :show-create-account :create-account})
-        (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-error-handler) #{}))))
+        (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-error-handler) #{})
+        (m/wrap-just-these-handlers #(m/wrap-activity-sources-and-types db activity-sources %)
+                                    #{:feed :show-customise-feed :customise-feed}))))
 
 (defn wrap-defaults-config [secure?]
   (-> (if secure? (assoc ring-mw/secure-site-defaults :proxy true) ring-mw/site-defaults)
@@ -111,11 +113,10 @@
 
 (defn create-app [config-m db activity-sources]
   (a/sync-activities! db activity-sources)                 ;; Ensure database is populated before starting app
-  (-> (scenic/scenic-handler routes/routes (site-handlers config-m db) not-found-handler)
+  (-> (scenic/scenic-handler routes/routes (site-handlers config-m db activity-sources) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
       (m/wrap-config config-m)
       (m/wrap-error-handling internal-server-error-handler)
-      (m/wrap-activity-sources activity-sources)
       m/wrap-translator))
 
 (defn -main [& args]

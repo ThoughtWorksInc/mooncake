@@ -36,14 +36,11 @@
 
 (fact "can load activity sources from a resource"
       (a/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 {:url            "https://test-activity.src/activities"
-                                                                                         :name           "Test Activity Source 1"
-                                                                                         :activity-types '("TestActivityType-1-1" "TestActivityType-1-2")}
+                                                                                         :name           "Test Activity Source 1"}
                                                                 :test-activity-source-2 {:url            "https://another-test-activity.src"
-                                                                                         :name           "Test Activity Source 2"
-                                                                                         :activity-types '("TestActivityType-2-1")}
+                                                                                         :name           "Test Activity Source 2"}
                                                                 :test-activity-source-3 {:url            "https://yet-another-test-activity.src"
-                                                                                         :name           "Test Activity Source 3"
-                                                                                         :activity-types '("Question" "Create")}})
+                                                                                         :name           "Test Activity Source 3"}})
 
 (fact "get-json-from-activity-source gracefully handles exceptions caused by bad/missing responses"
       (a/get-json-from-activity-source ...invalid-activity-src-url...) => nil

@@ -1,6 +1,7 @@
 (ns mooncake.middleware
   (:require [ring.util.response :as r]
             [clojure.tools.logging :as log]
+            [mooncake.db.activity :as adb]
             [mooncake.helper :as mh]
             [mooncake.translation :as translation]))
 
@@ -21,6 +22,21 @@
     (-> request
         (assoc-in [:context :activity-sources] activity-sources)
         handler)))
+
+(defn generate-activity-sources-with-types [activity-sources activity-types]
+  (reduce
+    (fn [generated-m [activity-src-key activity-src-data]]
+      (let [activity-types-for-src (get activity-types (name activity-src-key))
+            activity-src-data-with-types (assoc activity-src-data :activity-types activity-types-for-src)]
+        (assoc generated-m activity-src-key activity-src-data-with-types)))
+    {}
+    activity-sources))
+
+(defn wrap-activity-sources-and-types [db activity-sources handler]
+  (fn [request]
+    (let [activity-types (adb/fetch-activity-types db)
+          activity-sources-with-types (generate-activity-sources-with-types activity-sources activity-types)]
+      (handler (assoc-in request [:context :activity-sources] activity-sources-with-types)))))
 
 (defn wrap-error-handling [handler err-handler]
   (fn [request]
@@ -46,4 +62,9 @@
 (defn wrap-handlers-excluding [handlers wrap-function exclusions]
   (into {} (for [[k v] handlers]
              [k (if (k exclusions) v (wrap-function v))])))
+
+(defn wrap-just-these-handlers [handlers-m wrap-function inclusions]
+  (into {} (for [[k v] handlers-m]
+             [k (if (k inclusions) (wrap-function v) v)])))
+
 
