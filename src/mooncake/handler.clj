@@ -110,7 +110,7 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-app [config-m db activity-sources]
-  (a/sync-activities db activity-sources)                 ;; Ensure database is populated before starting app
+  (a/sync-activities! db activity-sources)                 ;; Ensure database is populated before starting app
   (-> (scenic/scenic-handler routes/routes (site-handlers config-m db) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
       (m/wrap-config config-m)

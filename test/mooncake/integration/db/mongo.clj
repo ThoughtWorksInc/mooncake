@@ -90,19 +90,29 @@
 
 (defn test-upsert [database]
   (fact {:midje/name (str (type database) " -- upsert inserts a record if it doesn't exist, or replaces it if found with query")}
-        (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "white"})
+        (mongo/upsert! database collection-name {:name "Gandalf"} :colour "white")
         (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :colour "white"}]
-        (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "grey"})
+        (mongo/upsert! database collection-name {:name "Gandalf"} :colour "grey")
         (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :colour "grey"}]))
 
 (defn bugfix-test-store-with-id-and-then-upsert [database]
   (fact {:midje/name (str (type database) " -- upsert works correctly after first storing with id")}
         (mongo/store-with-id! database collection-name :name {:name "Gandalf"})
         (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf"}]
-        (mongo/upsert! database collection-name {:name "Gandalf"} {:name "Gandalf" :colour "grey"})
-        (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :colour "grey"}])
+        (mongo/upsert! database collection-name {:name "Gandalf"} :colour "grey")
+        (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :colour "grey"}]))
 
-  )
+(defn test-add-to-set [database]
+  (fact {:midje/name (str (type database) " -- add-to-set adds a single value to an array field, ensuring there are no duplicates")}
+        (fact "can add first value to a set"
+              (mongo/add-to-set! database collection-name {:name "Gandalf"} :beard-colours "white")
+              (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :beard-colours ["white"]}])
+        (fact "can add second value to a set"
+              (mongo/add-to-set! database collection-name {:name "Gandalf"} :beard-colours "grey")
+              (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :beard-colours ["white" "grey"]}])
+        (fact "does not add duplicates to set"
+              (mongo/add-to-set! database collection-name {:name "Gandalf"} :beard-colours "grey")
+              (mongo/fetch-all database collection-name {:stringify? false}) => [{:name "Gandalf" :beard-colours ["white" "grey"]}])))
 
 (def tests [test-fetch
             test-store-with-id
@@ -112,7 +122,8 @@
             test-duplicate-key
             test-fetch-all-items-with-stringified-keys
             test-fetch-all-items-with-keywordised-keys
-            bugfix-test-store-with-id-and-then-upsert])
+            bugfix-test-store-with-id-and-then-upsert
+            test-add-to-set])
 
 (fact "test both implementations of database"
       (doseq [test tests]

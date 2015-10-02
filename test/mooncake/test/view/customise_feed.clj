@@ -144,6 +144,7 @@
                  third-src-checkbox-classes =not=> (contains "checkbox--all")
                  third-src-checkbox-classes =not=> (contains "checkbox--none")))))
 
+
 (facts "available feed sources are displayed if no activity types are available"
        (let [activity-source-preferences [{:id             "activity-src"
                                            :name           "Activity Source"

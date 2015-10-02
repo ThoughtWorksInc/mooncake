@@ -40,6 +40,11 @@
     (partial take batch-size)
     identity))
 
+(defn conj-unique [coll value]
+  (if (and coll (= -1 (.indexOf coll value)))
+    (conj coll value)
+    coll))
+
 (defrecord MemoryDatabase [data]
   mongo/Database
   (fetch [this coll id options-m]
@@ -81,9 +86,17 @@
           (swap! data assoc-in [coll item-key] (assoc item :_id item-key))
           (dissoc item :_id)))))
 
-  (upsert! [this coll query item]
-    (let [id (or (-> (find-item-with-id @data coll query) :_id) (UUID/randomUUID))]
-      (swap! data assoc-in [coll id] (assoc item :_id id)))))
+  (upsert! [this coll query key-param value]
+    (if-let [item (find-item-with-id @data coll query)]
+      (swap! data assoc-in [coll (:_id item)] (assoc item key-param value))
+      (let [id (UUID/randomUUID)]
+        (swap! data assoc-in [coll id] (assoc query :_id id key-param value)))))
+
+  (add-to-set! [this coll query key-param value]
+    (if-let [item (find-item-with-id @data coll query)]
+      (swap! data assoc-in [coll (:_id item)] (update item key-param conj-unique value))
+      (let [id (UUID/randomUUID)]
+        (swap! data assoc-in [coll id] (assoc query :_id id key-param [value]))))))
 
 
 (defn create-in-memory-db

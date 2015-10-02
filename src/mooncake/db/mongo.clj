@@ -19,8 +19,10 @@
     "Store the given map and return it.")
   (store-with-id! [this coll key-param item]
     "Store the given map using the value of the kw key-param and return it.")
-  (upsert! [this coll query item]
-    "Update item that corresponds to query, or if none exist insert item."))
+  (upsert! [this coll query key-param value]
+    "Update item that corresponds to query by replacing key-param with value, or if none exist insert it.")
+  (add-to-set! [this coll query key-param value]
+    "Add value to the key-param array in the item found with query, ensuring there are no duplicates."))
 
 (defn dissoc-id
   ([item]
@@ -91,8 +93,13 @@
     (->> (assoc item :_id (key-param item))
          (store! this coll)))
 
-  (upsert! [this coll query item]
-    (mcoll/upsert mongo-db coll query item)))
+  (upsert! [this coll query key-param value]
+    (mcoll/update mongo-db coll query {mop/$set {key-param value}} {:upsert true}))
+
+  (add-to-set! [this coll query key-param value]
+    (mcoll/update mongo-db coll query {mop/$addToSet {key-param value}} {:upsert true})))
+
+
 
 (defn create-database [mongodb]
   (MongoDatabase. mongodb))

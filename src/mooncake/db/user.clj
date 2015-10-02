@@ -15,7 +15,5 @@
   (mongo/fetch db collection auth-provider-user-id {:stringify? false}))
 
 (defn update-feed-settings! [db username feed-settings]
-  (let [user (find-user db username)
-        user-with-feed-settings (assoc user :feed-settings feed-settings)]
-      (mongo/upsert! db collection {:username username} user-with-feed-settings)))
+  (mongo/upsert! db collection {:username username} :feed-settings feed-settings))
 

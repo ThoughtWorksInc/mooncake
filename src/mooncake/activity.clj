@@ -3,7 +3,7 @@
             [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
-            [mooncake.db.activity :as a]
+            [mooncake.db.activity :as adb]
             [mooncake.helper :as mh]))
 
 (defn load-activity-sources [activity-resource-name]
@@ -40,14 +40,17 @@
        sort-by-published-time))
 
 (defn retrieve-activities [database activity-source-keys]
-  (a/fetch-activities-by-activity-sources-and-types database activity-source-keys))
+  (adb/fetch-activities-by-activity-sources-and-types database activity-source-keys))
 
-(defn sync-activities [db activity-sources]
+(defn sync-activities! [db activity-sources]
   (let [activities (poll-activity-sources activity-sources)]
-    (doall (map (partial a/store-activity! db) (reverse activities)))))
+    (doall (map (partial adb/store-activity! db) (reverse activities)))))
 
 (defn sync-activities-task [db activity-sources]
   (fn [time]
     (log/debug (format "Syncing activities at %s" time))
-    (sync-activities db activity-sources)))
+    (sync-activities! db activity-sources)))
+
+(defn retrieve-activity-types [db]
+  (adb/fetch-activity-types db))
 
