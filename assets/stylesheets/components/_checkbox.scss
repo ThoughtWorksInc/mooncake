@@ -11,12 +11,15 @@
     }
 
     &--none {
-        background-color: red;
     }
     &--some {
-        background-color: orange;
+      @include svgAndPng('minus', no-repeat 50% 50%);
+      background-size: contain;
+      transform-origin: 50% 50%;
     }
     &--all {
-        background-color: green;
+      @include svgAndPng('check', no-repeat 50% 50%);
+      background-size: contain;
+      transform-origin: 50% 50%;
     }
 }

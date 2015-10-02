@@ -48,7 +48,7 @@ mixin feedItem(feedName, isOn)
   li.feed-item.clj--feed-item
     fieldset.feed-item__fieldset
       legend.feed-item__name.clj--feed-item__name #{feedName}
-      .feed-item__toggle-checkbox.clj--STRIP
+      .feed-item__toggle-checkbox
         .checkbox.checkbox--none.clj--src-checkbox
       if block
         ul.feed-item__children-list.clj--feed-item__children-list

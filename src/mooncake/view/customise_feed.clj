@@ -77,6 +77,5 @@
     (render-customise-feed-link (mh/signed-in? request))
     (add-feed-items (get-in request [:context :activity-source-preferences]))
     set-form-action
-    ;(vh/add-script "js/main.js")
-    ))
+    (vh/add-script "js/main.js")))
 
