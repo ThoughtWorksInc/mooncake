@@ -1,5 +1,5 @@
 .checkbox {
-  @include checkbox(16px, $grey_medium);
+  @include fake_checkbox(16px, $grey_medium);
   &:after {
     content: '';
     @include middle-me;

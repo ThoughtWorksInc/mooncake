@@ -89,7 +89,7 @@ $feed-item-legend--height: 61px;
     box-sizing: border-box;
     content: '';
     display: block;
-    @include checkbox(16px, $grey_medium);
+    @include psuedo_checkbox(16px, $grey_medium);
     position: absolute;
     right: 0;
     @include vertical-middle-me;

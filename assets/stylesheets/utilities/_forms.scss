@@ -1,22 +1,30 @@
+@mixin checkbox_image($image) {
+  @include svgAndPng($image, no-repeat 50% 50%);
+  background-size: contain;
+  transform-origin: 50% 50%;
+}
+
 @mixin checkbox($size, $border_color: #000) {
   @include size($size);
   border: 1px solid $border_color;
   border-radius: 3px;
   cursor: pointer;
 
+}
+
+@mixin psuedo_checkbox($size, $border_color: #000) {
+  @include checkbox($size, $border_color);
+  input:checked + & {
+    @include checkbox_image('check');
+  }
+}
+
+@mixin fake_checkbox($size, $border_color: #000) {
+  @include checkbox($size, $border_color);
   &--some {
-    @include svgAndPng('minus', no-repeat 50% 50%);
-    background-size: contain;
-    transform-origin: 50% 50%;
+    @include checkbox_image('minus');
   }
   &--all {
-    @include svgAndPng('check', no-repeat 50% 50%);
-    background-size: contain;
-    transform-origin: 50% 50%;
-  }
-  input:checked + & {
-    @include svgAndPng('check', no-repeat 50% 50%);
-    background-size: contain;
-    transform-origin: 50% 50%;
+    @include checkbox_image('check');
   }
 }
