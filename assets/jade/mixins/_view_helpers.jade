@@ -47,7 +47,7 @@ mixin feedItem(feedName, isOn)
   - var feedInputID = feedName.replace(/ /g, "").toLowerCase();
   li.feed-item.clj--feed-item
     fieldset.feed-item__fieldset
-      legend.feed-item__name.clj--feed-item__name #{feedName}
+      p.feed-item__name.clj--feed-item__name #{feedName}
       .feed-item__toggle-checkbox
         .checkbox.checkbox--none.clj--src-checkbox
       if block

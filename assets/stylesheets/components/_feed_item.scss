@@ -1,3 +1,5 @@
+$feed-item-legend--height: 61px;
+
 .customise-feed {
   @include reset-list;
   margin-bottom: 1.5rem;
@@ -5,6 +7,7 @@
 }
 
 .feed-item {
+  margin-bottom: 1rem;
   background-color: $white;
   border-bottom: 1px solid $grey_light;
   color: $purple;
@@ -14,36 +17,39 @@
   }
   &__fieldset {
     position: relative;
-    padding: 0;
+    width: 100%;
+    padding: $feed-item-legend--height 0 0 0;
     border: 0;
+  }
+  &__name {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $feed-item-legend--height;
+    @include font-size(17px);
+    line-height: 1.1;
+    padding: 10px 0 10px 0;
+    color: $grey_blue;
+    @include width-from($medium_device) {
+      @include font-size(19px);
+    }
   }
   &__children-list {
     @include reset-list;
-    //margin-top: -15px;
     padding-bottom: 15px;
     padding-left: 0;
     font-weight: normal;
-    //border-top: 1px solid $grey_light;
   }
   &__toggle-checkbox {
     display: none;
     .js & {
       display: block;
       position: absolute;
-      top: 11px;
+      top: 27px;
       right: 0;
     }
-  }
-}
-
-.feed-item__name {
-  display: block;
-  @include font-size(17px);
-  line-height: 1.1;
-  padding: 10px 0 10px 0;
-  color: $grey_blue;
-  @include width-from($medium_device) {
-    @include font-size(19px);
   }
 }
 
