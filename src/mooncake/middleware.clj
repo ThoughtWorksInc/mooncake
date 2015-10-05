@@ -17,12 +17,6 @@
         (assoc-in [:context :config-m] config-m)
         handler)))
 
-(defn wrap-activity-sources [handler activity-sources]
-  (fn [request]
-    (-> request
-        (assoc-in [:context :activity-sources] activity-sources)
-        handler)))
-
 (defn generate-activity-sources-with-types [activity-sources activity-types]
   (reduce
     (fn [generated-m [activity-src-key activity-src-data]]
