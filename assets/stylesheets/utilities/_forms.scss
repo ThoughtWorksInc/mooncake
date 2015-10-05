@@ -1,0 +1,22 @@
+@mixin checkbox($size, $border_color: #000) {
+  @include size($size);
+  border: 1px solid $border_color;
+  border-radius: 3px;
+  cursor: pointer;
+
+  &--some {
+    @include svgAndPng('minus', no-repeat 50% 50%);
+    background-size: contain;
+    transform-origin: 50% 50%;
+  }
+  &--all {
+    @include svgAndPng('check', no-repeat 50% 50%);
+    background-size: contain;
+    transform-origin: 50% 50%;
+  }
+  input:checked + & {
+    @include svgAndPng('check', no-repeat 50% 50%);
+    background-size: contain;
+    transform-origin: 50% 50%;
+  }
+}

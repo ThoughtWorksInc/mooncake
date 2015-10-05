@@ -85,11 +85,18 @@ $feed-item-legend--height: 61px;
   @include width-from($medium_device) {
     @include font-size(17px);
   }
+  &:before {
+    box-sizing: border-box;
+    content: '';
+    display: block;
+    @include checkbox(16px, $grey_medium);
+    position: absolute;
+    right: 0;
+    @include vertical-middle-me;
+    cursor: pointer;
+  }
 }
 
 .feed-item-child__checkbox {
-  position: absolute;
-  right: 0;
-  @include vertical-middle-me;
-  cursor: pointer;
+  display: none;
 }

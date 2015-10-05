@@ -1,25 +1,9 @@
 .checkbox {
-    @include size(16px);
-    border: 1px solid $grey_medium;
-    border-radius: 3px;
-    cursor: pointer;
-    &:after {
-      content: '';
-      @include middle-me;
-      @include size(30px);
-      background: transparent;
-    }
-
-    &--none {
-    }
-    &--some {
-      @include svgAndPng('minus', no-repeat 50% 50%);
-      background-size: contain;
-      transform-origin: 50% 50%;
-    }
-    &--all {
-      @include svgAndPng('check', no-repeat 50% 50%);
-      background-size: contain;
-      transform-origin: 50% 50%;
-    }
+  @include checkbox(16px, $grey_medium);
+  &:after {
+    content: '';
+    @include middle-me;
+    @include size(30px);
+    background: transparent;
+  }
 }
