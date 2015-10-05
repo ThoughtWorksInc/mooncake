@@ -5,11 +5,20 @@
 ## Running locally
 Before starting the server, build the views by running:
 
-    gulp build
+    lein gulp
 
 To start the web server, run:
 
     lein run
+    
+### Running test suite
+    
+#### To run all tests, run this command
+
+    lein test
+
+
+Commands and aliases can be found in the project.clj file. 
 
 ## Environment variables for deployment
 
@@ -71,14 +80,15 @@ These deployments are trying to be as production like as possible. All use the s
 inventories per environment.
 
 ###Local 
-This is used to run the production like deployment locally. It can be started up by using the following Vagrant command.
+This is used to run the production like deployment locally. It can be started up by using the following Vagrant command
+from within the ops folder.
 
 ```
 vagrant up default
 ```
 
 Once this has run the VM is ready to go and the mooncake repo is mapped into /var/mooncake on the VM. At this
-point you need to so some manual steps:
+point you need to do so some manual steps:
 
 - Compile the uberjar
 
