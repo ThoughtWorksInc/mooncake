@@ -32,10 +32,10 @@
         (time-coerce/from-string))))
 
 (defn fetch-activities [store]
-  (mongo/fetch-all store activity-collection {:stringify? true}))
+  (mongo/fetch-all store activity-collection {:stringify? false}))
 
 (defn fetch-activities-by-activity-sources-and-types [store activity-sources-and-types]
-  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types {:stringify? true :sort {"published" :descending} :limit 50}))
+  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types {:stringify? false :sort {:published :descending} :limit 50}))
 
 (defn store-activity! [store activity]
   (let [activity-src (domain/activity->activity-src activity)

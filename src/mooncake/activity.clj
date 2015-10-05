@@ -4,7 +4,8 @@
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [mooncake.db.activity :as adb]
-            [mooncake.helper :as mh]))
+            [mooncake.helper :as mh]
+            [mooncake.domain.activity :as activity]))
 
 (defn load-activity-sources [activity-resource-name]
   (-> activity-resource-name
@@ -17,21 +18,21 @@
 
 (defn get-json-from-activity-source [url]
   (try
-    (:body (http/get url {:accept :json :as :json-string-keys}))
+    (:body (http/get url {:accept :json :as :json}))
     (catch Exception e
       (log/warn (str "Unable to retrieve activities from " url " --- " e))
       nil)))
 
 (defn sort-by-published-time [activities]
   (let [published-time (fn [activity]
-                         (mh/datetime-str->datetime (get activity "published")))]
+                         (mh/datetime-str->datetime (activity/activity->published activity)))]
     (->> activities
          (sort-by published-time mh/after?))))
 
 (defn retrieve-activities-from-source [source-k-v-pair]
   (let [[source-key source-attributes] source-k-v-pair
         activities (get-json-from-activity-source (:url source-attributes))]
-    (map #(assoc % "activity-src" source-key) activities)))
+    (map #(assoc % :activity-src source-key) activities)))
 
 (defn poll-activity-sources [activity-sources]
   (->> activity-sources

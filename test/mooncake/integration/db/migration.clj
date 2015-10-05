@@ -46,20 +46,20 @@
        (dbh/with-mongo-do
          (fn [db]
            (let [store (mongo/create-mongo-store db)]
-             (mongo/store! store activity/activity-collection {"@displayName" "KCat"
-                                                                  "published"    "2015-08-12T10:20:41.000Z"
-                                                                  "activity-src" "source-1"
-                                                                  "@type"        "Create"})
-             (mongo/store! store activity/activity-collection {"@displayName" "JDog"
-                                                                  "published"    "2015-08-12T10:20:42.000Z"
-                                                                  "activity-src" "source-1"
-                                                                  "@type"        "Question"})
-             (mongo/store! store activity/activity-collection {"@displayName" "LFrog"
-                                                                  "published"    "2015-08-12T10:20:43.000Z"
-                                                                  "activity-src" "source-2"
-                                                                  "@type"        "Create"})
+             (mongo/store! store activity/activity-collection {:displayName      "KCat"
+                                                               :published        "2015-08-12T10:20:41.000Z"
+                                                               :activity-src     "source-1"
+                                                               (keyword "@type") "Create"})
+             (mongo/store! store activity/activity-collection {:displayName      "JDog"
+                                                               :published        "2015-08-12T10:20:42.000Z"
+                                                               :activity-src     "source-1"
+                                                               (keyword "@type") "Question"})
+             (mongo/store! store activity/activity-collection {:displayName      "LFrog"
+                                                               :published        "2015-08-12T10:20:43.000Z"
+                                                               :activity-src     "source-2"
+                                                               (keyword "@type") "Create"})
              (activity/fetch-activity-types store) => {}
              (m/add-activity-types-of-existing-activities-to-activity-src-metadata! db)
              (activity/fetch-activity-types store) => {"source-1" ["Create" "Question"]
-                                                          "source-2" ["Create"]}))))
+                                                       "source-2" ["Create"]}))))
 

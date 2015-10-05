@@ -1,8 +1,7 @@
 (ns mooncake.controller.customise-feed
   (:require [mooncake.db.user :as user]
             [mooncake.helper :as mh]
-            [mooncake.view.customise-feed :as cfv]
-            [mooncake.db.activity :as a]))
+            [mooncake.view.customise-feed :as cfv]))
 
 (def default-feed-type-selected-value true)
 

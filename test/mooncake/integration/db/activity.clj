@@ -9,19 +9,19 @@
       (dbh/with-mongo-do
         (fn [db]
           (let [store (mongo/create-mongo-store db)
-                activity {"@displayName" "KCat"
-                          "published" "2015-08-12T10:20:41.000Z"}]
+                activity {:displayName "KCat"
+                          :published "2015-08-12T10:20:41.000Z"}]
             (activity/store-activity! store activity)
-            (mongo/find-item store activity/activity-collection {"@displayName" "KCat"} {:stringify? true}) => activity))))
+            (mongo/find-item store activity/activity-collection {:displayName "KCat"} {:stringify? false}) => activity))))
 
 (fact "will not store the existing activity"
       (dbh/with-mongo-do
         (fn [db]
           (let [store (mongo/create-mongo-store db)
-                activity1 {"published" "2015-08-12T10:20:41.369Z"
-                          "@displayName" "KCat"}
-                activity2 {"published" "2015-08-12T10:20:40.000"
-                           "@displayName" "JDog"}]
+                activity1 {:published "2015-08-12T10:20:41.369Z"
+                          :displayName "KCat"}
+                activity2 {:published "2015-08-12T10:20:40.000"
+                           :displayName "JDog"}]
             (activity/store-activity! store activity1)
             (activity/fetch-activities store) => [activity1]
             (fact "does not add activity because timestamp is not after latest timestamp"
@@ -32,8 +32,8 @@
       (dbh/with-mongo-do
         (fn [db]
           (let [store (mongo/create-mongo-store db)
-                activity {"@displayName" "KCat"
-                          "published" "2015-08-12T10:20:41.000Z"}]
+                activity {:displayName "KCat"
+                          :published "2015-08-12T10:20:41.000Z"}]
             (activity/store-activity! store activity)
             (activity/fetch-activities store) => [activity]))))
 
@@ -73,51 +73,51 @@
                   (activity/update-activity-types-for-activity-source! store activity-src "Type2")
                   (activity/fetch-activity-types store) => {"an-activity-src" ["Type1" "Type2"]})))))
 
+
 (fact "if new event is retrieved from API1 that is has an older timestamp than existing event from API2, then event is still stored"
       (dbh/with-mongo-do
         (fn [db]
           (let [store (mongo/create-mongo-store db)
-                event1api1 {"@displayName" "KCat"
-                            "published" "2015-08-12T10:20:41.000Z"
-                            "activity-src" "api1"}
-                event2api2 {"@diplayName" "JDog"
-                            "published" "2015-08-12T10:20:41.000Z"
-                            "activity-src" "api2"}]
+                event1api1 {:displayName "KCat"
+                            :published "2015-08-12T10:20:41.000Z"
+                            :activity-src "api1"}
+                event2api2 {:displayName "JDog"
+                            :published "2015-08-12T10:20:41.000Z"
+                            :activity-src "api2"}]
             (activity/store-activity! store event1api1)
             ;; time passes
             (activity/store-activity! store event2api2)
             (count (activity/fetch-activities store)) => 2))))
-
 
 (tabular
   (fact "can fetch a collection of activities with the given activity source keys and activity types"
         (dbh/with-mongo-do
           (fn [db]
             (let [store (mongo/create-mongo-store db)
-                  activity1 {"@displayName" "KCat"
-                             "published" "2015-08-12T10:20:41.000Z"
-                             "activity-src" "source-1"
-                             "@type" "Create"}
-                  activity2 {"@displayName" "KCat"
-                             "published" "2015-08-12T10:20:42.000Z"
-                             "activity-src" "source-1"
-                             "@type" "Question"}
-                  activity3 {"@displayName" "JDon"
-                             "published" "2015-08-12T11:20:41.000Z"
-                             "activity-src" "source-2"
-                             "@type" "Create"}]
+                  activity1 {:displayName "KCat"
+                             :published "2015-08-12T10:20:41.000Z"
+                             :activity-src "source-1"
+                             (keyword "@type") "Create"}
+                  activity2 {:displayName "KCat"
+                             :published "2015-08-12T10:20:42.000Z"
+                             :activity-src "source-1"
+                             (keyword "@type") "Question"}
+                  activity3 {:displayName "JDon"
+                             :published "2015-08-12T11:20:41.000Z"
+                             :activity-src "source-2"
+                             (keyword "@type") "Create"}]
               (activity/store-activity! store activity1)
               (activity/store-activity! store activity2)
               (activity/store-activity! store activity3)
               (activity/fetch-activities-by-activity-sources-and-types store ?activity-sources-and-types) => ?result))))
 
-  ?activity-sources-and-types                                           ?result
-  [{:activity-src :source-1 "@type" ["Create"]}]                        [activity1]
-  [{:activity-src :source-1 "@type" ["Create" "Question"]}]             [activity2 activity1]
-  [{:activity-src :source-1 "@type" ["Create" "Question"]}
-   {:activity-src :source-2 "@type" ["Create" "Add"]}]                  [activity3 activity2 activity1]
-  []                                                                    []
-  nil                                                                   [])
+  ?activity-sources-and-types                                                     ?result
+  [{:activity-src :source-1 (keyword "@type") ["Create"]}]                        [activity1]
+  [{:activity-src :source-1 (keyword "@type") ["Create" "Question"]}]             [activity2 activity1]
+  [{:activity-src :source-1 (keyword "@type") ["Create" "Question"]}
+   {:activity-src :source-2 (keyword "@type") ["Create" "Add"]}]                  [activity3 activity2 activity1]
+  []                                                                              []
+  nil                                                                             [])
 
 (fact "activities are fetched in batches of 50"
       (dbh/with-mongo-do
@@ -125,10 +125,10 @@
           (let [store (mongo/create-mongo-store db)]
             (->> (range 51)
                  (map (fn [counter]
-                        {"@displayName" (str "KCat" counter)
-                         "published"    (format "2015-08-12T10:20:%02d.000Z" counter)
-                         "activity-src" "source-1"
-                         "@type"        "Create"}))
+                        {:displayName (str "KCat" counter)
+                         :published    (format "2015-08-12T10:20:%02d.000Z" counter)
+                         :activity-src "source-1"
+                         (keyword "@type")        "Create"}))
                  (map (partial activity/store-activity! store))
                  doall)
-            (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :source-1 "@type" ["Create"]}]) => (n-of anything 50)))))
+            (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :source-1 (keyword "@type") ["Create"]}]) => (n-of anything 50)))))
