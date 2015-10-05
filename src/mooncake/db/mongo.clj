@@ -3,15 +3,14 @@
             [monger.operators :as mop]
             [monger.collection :as mcoll]
             [clojure.tools.logging :as log]
-            [clojure.walk :as walk]
             [mooncake.helper :as mh]))
 
 (defprotocol Store
-  (fetch [this coll k options-m]
+  (fetch [this coll k]
     "Find the item based on a key.")
-  (fetch-all [this coll options-m]
+  (fetch-all [this coll]
     "Find all items based on a collection.")
-  (find-item [this coll query-m options-m]
+  (find-item [this coll query-m]
     "Find an item matching the query-map.")
   (find-items-by-alternatives [this coll value-map-vector options-m]
     "Find items whose properties match properties of at least one of the provided maps.")
@@ -24,11 +23,8 @@
   (add-to-set! [this coll query key-param value]
     "Add value to the key-param array in the item found with query, ensuring there are no duplicates."))
 
-(defn dissoc-id
-  ([item]
-   (dissoc-id item true))
-  ([item keywordise?]
-   (dissoc item (if keywordise? :_id "_id"))))
+(defn dissoc-id [item]
+  (dissoc item :_id))
 
 (defn value->mongo-query-value [value]
   (if (sequential? value)
@@ -45,29 +41,21 @@
   (-> (:sort options-m)
       (mh/map-over-values {:ascending 1 :descending -1})))
 
-(defn stringify [collection stringify?]
-  (cond-> collection
-          stringify? walk/stringify-keys))
-
 (defrecord MongoStore [mongo-db]
   Store
-  (fetch [this coll k options-m]
-    (let [stringify? (:stringify? options-m)]
-      (when k
-        (-> (mcoll/find-map-by-id mongo-db coll k [] (not stringify?))
-            (stringify stringify?)
-            (dissoc-id (not stringify?))))))
+  (fetch [this coll k]
+    (when k
+      (-> (mcoll/find-map-by-id mongo-db coll k [])
+          dissoc-id)))
 
-  (fetch-all [this coll options-m]
-    (let [result-m (->> (mcoll/find-maps mongo-db coll)
-                        (map dissoc-id))]
-      (stringify result-m (:stringify? options-m))))
+  (fetch-all [this coll]
+    (->> (mcoll/find-maps mongo-db coll)
+         (map dissoc-id)))
 
-  (find-item [this coll query-m options-m]
-    (let [stringify? (:stringify? options-m)]
-      (when query-m
-        (-> (mcoll/find-one-as-map mongo-db coll query-m [] (not stringify?))
-            (dissoc-id (not stringify?))))))
+  (find-item [this coll query-m]
+    (when query-m
+      (-> (mcoll/find-one-as-map mongo-db coll query-m [])
+          dissoc-id)))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
     (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
@@ -75,19 +63,17 @@
       (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
             sort-query-map (options-m->sort-query-map options-m)
             batch-size (:limit options-m)
-            stringify? (:stringify? options-m)
             aggregation-pipeline (cond-> []
                                          :always (conj {mop/$match mongo-query-map})
                                          (not (empty? sort-query-map)) (conj {mop/$sort sort-query-map})
-                                         (not (nil? batch-size)) (conj {mop/$limit batch-size}))
-            result-m (->> (mcoll/aggregate mongo-db coll aggregation-pipeline)
-                          (map dissoc-id))]
-        (stringify result-m stringify?))
+                                         (not (nil? batch-size)) (conj {mop/$limit batch-size}))]
+        (->> (mcoll/aggregate mongo-db coll aggregation-pipeline)
+             (map dissoc-id)))
       []))
 
   (store! [this coll item]
     (-> (mcoll/insert-and-return mongo-db coll item)
-        (dissoc :_id)))
+        dissoc-id))
 
   (store-with-id! [this coll key-param item]
     (->> (assoc item :_id (key-param item))
@@ -98,7 +84,6 @@
 
   (add-to-set! [this coll query key-param value]
     (mcoll/update mongo-db coll query {mop/$addToSet {key-param value}} {:upsert true})))
-
 
 
 (defn create-mongo-store [mongodb]

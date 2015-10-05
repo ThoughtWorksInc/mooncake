@@ -8,7 +8,7 @@
 (def activity-metadata-collection "activityMetaData")
 
 (defn fetch-activity-types [store]
-  (let [all-activity-metadata (mongo/fetch-all store activity-metadata-collection {:stringify? false})]
+  (let [all-activity-metadata (mongo/fetch-all store activity-metadata-collection)]
     (reduce
       (fn [activity-types-m activity-metadata]
         (assoc activity-types-m (:activity-src activity-metadata) (:activity-types activity-metadata)))
@@ -26,16 +26,16 @@
   (mongo/upsert! store activity-metadata-collection {:activity-src activity-src} :latest-activity-datetime date))
 
 (defn fetch-most-recent-activity-date [store activity-src]
-  (when-let [item (mongo/find-item store activity-metadata-collection {:activity-src activity-src} {:stringify? false})]
+  (when-let [item (mongo/find-item store activity-metadata-collection {:activity-src activity-src})]
     (-> item
         :latest-activity-datetime
         (time-coerce/from-string))))
 
 (defn fetch-activities [store]
-  (mongo/fetch-all store activity-collection {:stringify? false}))
+  (mongo/fetch-all store activity-collection))
 
 (defn fetch-activities-by-activity-sources-and-types [store activity-sources-and-types]
-  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types {:stringify? false :sort {:published :descending} :limit 50}))
+  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types {:sort {:published :descending} :limit 50}))
 
 (defn store-activity! [store activity]
   (let [activity-src (domain/activity->activity-src activity)

@@ -13,4 +13,4 @@
                                :another-activity-src false}
                 expected-user (assoc stored-user :feed-settings feed-settings)]
             (user/update-feed-settings! store "username" feed-settings)
-            (mongo/find-item store user/collection {:username "username"} {:stringify? false}) => expected-user))))
+            (mongo/find-item store user/collection {:username "username"}) => expected-user))))

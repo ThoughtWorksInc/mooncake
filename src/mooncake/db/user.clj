@@ -9,10 +9,10 @@
     (mongo/store-with-id! store collection :auth-provider-user-id user)))
 
 (defn find-user [store username]
-  (mongo/find-item store collection {:username username} {:stringify? false}))
+  (mongo/find-item store collection {:username username}))
 
 (defn fetch-user [store auth-provider-user-id]
-  (mongo/fetch store collection auth-provider-user-id {:stringify? false}))
+  (mongo/fetch store collection auth-provider-user-id))
 
 (defn update-feed-settings! [store username feed-settings]
   (mongo/upsert! store collection {:username username} :feed-settings feed-settings))

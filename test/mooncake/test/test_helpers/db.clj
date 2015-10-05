@@ -1,7 +1,6 @@
 (ns mooncake.test.test-helpers.db
   (:require [monger.db :as mdb]
             [monger.core :as m]
-            [clojure.walk :as walk]
             [clojure.set :as set]
             [mooncake.db.mongo :as mongo])
   (:import (java.util UUID)))
@@ -14,8 +13,8 @@
     value
     [value]))
 
-(defn find-by-map-query [store coll single-query-map options-m]
-  (let [all-documents (mongo/fetch-all store coll options-m)
+(defn find-by-map-query [store coll single-query-map]
+  (let [all-documents (mongo/fetch-all store coll)
         documents-with-matching-key-values (fn [[k vs]] (filter #((set (to-vector vs)) (get % k)) all-documents))
         search-result-sets (->> single-query-map
                                 (map documents-with-matching-key-values)
@@ -47,29 +46,25 @@
 
 (defrecord MemoryStore [data]
   mongo/Store
-  (fetch [this coll id options-m]
+  (fetch [this coll id]
     (-> (get-in @data [coll id])
-        (dissoc :_id)
-        (mongo/stringify (:stringify? options-m))))
+        (dissoc :_id)))
 
-  (fetch-all [this coll options-m]
-    (mongo/stringify
-      (->> (vals (get @data coll))
-           (map #(dissoc % :_id)))
-      (:stringify? options-m)))
+  (fetch-all [this coll]
+    (->> (vals (get @data coll))
+         (map #(dissoc % :_id))))
 
-  (find-item [this coll query-m options-m]
+  (find-item [this coll query-m]
     (when query-m
       (-> (find-item-with-id @data coll query-m)
-          (dissoc :_id)
-          (mongo/stringify (:stringify? options-m)))))
+          (dissoc :_id))))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
     (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
     (let [comp-fn (options-m->comp-fn options-m)
           batch-fn (options-m->batch-fn options-m)]
       (->> value-map-vector
-           (map #(find-by-map-query this coll % options-m))
+           (map #(find-by-map-query this coll %))
            (apply set/union)
            (sort comp-fn)
            batch-fn)))
@@ -80,7 +75,7 @@
 
   (store-with-id! [this coll key-param item]
     (let [item-key (key-param item)]
-      (if (mongo/fetch this coll item-key {:stringify? false})
+      (if (mongo/fetch this coll item-key)
         (throw (Exception. "Duplicate ID!"))
         (do
           (swap! data assoc-in [coll item-key] (assoc item :_id item-key))
