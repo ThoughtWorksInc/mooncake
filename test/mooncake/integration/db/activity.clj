@@ -60,18 +60,18 @@
         (fn [db]
           (let [database (mongo/create-database db)
                 activity-src "an-activity-src"]
-            (activity/fetch-activity-types-by-activity-source database activity-src) => nil
+            (activity/fetch-activity-types database) => {}
             (activity/update-activity-types-for-activity-source! database activity-src "Type1")
-            (activity/fetch-activity-types-by-activity-source database activity-src) => ["Type1"]
+            (activity/fetch-activity-types database) => {"an-activity-src" ["Type1"]}
 
             (fact "can store multiple activity-types"
                   (activity/update-activity-types-for-activity-source! database activity-src "Type2")
-                  (activity/fetch-activity-types-by-activity-source database activity-src) => ["Type1" "Type2"])
+                  (activity/fetch-activity-types database) => {"an-activity-src" ["Type1" "Type2"]})
 
             (fact "will not store duplicates"
-                  (activity/fetch-activity-types-by-activity-source database activity-src) => ["Type1" "Type2"]
+                  (activity/fetch-activity-types database) => {"an-activity-src" ["Type1" "Type2"]}
                   (activity/update-activity-types-for-activity-source! database activity-src "Type2")
-                  (activity/fetch-activity-types-by-activity-source database activity-src) => ["Type1" "Type2"])))))
+                  (activity/fetch-activity-types database) => {"an-activity-src" ["Type1" "Type2"]})))))
 
 (fact "if new event is retrieved from API1 that is has an older timestamp than existing event from API2, then event is still stored"
       (dbh/with-mongo-do

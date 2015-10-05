@@ -18,6 +18,7 @@
                  [environ "1.0.1"]
                  [jarohen/chime "0.1.6"]
                  [com.novemberain/monger "2.1.0"]
+                 [ragtime "0.4.2"]
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
                                                     javax.jms/jms
                                                     com.sun.jdmk/jmxtools

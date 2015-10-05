@@ -1,6 +1,5 @@
 (ns mooncake.integration.db.user
   (:require [midje.sweet :refer :all]
-
             [mooncake.test.test-helpers.db :as dbh]
             [mooncake.db.mongo :as mongo]
             [mooncake.db.user :as user]))

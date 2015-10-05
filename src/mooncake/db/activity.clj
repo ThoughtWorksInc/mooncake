@@ -15,10 +15,6 @@
       {}
       all-activity-metadata)))
 
-(defn fetch-activity-types-by-activity-source [db activity-src]
-  (when-let [item (mongo/find-item db activity-metadata-collection {:activity-src activity-src} {:stringify? false})]
-    (:activity-types item)))
-
 (defn update-activity-types-for-activity-source! [db activity-src activity-type]
   (mongo/add-to-set! db activity-metadata-collection {:activity-src activity-src} :activity-types activity-type))
 

@@ -18,6 +18,7 @@
             [mooncake.controller.customise-feed :as cfc]
             [mooncake.view.error :as error]
             [mooncake.view.sign-in :as si]
+            [mooncake.db.migration :as migration]
             [mooncake.db.user :as user]
             [mooncake.schedule :as schedule])
   (:gen-class))
@@ -121,12 +122,14 @@
 
 (defn -main [& args]
   (let [config-m (config/create-config)
-        db (mongo/create-database (mongo/get-mongo-db (config/mongo-uri config-m)))
+        mongo-db (mongo/get-mongo-db (config/mongo-uri config-m))
+        mongo-store (mongo/create-database mongo-db)
         activity-sources a/activity-sources]
     (if-let [stub-user (config/stub-user config-m)]
-      (when-not (user/find-user db stub-user)
-        (user/create-user! db nil stub-user)))
-    (schedule/schedule (a/sync-activities-task db activity-sources) (config/sync-interval config-m))
-    (ring-jetty/run-jetty (create-app config-m db activity-sources)
+      (when-not (user/find-user mongo-store stub-user)
+        (user/create-user! mongo-store nil stub-user)))
+    (migration/run-migrations mongo-db)
+    (schedule/schedule (a/sync-activities-task mongo-store activity-sources) (config/sync-interval config-m))
+    (ring-jetty/run-jetty (create-app config-m mongo-store activity-sources)
                           {:port (config/port config-m)
                            :host (config/host config-m)})))
