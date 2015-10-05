@@ -17,22 +17,22 @@
     (-> (mh/redirect-to request :feed)
         (assoc :session updated-session))))
 
-(defn- create-account-response [db request username]
+(defn- create-account-response [store request username]
   (let [auth-provider-user-id (get-in request [:session :auth-provider-user-id])
-        created-user (user/create-user! db auth-provider-user-id username)]
+        created-user (user/create-user! store auth-provider-user-id username)]
     (account-created-response request created-user)))
 
-(defn is-username-duplicate? [db username]
-  (boolean (user/find-user db username)))
+(defn is-username-duplicate? [store username]
+  (boolean (user/find-user store username)))
 
-(defn create-account [db request]
+(defn create-account [store request]
   (if (mh/authenticated? request)
     (let [username (get-in request [:params :username])
-          duplicate-username-fn (partial is-username-duplicate? db)]
+          duplicate-username-fn (partial is-username-duplicate? store)]
       (if-let [username-validation-errors (v/validate-username username duplicate-username-fn)]
         (-> request
             (assoc-in [:context :error-m] username-validation-errors)
             (assoc-in [:context :params :username] username)
             show-create-account)
-        (create-account-response db request username)))
+        (create-account-response store request username)))
     (mh/redirect-to request :sign-in)))

@@ -8,92 +8,92 @@
 (fact "can store an activity"
       (dbh/with-mongo-do
         (fn [db]
-          (let [database (mongo/create-database db)
+          (let [store (mongo/create-mongo-store db)
                 activity {"@displayName" "KCat"
                           "published" "2015-08-12T10:20:41.000Z"}]
-            (activity/store-activity! database activity)
-            (mongo/find-item database activity/activity-collection {"@displayName" "KCat"} {:stringify? true}) => activity))))
+            (activity/store-activity! store activity)
+            (mongo/find-item store activity/activity-collection {"@displayName" "KCat"} {:stringify? true}) => activity))))
 
 (fact "will not store the existing activity"
       (dbh/with-mongo-do
         (fn [db]
-          (let [database (mongo/create-database db)
+          (let [store (mongo/create-mongo-store db)
                 activity1 {"published" "2015-08-12T10:20:41.369Z"
                           "@displayName" "KCat"}
                 activity2 {"published" "2015-08-12T10:20:40.000"
                            "@displayName" "JDog"}]
-            (activity/store-activity! database activity1)
-            (activity/fetch-activities database) => [activity1]
+            (activity/store-activity! store activity1)
+            (activity/fetch-activities store) => [activity1]
             (fact "does not add activity because timestamp is not after latest timestamp"
-                  (activity/store-activity! database activity2)
-                  (activity/fetch-activities database) => [activity1])))))
+                  (activity/store-activity! store activity2)
+                  (activity/fetch-activities store) => [activity1])))))
 
 (fact "can fetch a collection of activities"
       (dbh/with-mongo-do
         (fn [db]
-          (let [database (mongo/create-database db)
+          (let [store (mongo/create-mongo-store db)
                 activity {"@displayName" "KCat"
                           "published" "2015-08-12T10:20:41.000Z"}]
-            (activity/store-activity! database activity)
-            (activity/fetch-activities database) => [activity]))))
+            (activity/store-activity! store activity)
+            (activity/fetch-activities store) => [activity]))))
 
 (fact "can store and retrieve latest-activity-time in metadata collection per activity-src"
       (dbh/with-mongo-do
         (fn [db]
-          (let [database (mongo/create-database db)
+          (let [store (mongo/create-mongo-store db)
                 api1 "api1"
                 api2 "api2"]
-            (activity/fetch-most-recent-activity-date database api1) => nil
-            (activity/fetch-most-recent-activity-date database api2) => nil
+            (activity/fetch-most-recent-activity-date store api1) => nil
+            (activity/fetch-most-recent-activity-date store api2) => nil
 
-            (activity/store-most-recent-activity-date! database api1 "2015-08-12T10:20:41.000Z")
-            (activity/fetch-most-recent-activity-date database api1) => (time/date-time 2015 8 12 10 20 41 0)
-            (activity/fetch-most-recent-activity-date database api2) => nil
+            (activity/store-most-recent-activity-date! store api1 "2015-08-12T10:20:41.000Z")
+            (activity/fetch-most-recent-activity-date store api1) => (time/date-time 2015 8 12 10 20 41 0)
+            (activity/fetch-most-recent-activity-date store api2) => nil
 
-            (activity/store-most-recent-activity-date! database api1 "2015-08-12T10:20:42.000Z")
-            (activity/store-most-recent-activity-date! database api2 "2015-08-12T10:20:43.000Z")
-            (activity/fetch-most-recent-activity-date database api1) => (time/date-time 2015 8 12 10 20 42 0)
-            (activity/fetch-most-recent-activity-date database api2) => (time/date-time 2015 8 12 10 20 43 0)))))
+            (activity/store-most-recent-activity-date! store api1 "2015-08-12T10:20:42.000Z")
+            (activity/store-most-recent-activity-date! store api2 "2015-08-12T10:20:43.000Z")
+            (activity/fetch-most-recent-activity-date store api1) => (time/date-time 2015 8 12 10 20 42 0)
+            (activity/fetch-most-recent-activity-date store api2) => (time/date-time 2015 8 12 10 20 43 0)))))
 
 (fact "can store and retrieve activity-types in metadata collection per activity-src"
       (dbh/with-mongo-do
         (fn [db]
-          (let [database (mongo/create-database db)
+          (let [store (mongo/create-mongo-store db)
                 activity-src "an-activity-src"]
-            (activity/fetch-activity-types database) => {}
-            (activity/update-activity-types-for-activity-source! database activity-src "Type1")
-            (activity/fetch-activity-types database) => {"an-activity-src" ["Type1"]}
+            (activity/fetch-activity-types store) => {}
+            (activity/update-activity-types-for-activity-source! store activity-src "Type1")
+            (activity/fetch-activity-types store) => {"an-activity-src" ["Type1"]}
 
             (fact "can store multiple activity-types"
-                  (activity/update-activity-types-for-activity-source! database activity-src "Type2")
-                  (activity/fetch-activity-types database) => {"an-activity-src" ["Type1" "Type2"]})
+                  (activity/update-activity-types-for-activity-source! store activity-src "Type2")
+                  (activity/fetch-activity-types store) => {"an-activity-src" ["Type1" "Type2"]})
 
             (fact "will not store duplicates"
-                  (activity/fetch-activity-types database) => {"an-activity-src" ["Type1" "Type2"]}
-                  (activity/update-activity-types-for-activity-source! database activity-src "Type2")
-                  (activity/fetch-activity-types database) => {"an-activity-src" ["Type1" "Type2"]})))))
+                  (activity/fetch-activity-types store) => {"an-activity-src" ["Type1" "Type2"]}
+                  (activity/update-activity-types-for-activity-source! store activity-src "Type2")
+                  (activity/fetch-activity-types store) => {"an-activity-src" ["Type1" "Type2"]})))))
 
 (fact "if new event is retrieved from API1 that is has an older timestamp than existing event from API2, then event is still stored"
       (dbh/with-mongo-do
         (fn [db]
-          (let [database (mongo/create-database db)
+          (let [store (mongo/create-mongo-store db)
                 event1api1 {"@displayName" "KCat"
                             "published" "2015-08-12T10:20:41.000Z"
                             "activity-src" "api1"}
                 event2api2 {"@diplayName" "JDog"
                             "published" "2015-08-12T10:20:41.000Z"
                             "activity-src" "api2"}]
-            (activity/store-activity! database event1api1)
+            (activity/store-activity! store event1api1)
             ;; time passes
-            (activity/store-activity! database event2api2)
-            (count (activity/fetch-activities database)) => 2))))
+            (activity/store-activity! store event2api2)
+            (count (activity/fetch-activities store)) => 2))))
 
 
 (tabular
   (fact "can fetch a collection of activities with the given activity source keys and activity types"
         (dbh/with-mongo-do
           (fn [db]
-            (let [database (mongo/create-database db)
+            (let [store (mongo/create-mongo-store db)
                   activity1 {"@displayName" "KCat"
                              "published" "2015-08-12T10:20:41.000Z"
                              "activity-src" "source-1"
@@ -106,10 +106,10 @@
                              "published" "2015-08-12T11:20:41.000Z"
                              "activity-src" "source-2"
                              "@type" "Create"}]
-              (activity/store-activity! database activity1)
-              (activity/store-activity! database activity2)
-              (activity/store-activity! database activity3)
-              (activity/fetch-activities-by-activity-sources-and-types database ?activity-sources-and-types) => ?result))))
+              (activity/store-activity! store activity1)
+              (activity/store-activity! store activity2)
+              (activity/store-activity! store activity3)
+              (activity/fetch-activities-by-activity-sources-and-types store ?activity-sources-and-types) => ?result))))
 
   ?activity-sources-and-types                                           ?result
   [{:activity-src :source-1 "@type" ["Create"]}]                        [activity1]
@@ -122,13 +122,13 @@
 (fact "activities are fetched in batches of 50"
       (dbh/with-mongo-do
         (fn [db]
-          (let [database (mongo/create-database db)]
+          (let [store (mongo/create-mongo-store db)]
             (->> (range 51)
                  (map (fn [counter]
                         {"@displayName" (str "KCat" counter)
                          "published"    (format "2015-08-12T10:20:%02d.000Z" counter)
                          "activity-src" "source-1"
                          "@type"        "Create"}))
-                 (map (partial activity/store-activity! database))
+                 (map (partial activity/store-activity! store))
                  doall)
-            (activity/fetch-activities-by-activity-sources-and-types database [{:activity-src :source-1 "@type" ["Create"]}]) => (n-of anything 50)))))
+            (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :source-1 "@type" ["Create"]}]) => (n-of anything 50)))))

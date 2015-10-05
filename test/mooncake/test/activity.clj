@@ -48,7 +48,7 @@
         (http/get ...invalid-activity-src-url...
                   {:accept :json :as :json-string-keys}) =throws=> (ConnectException.)))
 
-(facts "sync activities retrieves activities from api and stores in database"
+(facts "sync activities retrieves activities from api and stores them"
        (let [an-activity-src-url "https://an-activity.src"
              another-activity-src-url "https://another-activity.src"
              json-src1 [{"actor"     {"displayName" "JDog"}
@@ -60,7 +60,7 @@
              json-src2 [{"actor"     {"displayName" "LSheep"}
                          "published" eleven-oclock
                          "@type"     "yet-another-type"}]
-             db (dbh/create-in-memory-db)]
+             store (dbh/create-in-memory-store)]
          (facts "with stubbed activity retrieval"
            (against-background
              (http/get an-activity-src-url {:accept :json
@@ -68,14 +68,14 @@
              (http/get another-activity-src-url {:accept :json
                                                  :as     :json-string-keys}) => {:body json-src2})
            (fact "activities are stored"
-                 (a/sync-activities! db {:an-activity-src      {:url an-activity-src-url}
+                 (a/sync-activities! store {:an-activity-src      {:url an-activity-src-url}
                                          :another-activity-src {:url another-activity-src-url}})
-                 (count (activity/fetch-activities db)) => 3)
+                 (count (activity/fetch-activities store)) => 3)
            (fact "activities are not stored again"
-                 (count (activity/fetch-activities db)) => 3
-                 (a/sync-activities! db {:an-activity-src      {:url an-activity-src-url}
+                 (count (activity/fetch-activities store)) => 3
+                 (a/sync-activities! store {:an-activity-src      {:url an-activity-src-url}
                                          :another-activity-src {:url another-activity-src-url}})
-                 (count (activity/fetch-activities db)) => 3)
+                 (count (activity/fetch-activities store)) => 3)
            (fact "activity types are stored"
-                 (a/retrieve-activity-types db) => {:an-activity-src      ["a-type" "another-type"]
+                 (a/retrieve-activity-types store) => {:an-activity-src      ["a-type" "another-type"]
                                                     :another-activity-src ["yet-another-type"]}))))

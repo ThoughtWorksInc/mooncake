@@ -39,11 +39,11 @@
   (so-jwt/decode anything ...id-token... ...public-key-str...) => {:sub "test-stonecutter-user-uuid"})
 
 (def test-db-uri "mongodb://localhost:27017/mooncake")
-(def database (mongo/create-database (mongo/get-mongo-db test-db-uri)))
+(def mongo-store (mongo/create-mongo-store (mongo/get-mongo-db test-db-uri)))
 
-(def app (h/create-app (c/create-config) database {}))
+(def app (h/create-app (c/create-config) mongo-store {}))
 
-(def app-with-activity-sources-from-yaml (h/create-app (c/create-config) database (a/load-activity-sources "test-activity-sources.yml")))
+(def app-with-activity-sources-from-yaml (h/create-app (c/create-config) mongo-store (a/load-activity-sources "test-activity-sources.yml")))
 
 (defn drop-db! []
   (let [{:keys [conn db]} (monger/connect-via-uri test-db-uri)]
@@ -52,17 +52,17 @@
 
 (defn clean-app-with-activity-sources-from-yaml-and-activity-types-populated-in-db []
   (drop-db!)
-  (adb/update-activity-types-for-activity-source! database "test-activity-source-1" "TestActivityType-1-1")
-  (adb/update-activity-types-for-activity-source! database "test-activity-source-1" "TestActivityType-1-2")
-  (adb/update-activity-types-for-activity-source! database "test-activity-source-2" "TestActivityType-2-1")
-  (adb/update-activity-types-for-activity-source! database "test-activity-source-3" "Question")
-  (adb/update-activity-types-for-activity-source! database "test-activity-source-3" "Create")
+  (adb/update-activity-types-for-activity-source! mongo-store "test-activity-source-1" "TestActivityType-1-1")
+  (adb/update-activity-types-for-activity-source! mongo-store "test-activity-source-1" "TestActivityType-1-2")
+  (adb/update-activity-types-for-activity-source! mongo-store "test-activity-source-2" "TestActivityType-2-1")
+  (adb/update-activity-types-for-activity-source! mongo-store "test-activity-source-3" "Question")
+  (adb/update-activity-types-for-activity-source! mongo-store "test-activity-source-3" "Create")
   app-with-activity-sources-from-yaml)
 
 (defn populate-db-with-stub-activities! [activities]
   (doseq [activity activities]
-    (adb/update-activity-types-for-activity-source! database (get activity "activity-src") (get activity "@type"))
-    (mongo/store! database adb/activity-collection activity)))
+    (adb/update-activity-types-for-activity-source! mongo-store (get activity "activity-src") (get activity "@type"))
+    (mongo/store! mongo-store adb/activity-collection activity)))
 
 (defn clean-app! []
   (drop-db!)
@@ -127,7 +127,7 @@
 
 (def server (atom nil))
 (defn start-server [] (swap! server (fn [_] (ring-jetty/run-jetty
-                                              (h/create-app (c/create-config) database {})
+                                              (h/create-app (c/create-config) mongo-store {})
                                               {:host "127.0.0.1" :port 3000 :join? false}))))
 (defn stop-server [] (.stop @server))
 
@@ -144,7 +144,7 @@
    (after :contents (stop-server))]
   (facts "Stub activities are rendered"
          (drop-db!)
-         (-> (k/session (h/create-app (c/create-config) database {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
+         (-> (k/session (h/create-app (c/create-config) mongo-store {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
              sign-in!
              (k/visit (routes/path :feed))
              (kh/check-page-is "/" ks/feed-page-body)
@@ -251,7 +251,7 @@
 
 (facts "Invalid activity source responses are handled gracefully"
        (drop-db!)
-       (-> (k/session (h/create-app (c/create-config) database {:invalid-activity-src {:url "http://localhost:6666/not-an-activity-source"}}))
+       (-> (k/session (h/create-app (c/create-config) mongo-store {:invalid-activity-src {:url "http://localhost:6666/not-an-activity-source"}}))
            sign-in!
            (k/visit (routes/absolute-path (c/create-config) :feed))
            (kh/check-page-is "/" ks/feed-page-body)))
@@ -259,7 +259,7 @@
 (facts "Error page is shown if an exception is thrown"
        (against-background
          (h/sign-in anything) =throws=> (Exception.))
-       (-> (k/session (h/create-app (c/create-config) database {}))
+       (-> (k/session (h/create-app (c/create-config) mongo-store {}))
            (k/visit (routes/absolute-path (c/create-config) :sign-in))
            (kh/response-status-is 500)
            (kh/selector-exists ks/error-500-page-body)))

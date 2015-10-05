@@ -24,10 +24,10 @@
        (facts "when successful"
               (let [create-account-request {:params  {:username "username"}
                                             :session {:auth-provider-user-id ...user-id...}}
-                    db (dbh/create-in-memory-db)
-                    response (cac/create-account db create-account-request)]
+                    store (dbh/create-in-memory-store)
+                    response (cac/create-account store create-account-request)]
                 (fact "it should create the user"
-                      (user/fetch-user db ...user-id...) => {:auth-provider-user-id ...user-id...
+                      (user/fetch-user store ...user-id...) => {:auth-provider-user-id ...user-id...
                                                              :username              "username"})
                 (fact "it should redirect to /"
                       response => (eh/check-redirects-to (routes/absolute-path {} :feed)))
@@ -58,7 +58,7 @@
              (let [create-account-request {:params  {:username "dupe_username"}
                                            :session {:auth-provider-user-id ...user-id...}
                                            :context {:translator {}}}
-                   store (dbh/create-in-memory-db {"user" {"some-id" {:auth-provider-user-id "some-id"
+                   store (dbh/create-in-memory-store {"user" {"some-id" {:auth-provider-user-id "some-id"
                                                                       :username              "dupe_username"}}})
                    response (cac/create-account store create-account-request)]
                response => (eh/check-renders-page :.func--create-account-page)
@@ -69,10 +69,10 @@
 
 (facts "about is-username-duplicate?"
        (fact "when username is unique returns false"
-             (let [store (dbh/create-in-memory-db)]
+             (let [store (dbh/create-in-memory-store)]
                (cac/is-username-duplicate? store "unique_username")) => false)
 
        (fact "duplicate username returns true"
-             (let [store (dbh/create-in-memory-db {"user" {"some-id" {:auth-provider-user-id "some-id"
+             (let [store (dbh/create-in-memory-store {"user" {"some-id" {:auth-provider-user-id "some-id"
                                                                       :username              "dupe_username"}}})]
                (cac/is-username-duplicate? store "dupe_username")) => true))

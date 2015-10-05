@@ -35,15 +35,15 @@
          ((:handler-3 wrapped-handlers) "request") => "wrap function return value"))
 
 (fact "wrap-activity-sources-and-types"
-      (let [db (dbh/create-in-memory-db)
+      (let [store (dbh/create-in-memory-store)
             activity-sources {:activity-src         {:name "A. Activity Source" :url "some url"}
                               :another-activity-src {:name "B. Another Source" :url "another url"}}
 
-            _ (adb/update-activity-types-for-activity-source! db "activity-src" "Create")
-            _ (adb/update-activity-types-for-activity-source! db "activity-src" "Question")
-            _ (adb/update-activity-types-for-activity-source! db "another-activity-src" "Question")
+            _ (adb/update-activity-types-for-activity-source! store "activity-src" "Create")
+            _ (adb/update-activity-types-for-activity-source! store "activity-src" "Question")
+            _ (adb/update-activity-types-for-activity-source! store "another-activity-src" "Question")
             handler-which-returns-request (fn [request] request)
-            wrapped-handler (m/wrap-activity-sources-and-types db activity-sources handler-which-returns-request)
+            wrapped-handler (m/wrap-activity-sources-and-types store activity-sources handler-which-returns-request)
             wrapped-request (wrapped-handler {})]
         wrapped-request => {:context {:activity-sources {:activity-src         {:name           "A. Activity Source"
                                                                                 :url            "some url"

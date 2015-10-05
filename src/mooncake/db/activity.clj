@@ -7,44 +7,44 @@
 (def activity-collection "activity")
 (def activity-metadata-collection "activityMetaData")
 
-(defn fetch-activity-types [db]
-  (let [all-activity-metadata (mongo/fetch-all db activity-metadata-collection {:stringify? false})]
+(defn fetch-activity-types [store]
+  (let [all-activity-metadata (mongo/fetch-all store activity-metadata-collection {:stringify? false})]
     (reduce
       (fn [activity-types-m activity-metadata]
         (assoc activity-types-m (:activity-src activity-metadata) (:activity-types activity-metadata)))
       {}
       all-activity-metadata)))
 
-(defn update-activity-types-for-activity-source! [db activity-src activity-type]
-  (mongo/add-to-set! db activity-metadata-collection {:activity-src activity-src} :activity-types activity-type))
+(defn update-activity-types-for-activity-source! [store activity-src activity-type]
+  (mongo/add-to-set! store activity-metadata-collection {:activity-src activity-src} :activity-types activity-type))
 
 (defn activity->published-datetime [activity]
   (-> (domain/activity->published activity)
       (time-coerce/from-string)))
 
-(defn store-most-recent-activity-date! [db activity-src date]
-  (mongo/upsert! db activity-metadata-collection {:activity-src activity-src} :latest-activity-datetime date))
+(defn store-most-recent-activity-date! [store activity-src date]
+  (mongo/upsert! store activity-metadata-collection {:activity-src activity-src} :latest-activity-datetime date))
 
-(defn fetch-most-recent-activity-date [db activity-src]
-  (when-let [item (mongo/find-item db activity-metadata-collection {:activity-src activity-src} {:stringify? false})]
+(defn fetch-most-recent-activity-date [store activity-src]
+  (when-let [item (mongo/find-item store activity-metadata-collection {:activity-src activity-src} {:stringify? false})]
     (-> item
         :latest-activity-datetime
         (time-coerce/from-string))))
 
-(defn fetch-activities [db]
-  (mongo/fetch-all db activity-collection {:stringify? true}))
+(defn fetch-activities [store]
+  (mongo/fetch-all store activity-collection {:stringify? true}))
 
-(defn fetch-activities-by-activity-sources-and-types [db activity-sources-and-types]
-  (mongo/find-items-by-alternatives db activity-collection activity-sources-and-types {:stringify? true :sort {"published" :descending} :limit 50}))
+(defn fetch-activities-by-activity-sources-and-types [store activity-sources-and-types]
+  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types {:stringify? true :sort {"published" :descending} :limit 50}))
 
-(defn store-activity! [db activity]
+(defn store-activity! [store activity]
   (let [activity-src (domain/activity->activity-src activity)
         activity-type (domain/activity->type activity)
-        most-recent-activity-date (fetch-most-recent-activity-date db activity-src)
+        most-recent-activity-date (fetch-most-recent-activity-date store activity-src)
         current-activity-date (activity->published-datetime activity)
         current-activity-date-string (domain/activity->published activity)]
     (when (or (not most-recent-activity-date) (time/after? current-activity-date most-recent-activity-date))
       (do
-        (update-activity-types-for-activity-source! db activity-src activity-type)
-        (store-most-recent-activity-date! db activity-src current-activity-date-string)
-        (mongo/store! db activity-collection activity)))))
+        (update-activity-types-for-activity-source! store activity-src activity-type)
+        (store-most-recent-activity-date! store activity-src current-activity-date-string)
+        (mongo/store! store activity-collection activity)))))

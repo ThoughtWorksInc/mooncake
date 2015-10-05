@@ -12,18 +12,18 @@
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 
 (fact "feed handler displays activities retrieved from activity sources"
-      (let [database (dbh/create-in-memory-db)]
-        (mongo/store! database a/activity-collection {"actor"       {"@type"       "Person"
+      (let [store (dbh/create-in-memory-store)]
+        (mongo/store! store a/activity-collection {"actor"       {"@type"       "Person"
                                                                      "displayName" "JDog"}
                                                       "published"   ten-oclock
                                                       "activity-src" "OpenAhjo"
                                                       "@type"       "Activity"})
-        (mongo/store! database a/activity-collection {"actor"       {"@type"       "Person"
+        (mongo/store! store a/activity-collection {"actor"       {"@type"       "Person"
                                                                      "displayName" "KCat"}
                                                       "published"   twelve-oclock
                                                       "activity-src" "objective8"
                                                       "@type"       "Activity"})
-        (fc/feed database {:context
+        (fc/feed store {:context
                            {:activity-sources {:OpenAhjo   {:activity-types ["Activity"]}
                                                :objective8 {:activity-types ["Activity"]}}
                             :translator       (constantly "")}}) => (every-checker
@@ -32,7 +32,7 @@
                                                                       (contains {:body (contains "KCat")}))))
 
 (fact "feed handler displays username of logged-in user"
-      (fc/feed (dbh/create-in-memory-db) {:context {:translator (constantly "")}
+      (fc/feed (dbh/create-in-memory-store) {:context {:translator (constantly "")}
                                           :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
 (def activity-src-1--enabled-type {"actor"        {"@type"       "Person"
@@ -52,18 +52,18 @@
                                          "@type"        "No-preference"})
 
 (facts "about which activities feed handler displays"
-       (let [database (dbh/create-in-memory-db)
-             _ (mongo/store! database a/activity-collection activity-src-1--enabled-type)
-             _ (mongo/store! database a/activity-collection activity-src-1--disabled-type)
-             _ (mongo/store! database a/activity-collection activity-src-2--no-preference-type)
-             _ (user/create-user! database ...user-id... ...username...)
-             _ (user/update-feed-settings! database ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
+       (let [store (dbh/create-in-memory-store)
+             _ (mongo/store! store a/activity-collection activity-src-1--enabled-type)
+             _ (mongo/store! store a/activity-collection activity-src-1--disabled-type)
+             _ (mongo/store! store a/activity-collection activity-src-2--no-preference-type)
+             _ (user/create-user! store ...user-id... ...username...)
+             _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                              {:id "Disabled" :selected false}]}})
              request {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
                                                    :activity-src-2 {:activity-types ["No-preference"]}}
                                 :translator       (constantly "")}
                       :session {:username ...username...}}
-             response (fc/feed database request)]
+             response (fc/feed store request)]
 
 
          (fact "enabled activity types are shown"
@@ -79,11 +79,11 @@
                (:body response) =not=> (contains "clj--empty-activity-item"))
 
          (fact "custom message is shown if all activity types are disabled"
-               (user/update-feed-settings! database ...username... {:activity-src-1 {:types [{:id "Disabled" :selected false}]}})
+               (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Disabled" :selected false}]}})
                (let [no-activities-request {:context {:activity-sources {:activity-src-1 {:activity-types ["Disabled"]}}
                                                       :translator       (constantly "")}
                                             :session {:username ...username...}}
-                     no-activities-response (fc/feed database no-activities-request)]
+                     no-activities-response (fc/feed store no-activities-request)]
                  (:body no-activities-response) => (contains "clj--empty-activity-item")))))
 
 (facts "about generating the activity query map"

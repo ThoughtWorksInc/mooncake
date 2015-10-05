@@ -14,13 +14,13 @@
 (defn generate-feed-query [feed-settings activity-sources]
   (remove nil? (map activity-src-preferences->feed-query (cfc/generate-activity-source-preferences activity-sources feed-settings))))
 
-(defn feed [db request]
+(defn feed [store request]
   (let [context (:context request)
         username (get-in request [:session :username])
-        user (user/find-user db username)
+        user (user/find-user store username)
         user-feed-settings (:feed-settings user)
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query user-feed-settings activity-sources)
-        activities (a/retrieve-activities db feed-query)
+        activities (a/retrieve-activities store feed-query)
         updated-context (assoc context :activities activities)]
     (mh/enlive-response (f/feed (assoc request :context updated-context)) (:context request))))

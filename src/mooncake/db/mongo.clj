@@ -6,7 +6,7 @@
             [clojure.walk :as walk]
             [mooncake.helper :as mh]))
 
-(defprotocol Database
+(defprotocol Store
   (fetch [this coll k options-m]
     "Find the item based on a key.")
   (fetch-all [this coll options-m]
@@ -49,8 +49,8 @@
   (cond-> collection
           stringify? walk/stringify-keys))
 
-(defrecord MongoDatabase [mongo-db]
-  Database
+(defrecord MongoStore [mongo-db]
+  Store
   (fetch [this coll k options-m]
     (let [stringify? (:stringify? options-m)]
       (when k
@@ -101,8 +101,8 @@
 
 
 
-(defn create-database [mongodb]
-  (MongoDatabase. mongodb))
+(defn create-mongo-store [mongodb]
+  (MongoStore. mongodb))
 
 (defn get-mongo-db-and-conn [mongo-uri]
   (log/debug "Connecting to mongo.")

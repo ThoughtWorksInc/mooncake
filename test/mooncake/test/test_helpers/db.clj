@@ -14,8 +14,8 @@
     value
     [value]))
 
-(defn find-by-map-query [database coll single-query-map options-m]
-  (let [all-documents (mongo/fetch-all database coll options-m)
+(defn find-by-map-query [store coll single-query-map options-m]
+  (let [all-documents (mongo/fetch-all store coll options-m)
         documents-with-matching-key-values (fn [[k vs]] (filter #((set (to-vector vs)) (get % k)) all-documents))
         search-result-sets (->> single-query-map
                                 (map documents-with-matching-key-values)
@@ -45,8 +45,8 @@
     (conj coll value)
     coll))
 
-(defrecord MemoryDatabase [data]
-  mongo/Database
+(defrecord MemoryStore [data]
+  mongo/Store
   (fetch [this coll id options-m]
     (-> (get-in @data [coll id])
         (dissoc :_id)
@@ -99,9 +99,9 @@
         (swap! data assoc-in [coll id] (assoc query :_id id key-param [value]))))))
 
 
-(defn create-in-memory-db
-  ([] (create-in-memory-db {}))
-  ([data] (MemoryDatabase. (atom data))))
+(defn create-in-memory-store
+  ([] (create-in-memory-store {}))
+  ([data] (MemoryStore. (atom data))))
 
 (def test-db "mooncake-test")
 (def test-db-uri (str "mongodb://localhost:27017/" test-db))

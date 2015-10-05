@@ -8,10 +8,10 @@
 
 (defn add-activity-types-of-existing-activities-to-activity-src-metadata! [db]
   (log/info "Running migration add-activity-types-of-existing-activities-to-activity-src-metadata!")
-  (let [database (mongo/create-database db)
-        activities (adb/fetch-activities database)]
+  (let [store (mongo/create-mongo-store db)
+        activities (adb/fetch-activities store)]
     (doseq [activity activities]
-      (adb/update-activity-types-for-activity-source! database (get activity "activity-src") (get activity "@type"))))
+      (adb/update-activity-types-for-activity-source! store (get activity "activity-src") (get activity "@type"))))
   (log/info "Finished running migration add-activity-types-of-existing-activities-to-activity-src-metadata!"))
 
 ;; IMPORTANT DO *NOT* MODIFY THE EXISTING MIGRATION IDS IN THIS LIST

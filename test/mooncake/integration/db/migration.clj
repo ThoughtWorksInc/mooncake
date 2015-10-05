@@ -45,21 +45,21 @@
 (facts "About adding activity types to activity source metadata"
        (dbh/with-mongo-do
          (fn [db]
-           (let [database (mongo/create-database db)]
-             (mongo/store! database activity/activity-collection {"@displayName" "KCat"
+           (let [store (mongo/create-mongo-store db)]
+             (mongo/store! store activity/activity-collection {"@displayName" "KCat"
                                                                   "published"    "2015-08-12T10:20:41.000Z"
                                                                   "activity-src" "source-1"
                                                                   "@type"        "Create"})
-             (mongo/store! database activity/activity-collection {"@displayName" "JDog"
+             (mongo/store! store activity/activity-collection {"@displayName" "JDog"
                                                                   "published"    "2015-08-12T10:20:42.000Z"
                                                                   "activity-src" "source-1"
                                                                   "@type"        "Question"})
-             (mongo/store! database activity/activity-collection {"@displayName" "LFrog"
+             (mongo/store! store activity/activity-collection {"@displayName" "LFrog"
                                                                   "published"    "2015-08-12T10:20:43.000Z"
                                                                   "activity-src" "source-2"
                                                                   "@type"        "Create"})
-             (activity/fetch-activity-types database) => {}
+             (activity/fetch-activity-types store) => {}
              (m/add-activity-types-of-existing-activities-to-activity-src-metadata! db)
-             (activity/fetch-activity-types database) => {"source-1" ["Create" "Question"]
+             (activity/fetch-activity-types store) => {"source-1" ["Create" "Question"]
                                                           "source-2" ["Create"]}))))
 

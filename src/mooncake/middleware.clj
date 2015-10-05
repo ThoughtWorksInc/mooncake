@@ -26,9 +26,9 @@
     {}
     activity-sources))
 
-(defn wrap-activity-sources-and-types [db activity-sources handler]
+(defn wrap-activity-sources-and-types [store activity-sources handler]
   (fn [request]
-    (let [activity-types (adb/fetch-activity-types db)
+    (let [activity-types (adb/fetch-activity-types store)
           activity-sources-with-types (generate-activity-sources-with-types activity-sources activity-types)]
       (handler (assoc-in request [:context :activity-sources] activity-sources-with-types)))))
 

@@ -39,18 +39,18 @@
        flatten
        sort-by-published-time))
 
-(defn retrieve-activities [database activity-source-keys]
-  (adb/fetch-activities-by-activity-sources-and-types database activity-source-keys))
+(defn retrieve-activities [store activity-source-keys]
+  (adb/fetch-activities-by-activity-sources-and-types store activity-source-keys))
 
-(defn sync-activities! [db activity-sources]
+(defn sync-activities! [store activity-sources]
   (let [activities (poll-activity-sources activity-sources)]
-    (doall (map (partial adb/store-activity! db) (reverse activities)))))
+    (doall (map (partial adb/store-activity! store) (reverse activities)))))
 
-(defn sync-activities-task [db activity-sources]
+(defn sync-activities-task [store activity-sources]
   (fn [time]
     (log/debug (format "Syncing activities at %s" time))
-    (sync-activities! db activity-sources)))
+    (sync-activities! store activity-sources)))
 
-(defn retrieve-activity-types [db]
-  (adb/fetch-activity-types db))
+(defn retrieve-activity-types [store]
+  (adb/fetch-activity-types store))
 

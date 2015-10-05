@@ -17,12 +17,12 @@
                                      :params  {:activity-src_-_Question "anything"
                                                :some-other-param        "something-else"}
                                      :session {:username ...username...}}
-             db (dbh/create-in-memory-db)
-             stored-user (user/create-user! db ...user-id... ...username...)
-             response (cf/customise-feed db customise-feed-request)]
+             store (dbh/create-in-memory-store)
+             stored-user (user/create-user! store ...user-id... ...username...)
+             response (cf/customise-feed store customise-feed-request)]
          (fact "it should update the user's feed settings for all activity sources and their types"
 
-               (user/find-user db ...username...) => {:auth-provider-user-id ...user-id...
+               (user/find-user store ...username...) => {:auth-provider-user-id ...user-id...
                                                       :username              ...username...
                                                       :feed-settings         {:activity-src         {:types    [{:id       "Create"
                                                                                                                  :selected false}
@@ -45,15 +45,15 @@
                                                                                                   :activity-types ["Add"]}}
                                                     :translator       {}}
                                           :session {:username ...username...}}
-             db (dbh/create-in-memory-db)
-             _ (user/create-user! db ...user-id... ...username...)
-             _ (user/update-feed-settings! db ...username... {:activity-src         {:types    [{:id       "Create"
+             store (dbh/create-in-memory-store)
+             _ (user/create-user! store ...user-id... ...username...)
+             _ (user/update-feed-settings! store ...username... {:activity-src         {:types    [{:id       "Create"
                                                                                                  :selected false}
                                                                                                 {:id       "Question"
                                                                                                  :selected true}]}
                                                               :another-activity-src {:types    [{:id       "Add"
                                                                                                  :selected false}]}})
-             response (cf/show-customise-feed db show-customise-feed-request)]
+             response (cf/show-customise-feed store show-customise-feed-request)]
          (fact "it should show available activity sources on feed settings page"
                response => (eh/check-renders-page [:.func--customise-feed-page])
                (:body response) => (contains "Activity Source")
@@ -79,9 +79,9 @@
                  (-> third-child-checkbox :attrs :checked) => nil))
 
          (fact "it should select activity types which are not explicitly set in user preferences by default"
-               (let [_ (user/update-feed-settings! db ...username... {:activity-src         {:types    [{:id       "Question"
+               (let [_ (user/update-feed-settings! store ...username... {:activity-src         {:types    [{:id       "Question"
                                                                                                          :selected false}]}})
-                     response (cf/show-customise-feed db show-customise-feed-request)
+                     response (cf/show-customise-feed store show-customise-feed-request)
                      [first-child-checkbox second-child-checkbox third-child-checkbox fourth-child-checkbox] (-> (html/html-snippet (:body response))
                                                                                                                  (html/select [:.clj--feed-item-child__checkbox]))]
 

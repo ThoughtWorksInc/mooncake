@@ -30,11 +30,11 @@
           {}
           (keys activity-sources)))
 
-(defn customise-feed [db request]
+(defn customise-feed [store request]
   (let [username (get-in request [:session :username])
         activity-sources (get-in request [:context :activity-sources])
         feed-settings-combined (create-user-feed-settings activity-sources (:params request))]
-    (user/update-feed-settings! db username feed-settings-combined)
+    (user/update-feed-settings! store username feed-settings-combined)
     (mh/redirect-to request :feed)))
 
 (defn selected-feed-type? [a-feed-setting]
@@ -69,10 +69,10 @@
             activity-sources)
        (sort-by :name)))
 
-(defn show-customise-feed [db request]
+(defn show-customise-feed [store request]
   (let [context (:context request)
         username (get-in request [:session :username])
-        user (user/find-user db username)
+        user (user/find-user store username)
         user-feed-settings (:feed-settings user)
         activity-source-preferences (generate-activity-source-preferences (:activity-sources context) user-feed-settings)
         updated-request (assoc-in request [:context :activity-source-preferences] activity-source-preferences)]

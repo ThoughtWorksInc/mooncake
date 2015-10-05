@@ -57,7 +57,7 @@
 (facts "about stonecutter-callback"
        (facts "when successfully authenticated"
               (fact "when new user, redirects to /create-account with the auth-provider-user-id set in the session"
-                    (h/stonecutter-callback openid-test-config ...db...
+                    (h/stonecutter-callback openid-test-config ...store...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
                          (eh/check-redirects-to (routes/absolute-path {} :show-create-account))
@@ -67,10 +67,10 @@
                       => {:id_token token-expiring-in-year-2515}
                       (so-jwt/get-public-key-string-from-jwk-set-url "ISSUER/api/jwk-set")
                       => test-auth-provider-public-key
-                      (user/fetch-user ...db... "SUBJECT") => nil))
+                      (user/fetch-user ...store... "SUBJECT") => nil))
 
               (fact "when existing user, redirects to / with the username set in the session and auth-provider-user-id removed"
-                    (h/stonecutter-callback openid-test-config ...db...
+                    (h/stonecutter-callback openid-test-config ...store...
                                             {:params {:code ...auth-code...}})
                     => (every-checker
                          (eh/check-redirects-to (routes/absolute-path {} :feed))
@@ -80,7 +80,7 @@
                       => {:id_token token-expiring-in-year-2515}
                       (so-jwt/get-public-key-string-from-jwk-set-url "ISSUER/api/jwk-set")
                       => test-auth-provider-public-key
-                      (user/fetch-user ...db... "SUBJECT")
+                      (user/fetch-user ...store... "SUBJECT")
                       => {:username ...username... :auth-provider-user-id "SUBJECT"})))
 
        (fact "passes on stonecutter oauth client exception"
