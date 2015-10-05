@@ -3,13 +3,8 @@
 objective8:
   url: https://objective8.dcentproject.eu/api/v1/activities
   name: Objective8
-  activity-types:
-      - Create
-      - Question
 
 OpenAhjo:
   url: https://helsinki-activity-stream.herokuapp.com
   name: Helsinki Decisions
-  activity-types:
-      - Add
 
