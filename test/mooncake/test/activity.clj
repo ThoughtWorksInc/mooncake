@@ -6,23 +6,25 @@
             [mooncake.db.activity :as activity])
   (:import (java.net ConnectException)))
 
+(def nine-oclock "2015-01-01T09:00:00.000Z")
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 
 (fact "retrieve activities retrieves activities from multiple sources, sorts them by published time and assocs activity source into each activity"
       (let [an-activity-src-url "https://an-activity.src"
-            another-activity-src-url "https://another-activity.src"]
-        (a/poll-activity-sources {:an-activity-src      {:url an-activity-src-url}
-                                  :another-activity-src {:url another-activity-src-url}}) => [{:activity-src :an-activity-src
-                                                                                               :actor        {:displayName "KCat"}
-                                                                                               :published    twelve-oclock}
-                                                                                              {:activity-src :another-activity-src
-                                                                                               :actor        {:displayName "LSheep"}
-                                                                                               :published    eleven-oclock}
-                                                                                              {:activity-src :an-activity-src
-                                                                                               :actor        {:displayName "JDog"}
-                                                                                               :published    ten-oclock}]
+            another-activity-src-url "https://another-activity.src"
+            store (dbh/create-in-memory-store)]
+        (a/poll-activity-sources store {:an-activity-src      {:url an-activity-src-url}
+                                        :another-activity-src {:url another-activity-src-url}}) => [{:activity-src :an-activity-src
+                                                                                                     :actor        {:displayName "KCat"}
+                                                                                                     :published    twelve-oclock}
+                                                                                                    {:activity-src :another-activity-src
+                                                                                                     :actor        {:displayName "LSheep"}
+                                                                                                     :published    eleven-oclock}
+                                                                                                    {:activity-src :an-activity-src
+                                                                                                     :actor        {:displayName "JDog"}
+                                                                                                     :published    ten-oclock}]
         (provided
           (http/get an-activity-src-url {:accept :json
                                          :as     :json}) => {:body [{:actor     {:displayName "JDog"}
@@ -42,7 +44,7 @@
                                                                                          :name "Test Activity Source 3"}})
 
 (fact "get-json-from-activity-source gracefully handles exceptions caused by bad/missing responses"
-      (a/get-json-from-activity-source ...invalid-activity-src-url...) => nil
+      (a/get-json-from-activity-source ...invalid-activity-src-url... nil) => nil
       (provided
         (http/get ...invalid-activity-src-url...
                   {:accept :json :as :json}) =throws=> (ConnectException.)))
@@ -62,10 +64,8 @@
              store (dbh/create-in-memory-store)]
          (facts "with stubbed activity retrieval"
                 (against-background
-                  (http/get an-activity-src-url {:accept :json
-                                                 :as     :json}) => {:body json-src1}
-                  (http/get another-activity-src-url {:accept :json
-                                                      :as     :json}) => {:body json-src2})
+                  (http/get an-activity-src-url anything) => {:body json-src1}
+                  (http/get another-activity-src-url anything) => {:body json-src2})
                 (fact "activities are stored"
                       (a/sync-activities! store {:an-activity-src      {:url an-activity-src-url}
                                                  :another-activity-src {:url another-activity-src-url}})
@@ -78,3 +78,29 @@
                 (fact "activity types are stored"
                       (a/retrieve-activity-types store) => {:an-activity-src      ["a-type" "another-type"]
                                                             :another-activity-src ["yet-another-type"]}))))
+
+(facts "retrieve-activities-from-source"
+       (let [activity-url "https://an-activity.src"
+             activity-source :test-activity-source]
+
+         (fact "make get request with no extra params if no recent-published-time is found"
+               (let [store (dbh/create-in-memory-store)]
+                 (a/retrieve-activities-from-source store [activity-source {:url activity-url}])) => anything
+               (provided
+                 (http/get activity-url {:accept :json
+                                                :as     :json}) => {}))
+
+         (fact "make get request with most recent published time stored"
+               (let [store (dbh/create-in-memory-store)
+                     recent-activity {:activity-src activity-source
+                                      :published    ten-oclock}
+                     old-activity {:activity-src activity-source
+                                   :published    nine-oclock}]
+                 (activity/store-activity! store recent-activity)
+                 (activity/store-activity! store old-activity)
+                 (a/retrieve-activities-from-source store [activity-source {:url activity-url}])) => anything
+
+               (provided
+                 (http/get activity-url {:accept       :json
+                                                :as           :json
+                                                :query-params {:from ten-oclock}}) => {}))))
