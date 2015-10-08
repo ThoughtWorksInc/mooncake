@@ -11,20 +11,38 @@
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 
-(fact "retrieve activities retrieves activities from multiple sources, sorts them by published time and assocs activity source into each activity"
+(fact "activities can be retrieved from a source that signs its responses using json web signatures and json web keys"
+      (a/poll-activity-sources (dbh/create-in-memory-store) {:signed-activity-source {:url "signed-activity-source-url"}})
+      => [{(keyword "@type") "Create"
+           :activity-src     :signed-activity-source
+           :published        "2015-10-06T11:23:50.000Z"
+           :signed           true}
+          {(keyword "@type") "Add"
+           :activity-src     :signed-activity-source
+           :published        "2015-10-06T11:23:45.000Z"
+           :signed           true}]
+      (provided
+        (http/get "signed-activity-source-url" {:accept :json
+                                                :as     :json}) => {:headers {"jku" "json-web-key-set-url"}
+                                                                            :body    {:jws-signed-payload "eyJhbGciOiJSUzI1NiJ9.W3siQHR5cGUiOiJDcmVhdGUiLCJwdWJsaXNoZWQiOiIyMDE1LTEwLTA2VDExOjIzOjUwLjAwMFoifSx7IkB0eXBlIjoiQWRkIiwicHVibGlzaGVkIjoiMjAxNS0xMC0wNlQxMToyMzo0NS4wMDBaIn1d.QofcptlnRdIJZo8tSWyl9GiBGDxvb0D1LLbjCHqU9NsBnO49YjUnAaRaXA0Kc6higDZI3wsG4GjBPrOwkeblNookxNDTgY4nlNUMNIhKyFIop8ATq-dzeug5yKvusB3bqJcF0VoVL4myn9ZPJF5iIsFmV-GM_NYpImUlJLemCW1UWyMFw_beg061fWz_CeTJRTO05ZO-xwjSgjz_Ip7E7RUjsoyxUztlrGUzBfFu6L9uSXeBy_3IJ-qZF4N9rYvjgXUg304M-cxjZ3g-EQgSgtlaxWXhmIf8xapGSHALd_YUiEedSN6GbUFDoaeHOWj3NkYWAwmTtf86DysQa8gYGA"}}
+        (http/get "json-web-key-set-url" {:accept :json}) => {:body "{\"keys\": [{\"kty\": \"RSA\", \"kid\": \"key-1444312448597\", \"alg\": \"RS256\", \"n\":   \"xoGFEME7awEBqRVzbSl-q1PA67KIRus_E9t25WAJgfZ9ynZVMlFwcozJSMf2mFaSV3DHR_X6o9kzaTCfklFuISshlYXvi9torY6CYn_InALOCRVTaV_bElSjvCVrlEw23hveAfOWT9JfCtPniSVCbt75UPZ8ewkC0sNNZsc4a4XbMKVirk6-g6XPUYhQAPfCc2pUzJYZDFLkgl39kk2s_UkFwLgFljNIawr4nz2vnAwfFYpJP67qGM1DCZmtlJCR90MlzMSQiSaCy9TFcfUKnWDJ_hFeaP9a1HfqKY_M0R0CNNsQZLbV2DttXq_jf77QtrDV8URd9iWuIg8ncflX9Q\", \"e\":   \"AQAB\"}]}"}))
+
+
+(fact "poll-activity-sources retrieves activities from multiple sources, sorts them by published time and assocs activity source into each activity"
       (let [an-activity-src-url "https://an-activity.src"
             another-activity-src-url "https://another-activity.src"
             store (dbh/create-in-memory-store)]
         (a/poll-activity-sources store {:an-activity-src      {:url an-activity-src-url}
-                                        :another-activity-src {:url another-activity-src-url}}) => [{:activity-src :an-activity-src
-                                                                                                     :actor        {:displayName "KCat"}
-                                                                                                     :published    twelve-oclock}
-                                                                                                    {:activity-src :another-activity-src
-                                                                                                     :actor        {:displayName "LSheep"}
-                                                                                                     :published    eleven-oclock}
-                                                                                                    {:activity-src :an-activity-src
-                                                                                                     :actor        {:displayName "JDog"}
-                                                                                                     :published    ten-oclock}]
+                                        :another-activity-src {:url another-activity-src-url}})
+        => [{:activity-src :an-activity-src
+             :actor        {:displayName "KCat"}
+             :published    twelve-oclock}
+            {:activity-src :another-activity-src
+             :actor        {:displayName "LSheep"}
+             :published    eleven-oclock}
+            {:activity-src :an-activity-src
+             :actor        {:displayName "JDog"}
+             :published    ten-oclock}]
         (provided
           (http/get an-activity-src-url {:accept :json
                                          :as     :json}) => {:body [{:actor     {:displayName "JDog"}
@@ -88,7 +106,7 @@
                  (a/retrieve-activities-from-source store [activity-source {:url activity-url}])) => anything
                (provided
                  (http/get activity-url {:accept :json
-                                                :as     :json}) => {}))
+                                         :as     :json}) => {}))
 
          (fact "make get request with most recent published time stored"
                (let [store (dbh/create-in-memory-store)
@@ -102,5 +120,7 @@
 
                (provided
                  (http/get activity-url {:accept       :json
-                                                :as           :json
-                                                :query-params {:from ten-oclock}}) => {}))))
+                                         :as           :json
+                                         :query-params {:from ten-oclock}}) => {}))))
+
+

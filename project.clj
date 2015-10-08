@@ -24,7 +24,9 @@
                                                     com.sun.jdmk/jmxtools
                                                     com.sun.jmx/jmxri]]
                  [org.clojure/clojurescript "0.0-3308" :scope "provided"]
-                 [prismatic/dommy "1.1.0"]]
+                 [prismatic/dommy "1.1.0"]
+                 [org.bitbucket.b_c/jose4j "0.4.4"]
+                 [org.slf4j/slf4j-simple "1.7.12"]]
   :main mooncake.handler
   :profiles {:dev     {:dependencies   [[ring-mock "0.1.5"]
                                         [midje "1.7.0"]

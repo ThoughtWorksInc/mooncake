@@ -4,9 +4,12 @@
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [clj-time.coerce :as time-coerce]
+            [cheshire.core :as json]
             [mooncake.db.activity :as adb]
             [mooncake.helper :as mh]
-            [mooncake.domain.activity :as activity]))
+            [mooncake.domain.activity :as activity])
+  (:import [org.jose4j.jwk JsonWebKeySet VerificationJwkSelector]
+           [org.jose4j.jws JsonWebSignature]))
 
 (defn load-activity-sources [activity-resource-name]
   (-> activity-resource-name
@@ -17,11 +20,26 @@
 (def activity-sources
   (load-activity-sources "activity-sources.yml"))
 
+(defn handle-signed-activity-source-response [signed-activity-source-response]
+  (let [json-web-key-set-url (get-in signed-activity-source-response [:headers "jku"])
+        jwk-set-response (http/get json-web-key-set-url {:accept :json})
+        json-web-key-set (JsonWebKeySet. (:body jwk-set-response))
+        jwk-selector (VerificationJwkSelector.)
+        jws-signed-payload (get-in signed-activity-source-response [:body :jws-signed-payload])
+        jws (doto (JsonWebSignature.) (.setCompactSerialization jws-signed-payload))
+        jwk (.select jwk-selector jws (.getJsonWebKeys json-web-key-set))
+        json-payload (.getPayload (doto jws (.setKey (.getKey jwk))))
+        activities (json/parse-string json-payload true)]
+    (map #(assoc % :signed true) activities)))
+
 (defn get-json-from-activity-source [url query-params]
   (try
     (let [query-map (if query-params {:accept :json :as :json :query-params query-params}
-                                     {:accept :json :as :json})]
-      (:body (http/get url query-map)))
+                                     {:accept :json :as :json})
+          activity-source-response (http/get url query-map)]
+      (if (get-in activity-source-response [:body :jws-signed-payload])
+        (handle-signed-activity-source-response activity-source-response)
+        (:body activity-source-response)))
     (catch Exception e
       (log/warn (str "Unable to retrieve activities from " url " --- " e))
       nil)))
@@ -35,8 +53,8 @@
 (defn retrieve-activities-from-source [store source-k-v-pair]
   (let [[source-key source-attributes] source-k-v-pair
         most-recent-activity-date (time-coerce/to-string (adb/fetch-most-recent-activity-date store source-key))
-        activities (get-json-from-activity-source (:url source-attributes)
-                                                  (when most-recent-activity-date {:from most-recent-activity-date}))]
+        query-params (when most-recent-activity-date {:from most-recent-activity-date})
+        activities (get-json-from-activity-source (:url source-attributes) query-params)]
     (map #(assoc % :activity-src source-key) activities)))
 
 (defn poll-activity-sources [store activity-sources]
