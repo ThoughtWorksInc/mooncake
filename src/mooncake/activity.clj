@@ -20,17 +20,23 @@
 (def activity-sources
   (load-activity-sources "activity-sources.yml"))
 
-(defn handle-signed-activity-source-response [signed-activity-source-response]
-  (let [json-web-key-set-url (get-in signed-activity-source-response [:body :jku])
-        json-web-key-set-signed-payload (get-in signed-activity-source-response [:body :jws-signed-payload])
-        jwk-set-response (http/get json-web-key-set-url {:accept :json})
+(defn verify-and-return-activities [json-web-key-set-url jws]
+  (let [jwk-set-response (http/get json-web-key-set-url {:accept :json})
         json-web-key-set (JsonWebKeySet. (:body jwk-set-response))
-        jwk-selector (VerificationJwkSelector.)
-        jws (doto (JsonWebSignature.) (.setCompactSerialization json-web-key-set-signed-payload))
-        jwk (.select jwk-selector jws (.getJsonWebKeys json-web-key-set))
+        jwk (.select (VerificationJwkSelector.) jws (.getJsonWebKeys json-web-key-set))
         json-payload (.getPayload (doto jws (.setKey (.getKey jwk))))
         activities (json/parse-string json-payload true)]
     (map #(assoc % :signed true) activities)))
+
+(defn handle-signed-activity-source-response [signed-activity-source-response]
+  (let [json-web-key-set-url (get-in signed-activity-source-response [:body :jku])
+        json-web-key-set-signed-payload (get-in signed-activity-source-response [:body :jws-signed-payload])
+        jws (doto (JsonWebSignature.) (.setCompactSerialization json-web-key-set-signed-payload))]
+    (try
+      (verify-and-return-activities json-web-key-set-url jws)
+      (catch Exception e
+        (log/warn (str "Verification of signed activity response failed - attempting to return unsigned activities ----" e))
+        (json/parse-string (.getUnverifiedPayload jws) true)))))
 
 (defn is-signed-response? [activity-source-response]
   (and (get-in activity-source-response [:body :jws-signed-payload])
