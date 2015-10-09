@@ -21,23 +21,27 @@
   (load-activity-sources "activity-sources.yml"))
 
 (defn handle-signed-activity-source-response [signed-activity-source-response]
-  (let [json-web-key-set-url (get-in signed-activity-source-response [:headers "jku"])
+  (let [json-web-key-set-url (get-in signed-activity-source-response [:body :jku])
+        json-web-key-set-signed-payload (get-in signed-activity-source-response [:body :jws-signed-payload])
         jwk-set-response (http/get json-web-key-set-url {:accept :json})
         json-web-key-set (JsonWebKeySet. (:body jwk-set-response))
         jwk-selector (VerificationJwkSelector.)
-        jws-signed-payload (get-in signed-activity-source-response [:body :jws-signed-payload])
-        jws (doto (JsonWebSignature.) (.setCompactSerialization jws-signed-payload))
+        jws (doto (JsonWebSignature.) (.setCompactSerialization json-web-key-set-signed-payload))
         jwk (.select jwk-selector jws (.getJsonWebKeys json-web-key-set))
         json-payload (.getPayload (doto jws (.setKey (.getKey jwk))))
         activities (json/parse-string json-payload true)]
     (map #(assoc % :signed true) activities)))
+
+(defn is-signed-response? [activity-source-response]
+  (and (get-in activity-source-response [:body :jws-signed-payload])
+       (get-in activity-source-response [:body :jku])))
 
 (defn get-json-from-activity-source [url query-params]
   (try
     (let [query-map (if query-params {:accept :json :as :json :query-params query-params}
                                      {:accept :json :as :json})
           activity-source-response (http/get url query-map)]
-      (if (get-in activity-source-response [:body :jws-signed-payload])
+      (if (is-signed-response? activity-source-response)
         (handle-signed-activity-source-response activity-source-response)
         (:body activity-source-response)))
     (catch Exception e
