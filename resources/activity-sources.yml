@@ -1,7 +1,7 @@
 ---
 
 objective8:
-  url: https://objective8-staging.dcentproject.eu/activities
+  url: https://objective8-staging.dcentproject.eu/as2/activities
   name: Objective8
 
 OpenAhjo:
