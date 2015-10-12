@@ -5,6 +5,6 @@ objective8:
   name: Objective8
 
 OpenAhjo:
-  url: https://helsinki-activity-stream.herokuapp.com
+  url: http://coracle.herokuapp.com/activities
   name: Helsinki Decisions
 
