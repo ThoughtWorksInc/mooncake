@@ -69,12 +69,16 @@
                (http/get "OOPS_WRONG" anything) =throws=> (ConnectException.)))
 
        (fact "if the signed payload cannot be decoded then no activites are returned"
-             (a/poll-activity-sources (dbh/create-in-memory-store) {:signed-activity-source {:url "signed-activity-source-url"}})
-             => []
+             (a/poll-activity-sources (dbh/create-in-memory-store) {:signed-activity-source {:url "signed-activity-source-url"}}) => []
              (provided
                (http/get "signed-activity-source-url" {:accept :json
                                                        :as     :json}) => {:body {:jku                "OOPS_WRONG"
-                                                                                  :jws-signed-payload "NOT_A_VALID_ENCODED_PAYLOAD"}})))
+                                                                                  :jws-signed-payload "NOT_A_VALID_ENCODED_PAYLOAD"}}))
+
+       (fact "if the json message has invalid format then exception is thrown"
+             (a/verify-and-return-activities ...signed-activity-source-url... ...jws...) => (throws Exception)
+             (provided
+               (a/verify-and-return-payload ...signed-activity-source-url... ...jws...) => "not-a-json")))
 
 
 (fact "can load activity sources from a resource"

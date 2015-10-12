@@ -20,11 +20,15 @@
 (def activity-sources
   (load-activity-sources "activity-sources.yml"))
 
-(defn verify-and-return-activities [json-web-key-set-url jws]
+(defn verify-and-return-payload [json-web-key-set-url jws]
   (let [jwk-set-response (http/get json-web-key-set-url {:accept :json})
         json-web-key-set (JsonWebKeySet. (:body jwk-set-response))
         jwk (.select (VerificationJwkSelector.) jws (.getJsonWebKeys json-web-key-set))
-        json-payload (.getPayload (doto jws (.setKey (.getKey jwk))))
+        json-payload (.getPayload (doto jws (.setKey (.getKey jwk))))]
+    json-payload))
+
+(defn verify-and-return-activities [json-web-key-set-url jws]
+  (let [json-payload (verify-and-return-payload json-web-key-set-url jws)
         activities (json/parse-string json-payload true)]
     (map #(assoc % :signed true) activities)))
 
