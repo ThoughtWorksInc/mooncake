@@ -65,7 +65,11 @@
           (fact "only supports sorting by one key"
                 (mongo/find-items-by-alternatives store collection-name [{}] {:sort {:some-index-key :ascending :other-index-key :descending}}) => (throws anything))
           (fact "can retrieve results in batches"
-                (mongo/find-items-by-alternatives store collection-name [{}] {:limit 2}) => (two-of anything)))))
+                (mongo/find-items-by-alternatives store collection-name [{}] {:limit 2}) => (two-of anything))
+          (fact "can retrieve results by page"
+                (mongo/find-items-by-alternatives store collection-name [{}] {:limit 2 :page-number 2}) => (one-of anything))
+          (fact "if page number is nil it will default to the first page"
+                (mongo/find-items-by-alternatives store collection-name [{}] {:limit 2 :page-number nil}) => (two-of anything)))))
 
 (defn test-fetch-all-items [store]
   (fact {:midje/name (str (type store) " -- can fetch all items")}

@@ -74,7 +74,7 @@
        sort-by-published-time))
 
 (defn retrieve-activities [store activity-source-keys]
-  (adb/fetch-activities-by-activity-sources-and-types store activity-source-keys))
+  (adb/fetch-activities-by-activity-sources-and-types store activity-source-keys {}))
 
 (defn sync-activities! [store activity-sources]
   (let [activities (poll-activity-sources store activity-sources)]

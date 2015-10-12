@@ -99,3 +99,7 @@
                                                                             (keyword "@type") ["Enabled" "No-preference"]}
                                                                            {:activity-src     "activity-src-3"
                                                                             (keyword "@type") ["No-preference"]}] :in-any-order)))
+
+(facts "about pagination"
+       (fact "page number is passed in get request"
+             (let [store (dbh/create-in-memory-store)])))

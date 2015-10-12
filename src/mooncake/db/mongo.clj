@@ -41,6 +41,11 @@
   (-> (:sort options-m)
       (mh/map-over-values {:ascending 1 :descending -1})))
 
+(defn skip-amount [batch-size page-number]
+  (if (nil? page-number)
+    0
+    (* (- page-number 1) batch-size)))
+
 (defrecord MongoStore [mongo-db]
   Store
   (fetch [this coll k]
@@ -63,10 +68,13 @@
       (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
             sort-query-map (options-m->sort-query-map options-m)
             batch-size (:limit options-m)
+            page-number (:page-number options-m)
+            skip-amount (skip-amount batch-size page-number)
             aggregation-pipeline (cond-> []
-                                         :always (conj {mop/$match mongo-query-map})
+                                         :always                       (conj {mop/$match mongo-query-map})
                                          (not (empty? sort-query-map)) (conj {mop/$sort sort-query-map})
-                                         (not (nil? batch-size)) (conj {mop/$limit batch-size}))]
+                                         :always                       (conj {mop/$skip skip-amount})
+                                         (not (nil? batch-size))       (conj {mop/$limit batch-size}))]
         (->> (mcoll/aggregate mongo-db coll aggregation-pipeline)
              (map dissoc-id)))
       []))

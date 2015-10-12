@@ -109,7 +109,7 @@
               (activity/store-activity! store activity1)
               (activity/store-activity! store activity2)
               (activity/store-activity! store activity3)
-              (activity/fetch-activities-by-activity-sources-and-types store ?activity-sources-and-types) => ?result))))
+              (activity/fetch-activities-by-activity-sources-and-types store ?activity-sources-and-types {}) => ?result))))
 
   ?activity-sources-and-types                                                     ?result
   [{:activity-src :source-1 (keyword "@type") ["Create"]}]                        [activity1]
@@ -119,16 +119,21 @@
   []                                                                              []
   nil                                                                             [])
 
-(fact "activities are fetched in batches of 50"
-      (dbh/with-mongo-do
-        (fn [db]
-          (let [store (mongo/create-mongo-store db)]
-            (->> (range 51)
-                 (map (fn [counter]
-                        {:displayName (str "KCat" counter)
-                         :published    (format "2015-08-12T10:20:%02d.000Z" counter)
-                         :activity-src "source-1"
-                         (keyword "@type")        "Create"}))
-                 (map (partial activity/store-activity! store))
-                 doall)
-            (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :source-1 (keyword "@type") ["Create"]}]) => (n-of anything 50)))))
+(facts "fetching activities with query"
+       (dbh/with-mongo-do
+         (fn [db]
+           (let [store (mongo/create-mongo-store db)]
+             (->> (range 51)
+                  (map (fn [counter]
+                         {:displayName      (str "KCat" counter)
+                          :published        (format "2015-08-12T10:20:%02d.000Z" counter)
+                          :activity-src     "source-1"
+                          (keyword "@type") "Create"}))
+                  (map (partial activity/store-activity! store))
+                  doall)
+
+             (fact "activities are fetched in batches of 50"
+                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :source-1 (keyword "@type") ["Create"]}] {}) => (n-of anything 50))
+
+             (fact "activities are paginated with 50 per page"
+                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :source-1 (keyword "@type") ["Create"]}] {:page-number 2}) => (one-of anything))))))
