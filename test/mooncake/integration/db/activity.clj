@@ -123,17 +123,9 @@
        (dbh/with-mongo-do
          (fn [db]
            (let [store (mongo/create-mongo-store db)]
-             (->> (range 51)
-                  (map (fn [counter]
-                         {:displayName      (str "KCat" counter)
-                          :published        (format "2015-08-12T10:20:%02d.000Z" counter)
-                          :activity-src     "source-1"
-                          (keyword "@type") "Create"}))
-                  (map (partial activity/store-activity! store))
-                  doall)
-
+             (dbh/create-dummy-activities store 51)
              (fact "activities are fetched in batches of 50"
-                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :source-1 (keyword "@type") ["Create"]}] {}) => (n-of anything 50))
+                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source (keyword "@type") ["Create"]}] {}) => (n-of anything 50))
 
              (fact "activities are paginated with 50 per page"
-                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :source-1 (keyword "@type") ["Create"]}] {:page-number 2}) => (one-of anything))))))
+                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source (keyword "@type") ["Create"]}] {:page-number 2}) => (one-of anything))))))

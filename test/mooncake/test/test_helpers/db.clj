@@ -2,7 +2,8 @@
   (:require [monger.db :as mdb]
             [monger.core :as m]
             [clojure.set :as set]
-            [mooncake.db.mongo :as mongo])
+            [mooncake.db.mongo :as mongo]
+            [mooncake.db.activity :as activity])
   (:import (java.util UUID)))
 
 (defn find-item-with-id [data-map coll query-m]
@@ -120,3 +121,13 @@
     (try (mdb/drop-db db)
          (thing-to-do db)
          (finally (m/disconnect conn)))))
+
+(defn create-dummy-activities [store amount]
+  (->> (range amount)
+       (map (fn [counter]
+              {:actor            {:displayName (str "TestData" counter)}
+               :published        (format "2015-08-12T10:20:%02d.000Z" counter)
+               :activity-src     "test-source"
+               (keyword "@type") "Create"}))
+       (map (partial activity/store-activity! store))
+       doall))

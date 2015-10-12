@@ -16,11 +16,12 @@
 
 (defn feed [store request]
   (let [context (:context request)
+        params (:params request)
         username (get-in request [:session :username])
         user (user/find-user store username)
         user-feed-settings (:feed-settings user)
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query user-feed-settings activity-sources)
-        activities (a/retrieve-activities store feed-query)
+        activities (a/retrieve-activities store feed-query params)
         updated-context (assoc context :activities activities)]
     (mh/enlive-response (f/feed (assoc request :context updated-context)) (:context request))))

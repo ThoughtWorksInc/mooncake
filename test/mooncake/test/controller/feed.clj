@@ -102,4 +102,14 @@
 
 (facts "about pagination"
        (fact "page number is passed in get request"
-             (let [store (dbh/create-in-memory-store)])))
+             (let [store (dbh/create-in-memory-store)
+                   _ (user/create-user! store ...user-id... ...username...)
+                   _ (dbh/create-dummy-activities store 60)
+                   request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}
+                                      :translator       (constantly "")}
+                            :session {:username ...username...}
+                            :params {:page-number 2}}
+                   response (fc/feed store request)]
+
+               (:body response) => (contains "TestData0")
+               (:body response) =not=> (contains "TestData10"))))
