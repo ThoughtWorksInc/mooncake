@@ -152,3 +152,12 @@
                                          :query-params {:from ten-oclock}}) => {}))))
 
 
+(fact "can retrieve total number of activities queried"
+      (let [store (dbh/create-in-memory-store)
+            _ (dbh/create-dummy-activities store 60)
+            feed-query [{:activity-src "test-source"
+                         (keyword "@type") ["Create"]}]]
+
+        (a/total-count-by-feed store feed-query) => 60))
+
+

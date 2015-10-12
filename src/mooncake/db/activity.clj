@@ -48,3 +48,6 @@
         (update-activity-types-for-activity-source! store activity-src activity-type)
         (store-most-recent-activity-date! store activity-src current-activity-date-string)
         (mongo/store! store activity-collection activity)))))
+
+(defn fetch-total-count-by-sources-and-types [store activity-source-keys]
+  (mongo/fetch-total-count-by-query store activity-collection activity-source-keys))

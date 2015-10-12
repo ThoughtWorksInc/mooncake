@@ -71,6 +71,17 @@
           (fact "if page number is nil it will default to the first page"
                 (mongo/find-items-by-alternatives store collection-name [{}] {:limit 2 :page-number nil}) => (two-of anything)))))
 
+(defn test-fetch-total-count-by-query [store]
+  (fact {:midje/name (str (type store) " -- test-fetch-total-count-by-query gets the total number of items which match the query")}
+        (let [item1 {:some-index-key "rebecca" :some-other-key "other"}
+              item2 {:some-index-key "barry" :some-other-key "other"}
+              item3 {:some-index-key "zane" :some-other-key "foo" :a-third-key "bar"}
+              _ (mongo/store-with-id! store collection-name :some-index-key item1)
+              _ (mongo/store-with-id! store collection-name :some-index-key item2)
+              _ (mongo/store-with-id! store collection-name :some-index-key item3)]
+          (mongo/fetch-total-count-by-query store collection-name [{}]) => 3
+          (mongo/fetch-total-count-by-query store collection-name [{:some-other-key "other"}]) => 2)))
+
 (defn test-fetch-all-items [store]
   (fact {:midje/name (str (type store) " -- can fetch all items")}
         (let [item1 {:a-key 1}
@@ -110,6 +121,7 @@
             test-upsert
             test-find-item
             test-find-items-by-alternatives
+            test-fetch-total-count-by-query
             test-duplicate-key
             test-fetch-all-items
             bugfix-test-store-with-id-and-then-upsert

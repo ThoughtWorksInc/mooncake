@@ -79,6 +79,12 @@
            skip-fn
            batch-fn)))
 
+  (fetch-total-count-by-query [this coll value-map-vector]
+    (->> value-map-vector
+         (map #(find-by-map-query this coll %))
+         (apply set/union)
+         count))
+
   (store! [this coll item]
     (->> (assoc item :_id (UUID/randomUUID))
          (mongo/store-with-id! this coll :_id)))

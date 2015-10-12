@@ -92,3 +92,6 @@
 (defn retrieve-activity-types [store]
   (adb/fetch-activity-types store))
 
+(defn total-count-by-feed [store activity-source-keys]
+  (adb/fetch-total-count-by-sources-and-types store activity-source-keys))
+

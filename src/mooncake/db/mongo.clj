@@ -14,6 +14,8 @@
     "Find an item matching the query-map.")
   (find-items-by-alternatives [this coll value-map-vector options-m]
     "Find items whose properties match properties of at least one of the provided maps.")
+  (fetch-total-count-by-query [this coll value-map-vector]
+    "Get total count of items that match the query.")
   (store! [this coll item]
     "Store the given map and return it.")
   (store-with-id! [this coll key-param item]
@@ -71,13 +73,20 @@
             page-number (:page-number options-m)
             skip-amount (skip-amount batch-size page-number)
             aggregation-pipeline (cond-> []
-                                         :always                       (conj {mop/$match mongo-query-map})
+                                         :always (conj {mop/$match mongo-query-map})
                                          (not (empty? sort-query-map)) (conj {mop/$sort sort-query-map})
-                                         :always                       (conj {mop/$skip skip-amount})
-                                         (not (nil? batch-size))       (conj {mop/$limit batch-size}))]
+                                         :always (conj {mop/$skip skip-amount})
+                                         (not (nil? batch-size)) (conj {mop/$limit batch-size}))]
         (->> (mcoll/aggregate mongo-db coll aggregation-pipeline)
              (map dissoc-id)))
       []))
+
+  (fetch-total-count-by-query [this coll value-map-vector]
+    (if (not-empty value-map-vector)
+      (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
+            query-result (mcoll/aggregate mongo-db coll [{mop/$match mongo-query-map}])]
+        (count query-result))
+      0))
 
   (store! [this coll item]
     (-> (mcoll/insert-and-return mongo-db coll item)

@@ -23,5 +23,6 @@
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query user-feed-settings activity-sources)
         activities (a/retrieve-activities store feed-query params)
-        updated-context (assoc context :activities activities)]
+        updated-context (-> context
+                            (assoc :activities activities))]
     (mh/enlive-response (f/feed (assoc request :context updated-context)) (:context request))))
