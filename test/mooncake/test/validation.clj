@@ -20,3 +20,15 @@
   "invalid-hyphen"          false                        {:username :invalid-format}
   "invalid@symbol"          false                        {:username :invalid-format}
   "Timmy"                   true                         {:username :duplicate})
+
+(tabular
+  (fact "validating incoming activity"
+        (v/validate-activity ?activity) => ?validations)
+  ?activity                                             ?validations
+  {:published "2015-08-03T14:49:38.407Z"}               nil
+  {}                                                    {:published :blank}
+  {:published "invalid-timestamp"}                      {:published :invalid}
+  {:published "   "}                                    {:published :blank}
+  {:published "\t\t\t\t\t\t\t\t"}                       {:published :blank}
+
+  )
