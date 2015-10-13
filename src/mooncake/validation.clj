@@ -14,21 +14,19 @@
 (defn validate-username [username duplicate-username-fn]
   (when-let [validation-issue
              (cond
-               (s/blank? username)                         :blank
+               (s/blank? username) :blank
                (is-too-long? username username-max-length) :too-long
-               (not (is-format-valid? username))           :invalid-format
-               (duplicate-username-fn username)            :duplicate)]
+               (not (is-format-valid? username)) :invalid-format
+               (duplicate-username-fn username) :duplicate)]
     {:username validation-issue}))
 
-
-(defn is-published-format-valid? [timestamp]
-  (time-coerce/from-string timestamp))
-
-(defn validate-published [activity]
-  (if-not (clojure.string/blank? (:published activity))
-    (when-not (is-published-format-valid? (:published activity))
-      :invalid)
+(defn is-empty? [string]
+  (when (clojure.string/blank? string)
     :blank))
+
+(defn is-published-format-invalid? [timestamp]
+  (when-not (time-coerce/from-string timestamp)
+    :invalid))
 
 (defn return-nil-if-empty [c]
   (when-not (empty? c) c))
@@ -42,5 +40,7 @@
 
 (defn validate-activity [activity]
   (->>
-    {:published (validate-published activity)}
+    {:published        (or (is-empty? (:published activity))
+                           (is-published-format-invalid? (:published activity)))
+     (keyword "@type") (is-empty? ((keyword "@type") activity))}
     return-errors-or-nil))

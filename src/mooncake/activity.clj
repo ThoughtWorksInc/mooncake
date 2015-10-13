@@ -7,7 +7,8 @@
             [cheshire.core :as json]
             [mooncake.db.activity :as adb]
             [mooncake.helper :as mh]
-            [mooncake.domain.activity :as activity])
+            [mooncake.domain.activity :as activity]
+            [mooncake.validation :as validation])
   (:import [org.jose4j.jwk JsonWebKeySet VerificationJwkSelector]
            [org.jose4j.jws JsonWebSignature]))
 
@@ -69,14 +70,15 @@
     (->> activities
          (sort-by published-time mh/after?))))
 
-(defn log-invalid-activity [invalid-activity]
-  (log/warn "Invalid format: " invalid-activity))
+(defn log-invalid-activity [invalid-activity activity-error-m]
+  (log/warn (str "Invalid activity: " invalid-activity))
+  (doseq [[attr error] activity-error-m] (log/warn (str "Attribute " attr " is " error))))
 
 (defn validate-activity-fn [activity]
-  (if (mh/has-keys? activity activity/required-activity-attributes)
-    true
-    (do (log-invalid-activity activity)
-        false)))
+  (if-let [activity-error-m (validation/validate-activity activity)]
+    (do (log-invalid-activity activity activity-error-m)
+        false)
+    true))
 
 (defn validate-activities [activities]
   (filter validate-activity-fn activities))

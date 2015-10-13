@@ -25,10 +25,18 @@
   (fact "validating incoming activity"
         (v/validate-activity ?activity) => ?validations)
   ?activity                                             ?validations
-  {:published "2015-08-03T14:49:38.407Z"}               nil
-  {}                                                    {:published :blank}
-  {:published "invalid-timestamp"}                      {:published :invalid}
-  {:published "   "}                                    {:published :blank}
-  {:published "\t\t\t\t\t\t\t\t"}                       {:published :blank}
+  {:published "2015-08-03T14:49:38.407Z"
+   (keyword "@type") "Add"}                             nil
+  {}                                                    {:published :blank
+                                                         (keyword "@type") :blank}
+  {:published "invalid-timestamp"}                      {:published :invalid
+                                                         (keyword "@type") :blank}
+  {:published        "    "
+   (keyword "@type") "    "}                            {:published :blank
+                                                         (keyword "@type") :blank}
+  {:published "\t\t\t\t\t\t\t\t"
+   (keyword "@type") "\t\t\t\t\t"}                      {:published :blank
+                                                         (keyword "@type") :blank}
 
-  )
+  {:published "invalid-timestamp"
+   (keyword "@type") "Add"}                             {:published :invalid})

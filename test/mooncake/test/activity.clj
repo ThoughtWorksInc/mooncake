@@ -98,7 +98,7 @@
                    activities [invalid-activity valid-activity]]
                (a/validate-activities activities) => [valid-activity]
                (provided
-                 (a/log-invalid-activity invalid-activity) => anything))))
+                 (a/log-invalid-activity invalid-activity {:published :blank}) => anything))))
 
 (fact "can load activity sources from a resource"
       (a/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 {:url  "https://test-activity.src/activities"
@@ -170,7 +170,6 @@
                                          :as           :json
                                          :query-params {:from ten-oclock}}) => {}))))
 
-
 (fact "can retrieve total number of activities queried"
       (let [store (dbh/create-in-memory-store)
             _ (dbh/create-dummy-activities store 60)
@@ -178,5 +177,3 @@
                          (keyword "@type") ["Create"]}]]
 
         (a/total-count-by-feed store feed-query) => 60))
-
-
