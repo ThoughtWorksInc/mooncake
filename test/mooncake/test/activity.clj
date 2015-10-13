@@ -18,27 +18,49 @@
                   store (dbh/create-in-memory-store)]
               (a/poll-activity-sources store {:an-activity-src      {:url an-activity-src-url}
                                               :another-activity-src {:url another-activity-src-url}})
-              => [{:activity-src :an-activity-src
-                   :actor        {:displayName "KCat"}
-                   :published    twelve-oclock
-                   :signed       false}
-                  {:activity-src :another-activity-src
-                   :actor        {:displayName "LSheep"}
-                   :published    eleven-oclock
-                   :signed       false}
-                  {:activity-src :an-activity-src
-                   :actor        {:displayName "JDog"}
-                   :published    ten-oclock
-                   :signed       false}]
+              => [{:activity-src     :an-activity-src
+                   :actor            {:displayName "KCat"}
+                   :published        twelve-oclock
+                   (keyword "@type") "Add"
+                   :signed           false}
+                  {:activity-src     :another-activity-src
+                   :actor            {:displayName "LSheep"}
+                   :published        eleven-oclock
+                   (keyword "@type") "Create"
+                   :signed           false}
+                  {:activity-src     :an-activity-src
+                   :actor            {:displayName "JDog"}
+                   :published        ten-oclock
+                   (keyword "@type") "Add"
+                   :signed           false}]
               (provided
                 (http/get an-activity-src-url {:accept :json
-                                               :as     :json}) => {:body [{:actor     {:displayName "JDog"}
-                                                                           :published ten-oclock}
-                                                                          {:actor     {:displayName "KCat"}
-                                                                           :published twelve-oclock}]}
+                                               :as     :json}) => {:body [{:actor            {:displayName "JDog"}
+                                                                           :published        ten-oclock
+                                                                           (keyword "@type") "Add"}
+                                                                          {:actor            {:displayName "KCat"}
+                                                                           :published        twelve-oclock
+                                                                           (keyword "@type") "Add"}]}
                 (http/get another-activity-src-url {:accept :json
-                                                    :as     :json}) => {:body [{:actor     {:displayName "LSheep"}
-                                                                                :published eleven-oclock}]}))))
+                                                    :as     :json}) => {:body [{:actor            {:displayName "LSheep"}
+                                                                                :published        eleven-oclock
+                                                                                (keyword "@type") "Create"}]})))
+
+      (fact "poll-activity-sources does not retrieve activities that have invalid format"
+            (let [an-activity-src-url "https://an-activity.src"
+                  store (dbh/create-in-memory-store)]
+              (a/poll-activity-sources store {:an-activity-src {:url an-activity-src-url}})
+              => [{:activity-src     :an-activity-src
+                   :actor            {:displayName "JDog"}
+                   :published        ten-oclock
+                   (keyword "@type") "Add"
+                   :signed           false}]
+              (provided
+                (http/get an-activity-src-url {:accept :json
+                                               :as     :json}) => {:body [{:actor            {:displayName "JDog"}
+                                                                           :published        ten-oclock
+                                                                           (keyword "@type") "Add"}
+                                                                          {:actor {:displayName "KCat"}}]}))))
 
 (facts "about retrieving signed activity responses"
        (fact "activities can be retrieved from a source that signs its responses using json web signatures and json web keys"
@@ -96,7 +118,7 @@
                                    :actor               {(keyword "@type") "Person"
                                                          :displayName      "Joshua"}}
                    activities [invalid-activity valid-activity]]
-               (a/validate-activities activities) => [valid-activity]
+               (a/remove-invalid-activities activities) => [valid-activity]
                (provided
                  (a/log-invalid-activity invalid-activity {:published :blank}) => anything))))
 

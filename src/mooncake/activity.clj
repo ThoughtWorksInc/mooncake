@@ -80,7 +80,7 @@
         false)
     true))
 
-(defn validate-activities [activities]
+(defn remove-invalid-activities [activities]
   (filter validate-activity-fn activities))
 
 (defn retrieve-activities-from-source [store source-k-v-pair]
@@ -88,7 +88,9 @@
         most-recent-activity-date (time-coerce/to-string (adb/fetch-most-recent-activity-date store source-key))
         query-params (when most-recent-activity-date {:from most-recent-activity-date})
         activities (get-json-from-activity-source (:url source-attributes) query-params)]
-    (map #(assoc % :activity-src source-key) activities)))
+    (->> activities
+         remove-invalid-activities
+         (map #(assoc % :activity-src source-key)))))
 
 (defn poll-activity-sources [store activity-sources]
   (->> activity-sources
