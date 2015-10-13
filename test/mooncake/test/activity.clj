@@ -11,30 +11,34 @@
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 
-(fact "poll-activity-sources retrieves activities from multiple sources, sorts them by published time and assocs activity source into each activity"
-      (let [an-activity-src-url "https://an-activity.src"
-            another-activity-src-url "https://another-activity.src"
-            store (dbh/create-in-memory-store)]
-        (a/poll-activity-sources store {:an-activity-src      {:url an-activity-src-url}
-                                        :another-activity-src {:url another-activity-src-url}})
-        => [{:activity-src :an-activity-src
-             :actor        {:displayName "KCat"}
-             :published    twelve-oclock}
-            {:activity-src :another-activity-src
-             :actor        {:displayName "LSheep"}
-             :published    eleven-oclock}
-            {:activity-src :an-activity-src
-             :actor        {:displayName "JDog"}
-             :published    ten-oclock}]
-        (provided
-          (http/get an-activity-src-url {:accept :json
-                                         :as     :json}) => {:body [{:actor     {:displayName "JDog"}
-                                                                     :published ten-oclock}
-                                                                    {:actor     {:displayName "KCat"}
-                                                                     :published twelve-oclock}]}
-          (http/get another-activity-src-url {:accept :json
-                                              :as     :json}) => {:body [{:actor     {:displayName "LSheep"}
-                                                                          :published eleven-oclock}]})))
+(fact "about retrieving signed activity responses"
+      (fact "poll-activity-sources retrieves activities from multiple sources, sorts them by published time, assocs activity source and signed status into each activity "
+            (let [an-activity-src-url "https://an-activity.src"
+                  another-activity-src-url "https://another-activity.src"
+                  store (dbh/create-in-memory-store)]
+              (a/poll-activity-sources store {:an-activity-src      {:url an-activity-src-url}
+                                              :another-activity-src {:url another-activity-src-url}})
+              => [{:activity-src :an-activity-src
+                   :actor        {:displayName "KCat"}
+                   :published    twelve-oclock
+                   :signed       false}
+                  {:activity-src :another-activity-src
+                   :actor        {:displayName "LSheep"}
+                   :published    eleven-oclock
+                   :signed       false}
+                  {:activity-src :an-activity-src
+                   :actor        {:displayName "JDog"}
+                   :published    ten-oclock
+                   :signed       false}]
+              (provided
+                (http/get an-activity-src-url {:accept :json
+                                               :as     :json}) => {:body [{:actor     {:displayName "JDog"}
+                                                                           :published ten-oclock}
+                                                                          {:actor     {:displayName "KCat"}
+                                                                           :published twelve-oclock}]}
+                (http/get another-activity-src-url {:accept :json
+                                                    :as     :json}) => {:body [{:actor     {:displayName "LSheep"}
+                                                                                :published eleven-oclock}]}))))
 
 (facts "about retrieving signed activity responses"
        (fact "activities can be retrieved from a source that signs its responses using json web signatures and json web keys"

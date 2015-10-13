@@ -32,6 +32,11 @@
         activities (json/parse-string json-payload true)]
     (map #(assoc % :signed true) activities)))
 
+(defn handle-unsigned-activity-source-response [unsigned-activity-source-response]
+  (->> unsigned-activity-source-response
+       :body
+       (map #(assoc % :signed false))))
+
 (defn handle-signed-activity-source-response [signed-activity-source-response]
   (let [json-web-key-set-url (get-in signed-activity-source-response [:body :jku])
         json-web-key-set-signed-payload (get-in signed-activity-source-response [:body :jws-signed-payload])
@@ -53,7 +58,7 @@
           activity-source-response (http/get url query-map)]
       (if (is-signed-response? activity-source-response)
         (handle-signed-activity-source-response activity-source-response)
-        (:body activity-source-response)))
+        (handle-unsigned-activity-source-response activity-source-response)))
     (catch Exception e
       (log/warn (str "Unable to retrieve activities from " url " --- " e))
       nil)))
