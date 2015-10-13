@@ -132,7 +132,7 @@
   (->> (range amount)
        (map (fn [counter]
               {:actor            {:displayName (str "TestData" counter)}
-               :published        (format "2015-08-12T10:20:%02d.000Z" counter)
+               :published        (format "2015-08-12T10:20:00.%02dZ" counter)
                :activity-src     "test-source"
                (keyword "@type") "Create"}))
        (map (partial activity/store-activity! store))

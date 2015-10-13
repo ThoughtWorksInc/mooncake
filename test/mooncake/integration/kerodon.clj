@@ -59,10 +59,20 @@
   (adb/update-activity-types-for-activity-source! mongo-store "test-activity-source-3" "Create")
   app-with-activity-sources-from-yaml)
 
-(defn populate-db-with-stub-activities! [activities]
-  (doseq [activity activities]
-    (adb/update-activity-types-for-activity-source! mongo-store (get activity :activity-src) (get activity (keyword "@type")))
-    (mongo/store! mongo-store adb/activity-collection activity)))
+(defn populate-db-with-stub-activities!
+  [activities]
+   (doseq [activity activities]
+     (adb/update-activity-types-for-activity-source! mongo-store (get activity :activity-src) (get activity (keyword "@type")))
+     (mongo/store! mongo-store adb/activity-collection activity)))
+
+(defn create-dummy-activities [amount]
+  (->> (range amount)
+       (map (fn [counter]
+              {:actor            {:displayName (str "TestData" counter)}
+               :published        (format "2015-08-12T10:20:00.%02dZ" counter)
+               :activity-src     "test-activity-source-1"
+               (keyword "@type") "Create"}))
+       populate-db-with-stub-activities!))
 
 (defn clean-app! []
   (drop-db!)
@@ -299,3 +309,28 @@
              (kh/check-page-is "/" ks/feed-page-body)
              (page-contains-feed-item first expected-objective-title "John Doe" "created an objective" "")
              (page-contains-feed-item second expected-question-title "Jane Q Public" "asked a question" ""))))
+
+(facts "Newer and older links are hidden or shown based on page numbers"
+       (fact "Links aren't shown when only 1 page exists"
+             (drop-db!)
+             (create-dummy-activities 1)
+             (-> (k/session app-with-activity-sources-from-yaml)
+                 sign-in!
+                 (k/visit (routes/path :feed))
+                 (kh/check-page-is "/" ks/feed-page-body)
+                 (kh/selector-not-present ks/newer-activities-link)
+                 (kh/selector-not-present ks/older-activities-link))
+             )
+
+       (fact "Multiple pages"
+             (drop-db!)
+             (create-dummy-activities 101)
+             (-> (k/session app-with-activity-sources-from-yaml)
+                 sign-in!
+                 (k/visit (routes/path :feed))
+                 (kh/check-page-is "/" ks/feed-page-body)
+                 (kh/selector-not-present ks/newer-activities-link)
+                 (kh/selector-exists ks/older-activities-link))))
+
+
+

@@ -197,5 +197,13 @@
             _ (dbh/create-dummy-activities store 60)
             feed-query [{:activity-src     "test-source"
                          (keyword "@type") ["Create"]}]]
-
         (a/total-count-by-feed store feed-query) => 60))
+
+(tabular
+  (fact "is-last-page returns true when on the last page"
+        (a/is-last-page? ?page-number ?total-activities) => ?result)
+        ?page-number   ?total-activities   ?result
+         1              30                  true
+         2              60                  true
+         2              101                 false
+         3              150                 true)

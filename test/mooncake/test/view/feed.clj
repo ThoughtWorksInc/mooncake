@@ -35,6 +35,19 @@
       (let [page (fv/feed {})]
         page => (eh/has-class? [:.clj--customise-feed__link] "clj--STRIP")))
 
+(tabular
+  (fact "newer and older links only display on relevant pages"
+        (let [page (fv/feed {:context {:is-last-page ?is-last-page}
+                             :params  {:page-number ?page-number}})]
+          page ?newer-link-hidden (eh/has-class? [:.clj--newer-activities__link] "clj--STRIP")
+          page ?older-link-hidden (eh/has-class? [:.clj--older-activities__link] "clj--STRIP")))
+
+  ?page-number  ?is-last-page ?newer-link-hidden  ?older-link-hidden
+  1             false         =>                  =not=>
+  2             true          =not=>              =>
+  1             true          =>                  =>
+  3             false         =not=>              =not=>)
+
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
             ten-minutes-ago-str (f/unparse (f/formatters :date-time) ten-minutes-ago)

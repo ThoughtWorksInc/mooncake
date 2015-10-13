@@ -17,12 +17,18 @@
 (defn feed [store request]
   (let [context (:context request)
         params (:params request)
+        page-number (or (:page-number params) 1)
         username (get-in request [:session :username])
         user (user/find-user store username)
         user-feed-settings (:feed-settings user)
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query user-feed-settings activity-sources)
         activities (a/retrieve-activities store feed-query params)
+        updated-params (-> params
+                           (assoc :page-number page-number))
+        total-activities (a/total-count-by-feed store feed-query)
+        is-last-page (a/is-last-page? page-number total-activities)
         updated-context (-> context
+                            (assoc :is-last-page is-last-page)
                             (assoc :activities activities))]
-    (mh/enlive-response (f/feed (assoc request :context updated-context)) (:context request))))
+    (mh/enlive-response (f/feed (assoc request :context updated-context :params updated-params)) (:context request))))

@@ -21,3 +21,5 @@
 (def customise-feed-page-submit-button :.func--customise-feed__submit)
 (def customise-feed-page-feed-item-child-list-item-label :.func--feed-item-child__label)
 (def customise-feed-page-feed-item-child-checkbox :.func--feed-item-child__checkbox)
+(def newer-activities-link :.func--newer-activities__link)
+(def older-activities-link :.func--older-activities__link)

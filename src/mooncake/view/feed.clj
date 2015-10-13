@@ -73,10 +73,25 @@
     (add-no-active-activity-sources-message enlive-m)
     (add-activities enlive-m activities)))
 
+(defn render-newer-activities-link [enlive-m page-number]
+  (if (= page-number 1)
+    (html/at enlive-m [:.clj--newer-activities__link] (html/do->
+                                                      (html/add-class "clj--STRIP")))
+    enlive-m))
+
+(defn render-older-activities-link [enlive-m is-last-page?]
+  (if is-last-page?
+    (html/at enlive-m [:.clj--older-activities__link] (html/do->
+                                                        (html/add-class "clj--STRIP")))
+    enlive-m))
+
 (defn feed [request]
   (let [activities (get-in request [:context :activities])]
     (-> (vh/load-template "public/feed.html")
         (render-username (get-in request [:session :username]))
         (render-customise-feed-link (mh/signed-in? request))
         (render-sign-out-link (mh/signed-in? request))
-        (render-activity-stream activities))))
+        (render-activity-stream activities)
+        (render-older-activities-link (get-in request [:context :is-last-page]))
+        (render-newer-activities-link (get-in request [:params :page-number])))))
+
