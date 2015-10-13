@@ -51,3 +51,10 @@
   "2015-09-06T12:05:53Z"                      "2015-09-06T12:05:53.000Z"
   "2015-09-06T13:05:53.213Z"                  "2015-09-06T13:05:53.213Z"
   "2015-09-06T14:05:53.542-02:00"             "2015-09-06T16:05:53.542Z")
+
+(fact "about has-keys?"
+      (let [map {:a "bob" :b "barry" :c "joshua"}
+            contained-keys [:a :b]
+            not-contained-keys [:a :d]]
+        (mh/has-keys? map contained-keys) => true
+        (mh/has-keys? map not-contained-keys) => false))

@@ -1,5 +1,11 @@
 (ns mooncake.domain.activity)
 
+(def required-activity-attributes
+  [:published
+   (keyword "@type")
+   (keyword "@context")
+   :actor])
+
 (defn activity->activity-src [activity]
   (:activity-src activity))
 

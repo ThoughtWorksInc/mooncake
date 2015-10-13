@@ -69,6 +69,18 @@
     (->> activities
          (sort-by published-time mh/after?))))
 
+(defn log-invalid-activity [invalid-activity]
+  (log/warn "Invalid format: " invalid-activity))
+
+(defn validate-activity-fn [activity]
+  (if (mh/has-keys? activity activity/required-activity-attributes)
+    true
+    (do (log-invalid-activity activity)
+        false)))
+
+(defn validate-activities [activities]
+  (filter validate-activity-fn activities))
+
 (defn retrieve-activities-from-source [store source-k-v-pair]
   (let [[source-key source-attributes] source-k-v-pair
         most-recent-activity-date (time-coerce/to-string (adb/fetch-most-recent-activity-date store source-key))

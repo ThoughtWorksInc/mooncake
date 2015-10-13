@@ -11,7 +11,7 @@
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 
-(fact "about retrieving signed activity responses"
+(fact "about retrieving unsigned activity responses"
       (fact "poll-activity-sources retrieves activities from multiple sources, sorts them by published time, assocs activity source and signed status into each activity "
             (let [an-activity-src-url "https://an-activity.src"
                   another-activity-src-url "https://another-activity.src"
@@ -84,6 +84,21 @@
              (provided
                (a/verify-and-return-payload ...signed-activity-source-url... ...jws...) => "not-a-json")))
 
+(facts "about validating format of the activities"
+       (fact "activities that do not contain required attributes are filtered and logged"
+             (let [invalid-activity {(keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                     (keyword "@type")    "Create"
+                                     :actor               {(keyword "@type") "Person"
+                                                           :displayName      "Barry"}}
+                   valid-activity {(keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                   (keyword "@type")    "Add"
+                                   :published           "2015-08-03T14:49:38.407Z"
+                                   :actor               {(keyword "@type") "Person"
+                                                         :displayName      "Joshua"}}
+                   activities [invalid-activity valid-activity]]
+               (a/validate-activities activities) => [valid-activity]
+               (provided
+                 (a/log-invalid-activity invalid-activity) => anything))))
 
 (fact "can load activity sources from a resource"
       (a/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 {:url  "https://test-activity.src/activities"
@@ -159,7 +174,7 @@
 (fact "can retrieve total number of activities queried"
       (let [store (dbh/create-in-memory-store)
             _ (dbh/create-dummy-activities store 60)
-            feed-query [{:activity-src "test-source"
+            feed-query [{:activity-src     "test-source"
                          (keyword "@type") ["Create"]}]]
 
         (a/total-count-by-feed store feed-query) => 60))

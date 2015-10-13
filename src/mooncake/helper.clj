@@ -40,3 +40,6 @@
 
 (defn map-over-values [m f]
   (into {} (for [[k v] m] [k (f v)])))
+
+(defn has-keys? [m ks]
+  (= (set ks) (set (keys (select-keys m ks)))))
