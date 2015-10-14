@@ -4,6 +4,7 @@
 (def header-customise-feed-link :.func--customise-feed__link)
 (def feed-page-body :.func--feed-page)
 (def feed-page-activity-list :.func--activity-stream)
+(def feed-page-activity-item :.func--activity-item)
 (def feed-page-activity-item-title :.func--activity-item__title)
 (def feed-page-activity-item-author :.func--activity-item__action__author)
 (def feed-page-activity-item-action :.func--activity-item__action)
@@ -23,3 +24,4 @@
 (def customise-feed-page-feed-item-child-checkbox :.func--feed-item-child__checkbox)
 (def newer-activities-link :.func--newer-activities__link)
 (def older-activities-link :.func--older-activities__link)
+

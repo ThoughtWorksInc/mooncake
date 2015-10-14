@@ -1,7 +1,8 @@
 (ns mooncake.integration.kerodon-helpers
   (:require [midje.sweet :refer :all]
             [net.cgrand.enlive-html :as html]
-            [kerodon.core :as k]))
+            [kerodon.core :as k]
+            [mooncake.integration.kerodon-selectors :as ks]))
 
 (defn page-title [state]
   (-> state :enlive (html/select [:title]) first html/text))
@@ -113,3 +114,8 @@
   (page-uri-is state uri)
   (response-status-is state 200)
   (selector-exists state body-selector))
+
+(defn page-contains-amount-of-activities [state num-of-activities]
+  (let [activity-items (-> state :enlive (html/select [ks/feed-page-activity-item]))]
+    (count activity-items) => num-of-activities)
+  state)
