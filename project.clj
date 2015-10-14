@@ -9,6 +9,7 @@
                  [scenic "0.2.5"]
                  [enlive "1.1.6"]
                  [org.clojure/tools.logging "0.3.1"]
+                 [com.taoensso/tower "3.0.2"]
                  [traduki "0.1.3-SNAPSHOT"]
                  [clj-yaml "0.4.0"]
                  [cheshire "5.5.0"]

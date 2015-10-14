@@ -4,6 +4,7 @@
             [ring.util.response :as r]
             [ring.middleware.defaults :as ring-mw]
             [clojure.java.io :as io]
+            [taoensso.tower.ring :as tower-ring]
             [stonecutter-oauth.client :as soc]
             [stonecutter-oauth.jwt :as so-jwt]
             [mooncake.activity :as a]
@@ -20,7 +21,8 @@
             [mooncake.view.sign-in :as si]
             [mooncake.db.migration :as migration]
             [mooncake.db.user :as user]
-            [mooncake.schedule :as schedule])
+            [mooncake.schedule :as schedule]
+            [clojure.tools.logging :as log])
   (:gen-class))
 
 (def default-context {:translator (t/translations-fn t/translation-map)})
@@ -118,6 +120,7 @@
   (a/sync-activities! store activity-sources)               ;; Ensure database is populated before starting app
   (-> (scenic/scenic-handler routes/routes (site-handlers config-m store activity-sources) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
+      (tower-ring/wrap-tower (t/config-translation))
       (m/wrap-config config-m)
       (m/wrap-error-handling internal-server-error-handler)
       m/wrap-translator))
