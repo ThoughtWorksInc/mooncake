@@ -93,7 +93,7 @@
              (let [response (h/stonecutter-callback ...stonecutter-config... ...user-store... {:params {:error "access_denied"}})]
                response => (every-checker
                              (eh/check-redirects-to (routes/absolute-path {} :sign-in))
-                             (contains {:flash :sign-in-failed})))))
+                             (contains {:flash {:sign-in-failed true}})))))
 
 (fact "sign-out handler clears the session and redirects to /sign-in"
       (let [response (h/sign-out {:session {:user-id        ...some-user-id...

@@ -115,6 +115,18 @@
            (kh/check-and-follow-redirect "to /")
            (kh/check-page-is "/" ks/feed-page-body)))
 
+(facts "If user authentication fails then user is returned to sign in page with flash message"
+       (against-background
+         (soc/authorisation-redirect-response anything) =>
+         (r/redirect (str (routes/absolute-path (c/create-config) :stonecutter-callback) "?error=access_denied")))
+       (-> (k/session (clean-app!))
+           (k/visit (routes/absolute-path (c/create-config) :sign-in))
+           (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
+           (kh/check-and-follow-redirect "to stonecutter")
+           (kh/check-and-follow-redirect "to sign-in page")
+           (kh/check-page-is "/sign-in" ks/sign-in-page-body)
+           (kh/selector-exists ks/sign-in-flash-message)))
+
 (facts "An existing user is redirected to / (rather than /create-account) after authenticating with stonecutter"
        (against-background
          (soc/authorisation-redirect-response anything) =>

@@ -56,7 +56,7 @@
         (-> (mh/redirect-to request :show-create-account)
             (assoc-in [:session :auth-provider-user-id] auth-provider-user-id))))
     (-> (mh/redirect-to request :sign-in)
-        (assoc :flash :sign-in-failed))))
+        (assoc-in [:flash :sign-in-failed] true))))
 
 (defn stub-activities [request]
   (-> "stub-activities.json"
