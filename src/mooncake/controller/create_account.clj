@@ -7,7 +7,7 @@
 
 (defn show-create-account [request]
   (if (mh/authenticated? request)
-    (mh/enlive-response (cav/create-account request) (:context request))
+    (mh/enlive-response (cav/create-account request) request)
     (mh/redirect-to request :sign-in)))
 
 (defn- account-created-response [request user]

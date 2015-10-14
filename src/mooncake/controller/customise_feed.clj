@@ -75,4 +75,4 @@
         user-feed-settings (:feed-settings user)
         activity-source-preferences (generate-activity-source-preferences (:activity-sources context) user-feed-settings)
         updated-request (assoc-in request [:context :activity-source-preferences] activity-source-preferences)]
-    (mh/enlive-response (cfv/customise-feed updated-request) context)))
+    (mh/enlive-response (cfv/customise-feed updated-request) request)))

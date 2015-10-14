@@ -9,7 +9,7 @@
 
 (facts "about show-create-account"
        (let [show-create-account-request (-> (mock/request :get (routes/absolute-path {} :show-create-account))
-                                             (assoc :context {:translator {}}))]
+                                             (assoc :t {}))]
          (fact "when auth-provider-user-id is in the session it should render the create-account page"
                (let [response (-> (assoc show-create-account-request :session {:auth-provider-user-id
                                                                                ...user-id...})
@@ -46,7 +46,7 @@
        (fact "invalid username parameter renders show-create-account and nothing is stored"
              (let [create-account-request {:params  {:username "!!*FAIL*!!"}
                                            :session {:auth-provider-user-id ...user-id...}
-                                           :context {:translator {}}}
+                                           :t {}}
                    response (cac/create-account ...store... create-account-request)]
                response => (eh/check-renders-page :.func--create-account-page)
                (:body response) => (contains "clj--username__validation")
@@ -57,7 +57,7 @@
        (fact "duplicate username parameter renders show-create-account and nothing is stored"
              (let [create-account-request {:params  {:username "dupe_username"}
                                            :session {:auth-provider-user-id ...user-id...}
-                                           :context {:translator {}}}
+                                           :t       {}}
                    store (dbh/create-in-memory-store {"user" {"some-id" {:auth-provider-user-id "some-id"
                                                                       :username              "dupe_username"}}})
                    response (cac/create-account store create-account-request)]

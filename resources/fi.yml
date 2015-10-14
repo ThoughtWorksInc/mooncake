@@ -1,3 +1,75 @@
 ---
+
 default:
-  title: Mooncake Activity Stream
+  title: Mooncake Activity Stream in Finnish
+  sign-out-link: Sign out in Finnish
+  sign-in-link: Sign in in Finnish
+  nav-customise-feed: Customise feed in Finnish
+
+feed:
+  title: Mooncake Activity Stream in Finnish
+  action-text-objective: created an objective in Finnish
+  action-text-question: asked a question in Finnish
+  error-title-1: We have hidden in Finnish
+  error-title-1: updates in Finnish
+
+  error-description-1: These are missing details we use to verify their safety. in Finnish
+  error-description-2: "If you are happy to continue you can show hidden items: in Finnish"
+  error-button: Show hidden items in Finnish
+
+empty-feed:
+  page-title: There are no activities to show in Finnish
+  intro: Customise your feed here in Finnish
+
+customise-feed:
+  title: Customise feed in Finnish
+  page-title: Customise your feed in Finnish
+  page-intro: "Choose the information you'd like to receive updates on: in Finnish"
+  feed-digitally-signed-false: Unconfirmed source in Finnish
+  feed-digitally-signed-true: Confirmed trusted source in Finnish
+
+sign-in:
+  title: Sign In in Finnish
+  sign-in-with-d-cent: Continue with D-Cent in Finnish
+  page-title-1: Mooncake in Finnish
+  page-title-2: Feeds redefined in Finnish
+  page-intro-1: Mooncake is a simple and secure tool for following actions all around the world. in Finnish
+  page-intro-2: Using Mooncake's all-in-one feed you can stay up-to-date with ease. in Finnish
+  #page-intro-3: Feeds can be encrypted with PGP to avert prying eyes. in Finnish
+  #page-intro-4: With customisable feeds you can choose what activities you'd like to receive updates on. in Finnish
+  #page-intro-5: All D-Cent tools provide feeds to integrate with as standard.  You can also include any feed that adheres to W3's activity stream 2 standard. in Finnish
+
+
+create-account:
+  title: Create Account in Finnish
+  page-title: Choose your username in Finnish
+  username-label: Username in Finnish
+  username-help-message: Maximum of 16 letters or numbers. No spaces. in Finnish
+  username-blank-validation-message: Enter a username in Finnish
+  username-too-long-validation-message: Too long - enter a shorter username. in Finnish
+  username-invalid-format-validation-message: Invalid format - please use alphanumerics only. in Finnish
+  username-duplicate-validation-message: This username is already taken - please try another one. in Finnish
+  username-default-validation-message: Invalid username - please try another one. in Finnish
+  create-account-submit: Create account in Finnish
+
+error-default:
+  return-to-link-header: What can I do now? in Finnish
+  return-to-link-before: Please return to the in Finnish
+  return-to-link: home page in Finnish
+  return-to-link-title-attr: Return to Home in Finnish
+  return-to-link-after: "in Finnish"
+
+error-404:
+  title: Error-404 in Finnish
+  page-header: "Sorry the page you requested can't be found. in Finnish"
+  page-intro: "The page you were trying to reach at this address doesn't seem to exist. This is usually the result of a bad or outdated link. We apologise for any inconvenience. in Finnish"
+
+error-500:
+  title: "Oops! Something went wrong in Finnish"
+  page-header: "Sorry something went wrong in Finnish"
+  page-intro: "An unexpected error has occurred, please try again. We apologise for any inconvenience. in Finnish"
+
+error-forbidden:
+  title: Forbidden in Finnish
+  page-header: "Request forbidden in Finnish"
+  page-intro: "Request forbidden response. in Finnish"

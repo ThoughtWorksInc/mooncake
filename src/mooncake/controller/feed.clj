@@ -32,4 +32,4 @@
                             (assoc :is-last-page is-last-page)
                             (assoc :activities activities))]
 
-    (mh/enlive-response (f/feed (assoc request :context updated-context :params updated-params)) (:context request))))
+    (mh/enlive-response (f/feed (assoc request :context updated-context :params updated-params)) request)))

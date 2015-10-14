@@ -24,15 +24,15 @@
                                                    :activity-src     "objective8"
                                                    (keyword "@type") "Activity"})
         (fc/feed store {:context
-                        {:activity-sources {:OpenAhjo   {:activity-types ["Activity"]}
-                                            :objective8 {:activity-types ["Activity"]}}
-                         :translator       (constantly "")}}) => (every-checker
-                                                                   (eh/check-renders-page :.func--feed-page)
-                                                                   (contains {:body (contains "JDog")})
-                                                                   (contains {:body (contains "KCat")}))))
+                           {:activity-sources {:OpenAhjo   {:activity-types ["Activity"]}
+                                               :objective8 {:activity-types ["Activity"]}}}
+                        :t (constantly "")}) => (every-checker
+                                                  (eh/check-renders-page :.func--feed-page)
+                                                  (contains {:body (contains "JDog")})
+                                                  (contains {:body (contains "KCat")}))))
 
 (fact "feed handler displays username of logged-in user"
-      (fc/feed (dbh/create-in-memory-store) {:context {:translator (constantly "")}
+      (fc/feed (dbh/create-in-memory-store) {:t       (constantly "")
                                              :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
 (def activity-src-1--enabled-type {:actor            {(keyword "@type") "Person"
@@ -60,8 +60,8 @@
              _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}})
              request {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
-                                                   :activity-src-2 {:activity-types ["No-preference"]}}
-                                :translator       (constantly "")}
+                                                   :activity-src-2 {:activity-types ["No-preference"]}}}
+                      :t       (constantly "")
                       :session {:username ...username...}}
              response (fc/feed store request)]
 
@@ -80,8 +80,8 @@
 
          (fact "custom message is shown if all activity types are disabled"
                (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Disabled" :selected false}]}})
-               (let [no-activities-request {:context {:activity-sources {:activity-src-1 {:activity-types ["Disabled"]}}
-                                                      :translator       (constantly "")}
+               (let [no-activities-request {:context {:activity-sources {:activity-src-1 {:activity-types ["Disabled"]}}}
+                                            :t       (constantly "")
                                             :session {:username ...username...}}
                      no-activities-response (fc/feed store no-activities-request)]
                  (:body no-activities-response) => (contains "clj--empty-activity-item")))))
@@ -105,10 +105,10 @@
              (let [store (dbh/create-in-memory-store)
                    _ (user/create-user! store ...user-id... ...username...)
                    _ (dbh/create-dummy-activities store 60)
-                   request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}
-                                      :translator       (constantly "")}
+                   request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                            :t       (constantly "")
                             :session {:username ...username...}
-                            :params {:page-number "2"}}
+                            :params  {:page-number "2"}}
                    response (fc/feed store request)]
 
                (:body response) => (contains "TestData0")

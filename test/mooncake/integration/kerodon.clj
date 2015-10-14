@@ -259,7 +259,8 @@
            (kh/check-and-follow ks/header-sign-out-link)
            (kh/check-and-follow-redirect "to sign-in page after signing out")
            (kh/check-page-is "/sign-in" ks/sign-in-page-body)
-           (kh/selector-not-present ks/header-sign-out-link)))
+           (kh/selector-not-present ks/header-sign-out-link)
+           ))
 
 (facts "Invalid activity source responses are handled gracefully"
        (drop-db!)

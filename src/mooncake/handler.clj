@@ -25,12 +25,10 @@
             [clojure.tools.logging :as log])
   (:gen-class))
 
-(def default-context {:translator (t/translations-fn t/translation-map)})
-
 (defn sign-in [request]
   (if (mh/signed-in? request)
     (mh/redirect-to request :feed)
-    (mh/enlive-response (si/sign-in request) (:context request))))
+    (mh/enlive-response (si/sign-in request) request)))
 
 (defn sign-out [request]
   (-> (mh/redirect-to request :sign-in)
@@ -68,18 +66,19 @@
       (r/content-type "application/json")))
 
 (defn internal-server-error-handler [request]
+  (prn "in 500" request)
   (-> (error/internal-server-error request)
-      (mh/enlive-response default-context)
+      (mh/enlive-response request)
       (r/status 500)))
 
 (defn not-found-handler [request]
   (-> (error/not-found-error request)
-      (mh/enlive-response default-context)
+      (mh/enlive-response request)
       (r/status 404)))
 
 (defn forbidden-error-handler [request]
   (-> (error/forbidden-error request)
-      (mh/enlive-response default-context)
+      (mh/enlive-response request)
       (r/status 403)))
 
 (defn create-stonecutter-config [config-m]
@@ -120,10 +119,9 @@
   (a/sync-activities! store activity-sources)               ;; Ensure database is populated before starting app
   (-> (scenic/scenic-handler routes/routes (site-handlers config-m store activity-sources) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
-      (tower-ring/wrap-tower (t/config-translation))
       (m/wrap-config config-m)
       (m/wrap-error-handling internal-server-error-handler)
-      m/wrap-translator))
+      (tower-ring/wrap-tower (t/config-translation))))
 
 (defn -main [& args]
   (let [config-m (config/create-config)

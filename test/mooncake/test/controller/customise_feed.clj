@@ -42,8 +42,8 @@
                                                                                                   :activity-types ["Add"]}
                                                                        :yet-another-activity-src {:name           "C. Yet Another Source"
                                                                                                   :url            "yet another url"
-                                                                                                  :activity-types ["Add"]}}
-                                                    :translator       {}}
+                                                                                                  :activity-types ["Add"]}}}
+                                          :t {}
                                           :session {:username ...username...}}
              store (dbh/create-in-memory-store)
              _ (user/create-user! store ...user-id... ...username...)

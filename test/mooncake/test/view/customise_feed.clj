@@ -156,7 +156,7 @@
                                            :url      "other url"
                                            :selected false}]
              context {:activity-source-preferences activity-source-preferences}
-             page (cf/customise-feed {:context context})]
+             page (cf/customise-feed {:context context :t {}})]
 
          (fact "names of activity sources are displayed"
                (let [[first-activity-source-label-name second-activity-source-label-name]

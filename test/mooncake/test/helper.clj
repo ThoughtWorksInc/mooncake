@@ -9,14 +9,14 @@
                       <h1 class=\"clj--STRIP\">stripped</h1>
                       <div class=\"clj--STRIP\">stripped</div>"
             enlive-m (html/html-snippet some-html)
-            response-body (:body (mh/enlive-response enlive-m {:translator {}}))]
+            response-body (:body (mh/enlive-response enlive-m {}))]
         response-body => (contains "kept")
         response-body =not=> (contains "stripped")))
 
 (fact "CSRF token is added to forms"
       (let [some-html "<form></form><form></form>"
             enlive-m (html/html-snippet some-html)
-            response-body (:body (mh/enlive-response enlive-m {:translator {}}))]
+            response-body (:body (mh/enlive-response enlive-m {}))]
         (-> (html/html-snippet response-body)
             (html/select [:input])) => (two-of (contains {:attrs (contains {:name "__anti-forgery-token"})}))))
 

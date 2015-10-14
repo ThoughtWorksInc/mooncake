@@ -25,11 +25,11 @@
    (test-translations page-name view-fn {}))
   ([page-name view-fn context]
    (midje/fact {:midje/name (format "Checking all translations exist for %s" page-name)}
-              (let [translator (t/translations-fn t/translation-map)
-                    page (-> {:context (assoc context :translator translator)}
-                             view-fn
-                             (mh/enlive-response {:translator translator}) :body)]
-                page => no-untranslated-strings))))
+               (let [page (-> {:context context}
+                              view-fn
+                              (mh/enlive-response {:t {}})
+                              :body)]
+                 page => no-untranslated-strings))))
 
 (defn enlive-m->attr [enlive-m selector attr]
   (-> enlive-m (html/select selector) first :attrs attr))
@@ -68,5 +68,8 @@
 
 (defn test-logo-link [view-fn]
   (midje/fact {:midje/name "Checking logo has a correct link"}
-  (let [page (-> (view-fn ...request...) (mh/enlive-response {:translator (constantly {})}) :body (html/html-snippet))]
-    page => (links-to? [:.clj--header__logo :a] (routes/path :feed)))))
+              (let [page (-> (view-fn ...request...)
+                             (mh/enlive-response {:t {}})
+                             :body
+                             (html/html-snippet))]
+                page => (links-to? [:.clj--header__logo :a] (routes/path :feed)))))

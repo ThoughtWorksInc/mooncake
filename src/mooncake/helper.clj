@@ -13,12 +13,12 @@
 (defn authenticated? [request]
   (boolean (get-in request [:session :auth-provider-user-id])))
 
-(defn enlive-response [enlive-m context]
+(defn enlive-response [enlive-m request]
   (-> enlive-m
       vh/add-logo-link
       (vh/remove-elements [:.clj--STRIP])
       vh/add-anti-forgery
-      (t/context-translate context)
+      (t/context-translate request)
       vh/enlive-to-str
       r/response
       (r/content-type "text/html")))

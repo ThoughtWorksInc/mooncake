@@ -37,5 +37,11 @@
                                  (log/warn (str "Missing translation! locales: " locales
                                                 ", keys: " ks ", namespace: " ns)))})
 
-(defn context-translate [enlive-m context]
-  (t/translate (partial (tower/make-t (config-translation)) :en) enlive-m))
+(defn get-locale-from-request [request]
+  (if-let [session-locale (get-in request [:session :locale])]
+    session-locale
+    (get request :locale :en)))
+
+(defn context-translate [enlive-m request]
+  (let [locale (get-locale-from-request request)]
+    (t/translate (partial (:t request) locale) enlive-m)))

@@ -23,7 +23,7 @@
         => ...stonecutter-config-m...))
 
 (fact "sign-in handler renders the sign-in view when the user is not signed in"
-      (h/sign-in {:context {:translator {}}}) => (eh/check-renders-page :.func--sign-in-page))
+      (h/sign-in {:t {}}) => (eh/check-renders-page :.func--sign-in-page))
 
 (fact "sign-in handler redirects to / when user is signed in"
       (h/sign-in {:session {:username ...username...}}) => (eh/check-redirects-to (routes/absolute-path {} :feed)))
