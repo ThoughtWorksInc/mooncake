@@ -16,6 +16,11 @@
         (-> state :request :uri) => uri)
   state)
 
+(defn params-contains [state key value]
+  (fact {:midje/name (str "Checking page params contains" key ":" value)}
+        (-> state :request key) => (contains value))
+  state)
+
 (defn page-uri-contains [state uri]
   (fact {:midje/name (str "Checking if page uri contains " uri)}
         (-> state :request :uri) => (contains uri))

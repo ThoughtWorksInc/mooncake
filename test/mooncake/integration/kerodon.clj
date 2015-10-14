@@ -330,7 +330,14 @@
                  (k/visit (routes/path :feed))
                  (kh/check-page-is "/" ks/feed-page-body)
                  (kh/selector-not-present ks/newer-activities-link)
-                 (kh/selector-exists ks/older-activities-link))))
-
+                 (kh/selector-exists ks/older-activities-link)
+                 (kh/check-and-follow ks/older-activities-link)
+                 (kh/check-page-is "/" ks/feed-page-body)
+                 (kh/params-contains :query-string "page-number=2")
+                 (kh/selector-exists ks/newer-activities-link)
+                 (kh/selector-exists ks/older-activities-link)
+                 (kh/check-and-follow ks/older-activities-link)
+                 (kh/check-page-is "/" ks/feed-page-body)
+                 (kh/params-contains :query-string "page-number=3"))))
 
 

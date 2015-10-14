@@ -108,7 +108,7 @@
                    request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}
                                       :translator       (constantly "")}
                             :session {:username ...username...}
-                            :params {:page-number 2}}
+                            :params {:page-number "2"}}
                    response (fc/feed store request)]
 
                (:body response) => (contains "TestData0")

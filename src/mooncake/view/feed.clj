@@ -76,14 +76,18 @@
 (defn render-newer-activities-link [enlive-m page-number]
   (if (= page-number 1)
     (html/at enlive-m [:.clj--newer-activities__link] (html/do->
-                                                      (html/add-class "clj--STRIP")))
-    enlive-m))
-
-(defn render-older-activities-link [enlive-m is-last-page?]
-  (if is-last-page?
-    (html/at enlive-m [:.clj--older-activities__link] (html/do->
                                                         (html/add-class "clj--STRIP")))
     enlive-m))
+
+(defn render-older-activities-link [enlive-m is-last-page? page-number]
+  (let [page-number-not-null (or page-number 1)
+        inc-page-number (String/valueOf (+ page-number-not-null 1))]
+    (if is-last-page?
+      (html/at enlive-m [:.clj--older-activities__link] (html/do->
+                                                          (html/add-class "clj--STRIP")))
+      (html/at enlive-m [:.clj--older-activities__link] (html/do->
+                                                          (html/set-attr :href (str "/?page-number=" inc-page-number)))))
+    ))
 
 (defn feed [request]
   (let [activities (get-in request [:context :activities])]
@@ -92,6 +96,7 @@
         (render-customise-feed-link (mh/signed-in? request))
         (render-sign-out-link (mh/signed-in? request))
         (render-activity-stream activities)
-        (render-older-activities-link (get-in request [:context :is-last-page]))
+        (render-older-activities-link (get-in request [:context :is-last-page])
+                                      (get-in request [:params :page-number]))
         (render-newer-activities-link (get-in request [:params :page-number])))))
 
