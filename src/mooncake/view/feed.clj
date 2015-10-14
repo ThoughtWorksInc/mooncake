@@ -73,23 +73,26 @@
     (add-no-active-activity-sources-message enlive-m)
     (add-activities enlive-m activities)))
 
+(defn feed-path-url-with-page-number [value]
+  (str (routes/path :feed) "?page-number=" value))
+
 (defn render-newer-activities-link [enlive-m page-number]
   (let [page-number-not-null (or page-number 1)
-        dec-page-number (String/valueOf (- page-number-not-null 1))]
+        dec-page-number (dec page-number-not-null)]
     (if (= page-number 1)
       (html/at enlive-m [:.clj--newer-activities__link] (html/do->
                                                           (html/add-class "clj--STRIP")))
       (html/at enlive-m [:.clj--newer-activities__link] (html/do->
-                                                          (html/set-attr :href (str "/?page-number=" dec-page-number)))))))
+                                                          (html/set-attr :href (feed-path-url-with-page-number dec-page-number)))))))
 
 (defn render-older-activities-link [enlive-m is-last-page? page-number]
   (let [page-number-not-null (or page-number 1)
-        inc-page-number (String/valueOf (+ page-number-not-null 1))]
+        inc-page-number (inc page-number-not-null)]
     (if is-last-page?
       (html/at enlive-m [:.clj--older-activities__link] (html/do->
                                                           (html/add-class "clj--STRIP")))
       (html/at enlive-m [:.clj--older-activities__link] (html/do->
-                                                          (html/set-attr :href (str "/?page-number=" inc-page-number)))))))
+                                                          (html/set-attr :href (feed-path-url-with-page-number inc-page-number)))))))
 
 (defn feed [request]
   (let [activities (get-in request [:context :activities])]
