@@ -89,9 +89,11 @@
              (provided
                (soc/request-access-token! anything anything) =throws=> (ex-info "Invalid token response" {:token-response-keys []})))
 
-       (fact "when no auth-code, returns 200 response"
+       (fact "when no auth-code, redirects to /sign-in with flash in response"
              (let [response (h/stonecutter-callback ...stonecutter-config... ...user-store... {:params {:error "access_denied"}})]
-               (:status response) => 200)))
+               response => (every-checker
+                             (eh/check-redirects-to (routes/absolute-path {} :sign-in))
+                             (contains {:flash :sign-in-failed})))))
 
 (fact "sign-out handler clears the session and redirects to /sign-in"
       (let [response (h/sign-out {:session {:user-id        ...some-user-id...

@@ -319,9 +319,7 @@
                  (k/visit (routes/path :feed))
                  (kh/check-page-is "/" ks/feed-page-body)
                  (kh/selector-not-present ks/newer-activities-link)
-                 (kh/selector-not-present ks/older-activities-link))
-             )
-
+                 (kh/selector-not-present ks/older-activities-link)))
        (fact "Multiple pages"
              (drop-db!)
              (create-dummy-activities 101)

@@ -7,6 +7,12 @@
   (html/at enlive-m
            [:.clj--sign-in-with-d-cent] (html/set-attr :href path)))
 
+(defn set-flash-message [enlive-m request]
+  (if-not (get-in request [:flash :sign-in-failed])
+    (vh/remove-element enlive-m [:.clj--flash-message-container])
+    enlive-m))
+
 (defn sign-in [request]
   (-> (vh/load-template "public/sign-in.html")
-      (set-sign-in-link (routes/path :stonecutter-sign-in))))
+      (set-sign-in-link (routes/path :stonecutter-sign-in))
+      (set-flash-message request)))
