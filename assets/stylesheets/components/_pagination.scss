@@ -1,8 +1,6 @@
 .activity-nav-links {
     padding: 10px 0;
     width: $medium_device;
-    position: absolute;
-    bottom: 0;
     @include width-to($medium_device) {
         width: 100%;
     }
