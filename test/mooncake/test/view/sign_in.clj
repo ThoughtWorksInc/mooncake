@@ -3,7 +3,8 @@
             [mooncake.routes :as routes]
             [mooncake.test.test-helpers.enlive :as eh]
             [mooncake.view.sign-in :as si]
-            [net.cgrand.enlive-html :as html]))
+            [net.cgrand.enlive-html :as html]
+            [mooncake.translation :as t]))
 
 (fact "sign-in page should render sign-in template"
       (let [page (si/sign-in ...request...)]
@@ -15,6 +16,8 @@
 (fact "sign-in links to the correct location"
       (let [page (si/sign-in ...request...)]
         page => (eh/links-to? [:.clj--sign-in-with-d-cent] (routes/path :stonecutter-sign-in))))
+
+(eh/test-translations "sign-in page" si/sign-in {} {:flash {:sign-in-failed true}})
 
 (facts "about a flash message"
        (fact "no flash messages are displayed by default"

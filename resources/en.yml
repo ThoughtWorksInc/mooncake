@@ -6,6 +6,9 @@ default:
   sign-in-link: Sign in
   nav-customise-feed: Customise feed
 
+flash:
+  sign-in-failed: Sign in failed
+
 feed:
   title: Mooncake Activity Stream
   action-text-objective: created an objective
@@ -38,7 +41,6 @@ sign-in:
   #page-intro-3: Feeds can be encrypted with PGP to avert prying eyes.
   #page-intro-4: With customisable feeds you can choose what activities you'd like to receive updates on.
   #page-intro-5: All D-Cent tools provide feeds to integrate with as standard.  You can also include any feed that adheres to W3's activity stream 2 standard.
-
 
 create-account:
   title: Create Account

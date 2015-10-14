@@ -22,10 +22,13 @@
 
 (defn test-translations
   ([page-name view-fn]
-   (test-translations page-name view-fn {}))
+   (test-translations page-name view-fn {} {}))
   ([page-name view-fn context]
+   (test-translations page-name view-fn context {}))
+  ([page-name view-fn context request]
    (midje/fact {:midje/name (format "Checking all translations exist for %s" page-name)}
-               (let [page (-> {:context context}
+               (let [translator (t/translations-fn t/translation-map)
+                     page (-> (assoc request :context (assoc context :translator translator))
                               view-fn
                               (mh/enlive-response {:t {}})
                               :body)]
