@@ -15,7 +15,9 @@
             [mooncake.integration.kerodon-helpers :as kh]
             [mooncake.integration.kerodon-selectors :as ks]
             [mooncake.db.mongo :as mongo]
-            [mooncake.db.activity :as adb]))
+            [mooncake.db.activity :as adb]
+            [clj-time.format :as f]
+            [clj-time.core :as t]))
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
@@ -69,7 +71,7 @@
   (->> (range amount)
        (map (fn [counter]
               {:actor            {:displayName (str "TestData" counter)}
-               :published        (format "2015-08-12T10:20:00.%02dZ" counter)
+               :published        (f/unparse (f/formatters :date-hour-minute-second) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
                :activity-src     "test-activity-source-1"
                (keyword "@type") "Create"}))
        populate-db-with-stub-activities!))

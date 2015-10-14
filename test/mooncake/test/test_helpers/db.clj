@@ -3,7 +3,9 @@
             [monger.core :as m]
             [clojure.set :as set]
             [mooncake.db.mongo :as mongo]
-            [mooncake.db.activity :as activity])
+            [mooncake.db.activity :as activity]
+            [clj-time.core :as t]
+            [clj-time.format :as f])
   (:import (java.util UUID)))
 
 (defn find-item-with-id [data-map coll query-m]
@@ -132,7 +134,7 @@
   (->> (range amount)
        (map (fn [counter]
               {:actor            {:displayName (str "TestData" counter)}
-               :published        (format "2015-08-12T10:20:00.%02dZ" counter)
+               :published        (f/unparse (f/formatters :date-hour-minute-second) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
                :activity-src     "test-source"
                (keyword "@type") "Create"}))
        (map (partial activity/store-activity! store))
