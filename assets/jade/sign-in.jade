@@ -10,6 +10,8 @@ block headerScripts
 
 block content
   .box
+    +flashMessageWithCljContainer('clj--flash-message-container clj--STRIP','func--flash-message-container', 'fail')
+      p.flash-message__title.clj--flash-message-text !Success Flash Message.
     h1.site-title
       span.site-title__line-one(data-l8n="content:sign-in/page-title-1") !Mooncake
       = " "

@@ -22,7 +22,7 @@ var dev_path = {
   js: ['assets/javascripts/**/*.js'],
   images: ['assets/images/**/*', '!assets/images/dev-*'],
   favicons: ['assets/icons/favicon.*'],
-  fonts: ['assets/stylesheets/fonts/*','/bower_components/font-awesome/fonts/*'],
+  fonts: ['assets/stylesheets/fonts/*','node_modules/font-awesome/fonts/fontawesome-webfont.*'],
   port: 5678
 };
 var build_path = {

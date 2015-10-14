@@ -11,6 +11,7 @@ $blue: #3498DB;
 $blue_medium: #3173df;
 $red: #E74C3C;
 $orange: #FFA734;
+$medium_pink_dull: #FFC0DF;
 
 $cyan: #1ABC9C;
 $grey_blue: #34495E;
@@ -20,6 +21,10 @@ $grey_blue: #34495E;
 $default_text_color: rgba(black,0.8);
 $background_color: $grey_light;
 $error_color: $red;
+
+$flash_error_color: $medium_pink_dull;
+$flash_error_color--dark: darken($error_color,75%);
+$success_color: #BAE6E2;
 
 $link_colour: $default_text_color;
 $link_hover_colour: $link_colour;
