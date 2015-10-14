@@ -1,0 +1,21 @@
+.activity-nav-links {
+    padding: 10px 0;
+    width: $medium_device;
+    position: absolute;
+    bottom: 0;
+    @include width-to($medium_device) {
+        width: 100%;
+    }
+    a {
+        padding: 15px;
+        display: inline-block;
+        text-decoration: none;
+        &.older-activities-link {
+            float: right;
+        }
+        @include width-to($medium_device) {
+            @include font-size(15px);
+            margin: 0 10px;
+        }
+    }
+}
