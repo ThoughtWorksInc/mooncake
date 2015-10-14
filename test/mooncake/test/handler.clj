@@ -87,7 +87,11 @@
              (h/stonecutter-callback ...stonecutter-config... ...user-store... {:params {:code ...auth-code...}})
              => (throws Exception)
              (provided
-               (soc/request-access-token! anything anything) =throws=> (ex-info "Invalid token response" {:token-response-keys []}))))
+               (soc/request-access-token! anything anything) =throws=> (ex-info "Invalid token response" {:token-response-keys []})))
+
+       (fact "when no auth-code, returns 200 response"
+             (let [response (h/stonecutter-callback ...stonecutter-config... ...user-store... {:params {:error "access_denied"}})]
+               (:status response) => 200)))
 
 (fact "sign-out handler clears the session and redirects to /sign-in"
       (let [response (h/sign-out {:session {:user-id        ...some-user-id...

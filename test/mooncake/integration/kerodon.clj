@@ -79,7 +79,7 @@
   app)
 
 (defn authenticate-against-stub [state]
-  (k/visit state (routes/absolute-path (c/create-config) :stonecutter-callback)))
+  (k/visit state (str (routes/absolute-path (c/create-config) :stonecutter-callback) "?code=1234")))
 
 (defn sign-in! [state]
   (-> state
@@ -101,7 +101,7 @@
 (facts "A user can authenticate and create an account"
        (against-background
          (soc/authorisation-redirect-response anything) =>
-         (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
+         (r/redirect (str (routes/absolute-path (c/create-config) :stonecutter-callback) "?code=1234")))
        (-> (k/session (clean-app!))
            (k/visit (routes/absolute-path (c/create-config) :sign-in))
            (kh/check-and-follow ks/sign-in-page-sign-in-with-d-cent-link)
@@ -116,7 +116,7 @@
 (facts "An existing user is redirected to / (rather than /create-account) after authenticating with stonecutter"
        (against-background
          (soc/authorisation-redirect-response anything) =>
-         (r/redirect (routes/absolute-path (c/create-config) :stonecutter-callback)))
+         (r/redirect (str (routes/absolute-path (c/create-config) :stonecutter-callback) "?code=1234")))
        (-> (k/session (clean-app!))
            sign-in!
            sign-out

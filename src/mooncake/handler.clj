@@ -44,17 +44,19 @@
   (str (:auth-provider-url stonecutter-config) "/api/jwk-set"))
 
 (defn stonecutter-callback [stonecutter-config store request]
-  (let [auth-code (get-in request [:params :code])
-        token-response (soc/request-access-token! stonecutter-config auth-code)
-        auth-jwks-url (get-auth-jwks-url stonecutter-config)
-        public-key-string (so-jwt/get-public-key-string-from-jwk-set-url auth-jwks-url)
-        user-info (so-jwt/decode stonecutter-config (:id_token token-response) public-key-string)
-        auth-provider-user-id (:sub user-info)]
-    (if-let [user (user/fetch-user store auth-provider-user-id)]
-      (-> (mh/redirect-to request :feed)
-          (assoc-in [:session :username] (:username user)))
-      (-> (mh/redirect-to request :show-create-account)
-          (assoc-in [:session :auth-provider-user-id] auth-provider-user-id)))))
+  (if-let [auth-code (get-in request [:params :code])]
+    (let [token-response (soc/request-access-token! stonecutter-config auth-code)
+          auth-jwks-url (get-auth-jwks-url stonecutter-config)
+          public-key-string (so-jwt/get-public-key-string-from-jwk-set-url auth-jwks-url)
+          user-info (so-jwt/decode stonecutter-config (:id_token token-response) public-key-string)
+          auth-provider-user-id (:sub user-info)]
+      (if-let [user (user/fetch-user store auth-provider-user-id)]
+        (-> (mh/redirect-to request :feed)
+            (assoc-in [:session :username] (:username user)))
+        (-> (mh/redirect-to request :show-create-account)
+            (assoc-in [:session :auth-provider-user-id] auth-provider-user-id))))
+    {:status 200}
+    ))
 
 (defn stub-activities [request]
   (-> "stub-activities.json"
@@ -101,7 +103,7 @@
          :stonecutter-sign-in  (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback (partial stonecutter-callback stonecutter-config store)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
-                                   #{:sign-in :stonecutter-sign-in :stonecutter-callback 
+                                   #{:sign-in :stonecutter-sign-in :stonecutter-callback
                                      :stub-activities :show-create-account :create-account})
         (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-error-handler) #{})
         (m/wrap-just-these-handlers #(m/wrap-activity-sources-and-types store activity-sources %)
@@ -113,7 +115,7 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-app [config-m store activity-sources]
-  (a/sync-activities! store activity-sources)                 ;; Ensure database is populated before starting app
+  (a/sync-activities! store activity-sources)               ;; Ensure database is populated before starting app
   (-> (scenic/scenic-handler routes/routes (site-handlers config-m store activity-sources) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
       (m/wrap-config config-m)
