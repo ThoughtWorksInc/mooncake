@@ -5,7 +5,7 @@
                 :mongo-uri :mongo-port-27017-tcp-addr
                 :client-id :client-secret :auth-url
                 :secure :sync-interval
-                :stub-user})
+                :stub-user :activity-source-file})
 
 (defn create-config []
   (select-keys env/env env-vars))

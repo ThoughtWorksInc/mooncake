@@ -8,7 +8,8 @@
             [mooncake.db.activity :as adb]
             [mooncake.helper :as mh]
             [mooncake.domain.activity :as activity]
-            [mooncake.validation :as validation])
+            [mooncake.validation :as validation]
+            [mooncake.config :as config])
   (:import [org.jose4j.jwk JsonWebKeySet VerificationJwkSelector]
            [org.jose4j.jws JsonWebSignature]))
 
@@ -18,8 +19,17 @@
       slurp
       yaml/parse-string))
 
-(defn load-activity-sources []
-  (load-activity-sources-from-resource "activity-sources.yml"))
+(defn load-activity-sources-from-file [file-name]
+  (-> file-name
+      slurp
+      yaml/parse-string))
+
+(def default-activity-sources (load-activity-sources-from-resource "activity-sources.yml"))
+
+(defn load-activity-sources [config-m]
+  (if-let [f (config/activity-source-file config-m)]
+    (load-activity-sources-from-file f)
+    default-activity-sources))
 
 (defn verify-and-return-payload [json-web-key-set-url jws]
   (let [jwk-set-response (http/get json-web-key-set-url {:accept :json})

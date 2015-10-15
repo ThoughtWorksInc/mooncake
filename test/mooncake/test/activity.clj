@@ -1,6 +1,8 @@
 (ns mooncake.test.activity
   (:require [midje.sweet :refer :all]
             [clj-http.client :as http]
+            [clj-yaml.core :as yaml]
+            [clojure.java.io :as io]
             [mooncake.activity :as a]
             [mooncake.test.test-helpers.db :as dbh]
             [mooncake.db.activity :as activity])
@@ -129,6 +131,22 @@
                                                                                          :name "Test Activity Source 2"}
                                                                 :test-activity-source-3 {:url  "https://yet-another-test-activity.src"
                                                                                          :name "Test Activity Source 3"}})
+
+(fact "can load activity sources from file"
+      (let [source-data {:source-1 {:url "the-url" :name "the-name"}}
+            yaml (yaml/generate-string source-data)]
+        (spit "test-activity-sources-file.yml" yaml)
+        (a/load-activity-sources-from-file "test-activity-sources-file.yml") => source-data
+        (io/delete-file "test-activity-sources-file.yml")))
+
+(fact "loading adsfa;lsdfkjas;ldj"
+      (let [source-data {:source-1 {:url "the-url" :name "the-name"}}
+            yaml (yaml/generate-string source-data)]
+        (spit "test-activity-sources-file.yml" yaml)
+        (a/load-activity-sources {}) => a/default-activity-sources
+        (a/load-activity-sources {:activity-source-file "blah"}) => (throws Exception)
+        (a/load-activity-sources {:activity-source-file "test-activity-sources-file.yml"}) => source-data
+        (io/delete-file "test-activity-sources-file.yml")))
 
 (fact "get-json-from-activity-source gracefully handles exceptions caused by bad/missing responses"
       (a/get-json-from-activity-source ...invalid-activity-src-url... nil) => nil
