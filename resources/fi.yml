@@ -17,6 +17,9 @@ feed:
   error-description-2: "If you are happy to continue you can show hidden items: in Finnish"
   error-button: Show hidden items in Finnish
 
+  newer-link: Newer in Finnish
+  older-link: Older in Finnish
+
 empty-feed:
   page-title: There are no activities to show in Finnish
   intro: Customise your feed here in Finnish

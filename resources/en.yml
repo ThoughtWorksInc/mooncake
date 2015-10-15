@@ -20,6 +20,9 @@ feed:
   error-description-2: "If you are happy to continue you can show hidden items:"
   error-button: Show hidden items
 
+  newer-link: Newer
+  older-link: Older
+
 empty-feed:
   page-title: There are no activities to show
   intro: Customise your feed here
