@@ -66,7 +66,6 @@
       (r/content-type "application/json")))
 
 (defn internal-server-error-handler [request]
-  (prn "in 500" request)
   (-> (error/internal-server-error request)
       (mh/enlive-response request)
       (r/status 500)))

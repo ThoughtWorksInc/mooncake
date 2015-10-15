@@ -117,5 +117,8 @@
   (adb/fetch-total-count-by-sources-and-types store activity-source-keys))
 
 (defn is-last-page? [page-number total-activities]
-  (<= (/ total-activities 50) page-number))
+  (try
+    (<= (/ total-activities 50) page-number)
+    (catch Exception e
+      false)))
 

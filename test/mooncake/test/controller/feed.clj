@@ -101,15 +101,57 @@
                                                                             (keyword "@type") ["No-preference"]}] :in-any-order)))
 
 (facts "about pagination"
-       (fact "page number is passed in get request"
-             (let [store (dbh/create-in-memory-store)
-                   _ (user/create-user! store ...user-id... ...username...)
-                   _ (dbh/create-dummy-activities store 60)
-                   request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
-                            :t       (constantly "")
-                            :session {:username ...username...}
-                            :params  {:page-number "2"}}
-                   response (fc/feed store request)]
+       (let [store (dbh/create-in-memory-store)
+             _ (user/create-user! store ...user-id... ...username...)
+             _ (dbh/create-dummy-activities store 60)
+             valid-page-number "2"
+             invalid-page-number "ABC"
+             too-tiny-of-a-page-number "0"
+             too-big-of-a-page-number "3"]
 
-               (:body response) => (contains "TestData0")
-               (:body response) =not=> (contains "TestData10"))))
+             (fact "page number is passed in get request"
+                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                                  :t       (constantly "")
+                                  :session {:username ...username...}
+                                  :params  {:page-number valid-page-number}}
+                         response (fc/feed store request)]
+
+                     (:body response) => (contains "TestData0")
+                     (:body response) =not=> (contains "TestData10")))
+
+             (fact "empty page number params is passed in get request and defaults to 1"
+                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                                  :t       (constantly "")
+                                  :session {:username ...username...}
+                                  :params  {}}
+                         response (fc/feed store request)]
+
+                     (:body response) =not=> (contains "TestData0")
+                     (:body response) => (contains "TestData10")))
+
+             (fact "page number cannot be non-numbers"
+                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                                  :t       (constantly "")
+                                  :session {:username ...username...}
+                                  :params  {:page-number invalid-page-number}}
+                         response (fc/feed store request)]
+
+                     (:status response) => nil))
+
+             (fact "page number cannot be too small"
+                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                                  :t       (constantly "")
+                                  :session {:username ...username...}
+                                  :params  {:page-number too-tiny-of-a-page-number}}
+                         response (fc/feed store request)]
+
+                     (:status response) => nil))
+
+             (fact "page number cannot be too big"
+                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                                  :t       (constantly "")
+                                  :session {:username ...username...}
+                                  :params  {:page-number too-big-of-a-page-number}}
+                         response (fc/feed store request)]
+
+                     (:status response) => nil))))

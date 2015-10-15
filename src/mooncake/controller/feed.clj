@@ -14,6 +14,21 @@
 (defn generate-feed-query [feed-settings activity-sources]
   (remove nil? (map activity-src-preferences->feed-query (cfc/generate-activity-source-preferences activity-sources feed-settings))))
 
+(defn last-page-number [total-activities]
+  (if (= total-activities 0)
+    1
+    (Math/ceil (/ total-activities 50))))
+
+(defn parse-page-number [params]
+  (try
+    (Integer/parseInt (or (:page-number params) "1"))
+    (catch Exception e
+      nil)))
+
+(defn page-number-is-in-correct-range [page-number total-activities]
+  (when page-number
+    (and (> page-number 0) (<= page-number (last-page-number total-activities)))))
+
 (defn feed [store request]
   (let [context (:context request)
         params (:params request)
@@ -22,7 +37,7 @@
         user-feed-settings (:feed-settings user)
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query user-feed-settings activity-sources)
-        page-number (Integer/parseInt (or (:page-number params) "1"))
+        page-number (parse-page-number params)
         updated-params (-> params
                            (assoc :page-number page-number))
         activities (a/retrieve-activities store feed-query updated-params)
@@ -32,4 +47,5 @@
                             (assoc :is-last-page is-last-page)
                             (assoc :activities activities))]
 
-    (mh/enlive-response (f/feed (assoc request :context updated-context :params updated-params)) request)))
+    (when (page-number-is-in-correct-range page-number total-activities)
+      (mh/enlive-response (f/feed (assoc request :context updated-context :params updated-params)) request))))

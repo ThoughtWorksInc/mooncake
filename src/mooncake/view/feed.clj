@@ -79,7 +79,7 @@
 (defn render-newer-activities-link [enlive-m page-number]
   (let [page-number-not-null (or page-number 1)
         dec-page-number (dec page-number-not-null)]
-    (if (= page-number 1)
+    (if (= page-number-not-null 1)
       (html/at enlive-m [:.clj--newer-activities__link] (html/do->
                                                           (html/add-class "clj--STRIP")))
       (html/at enlive-m [:.clj--newer-activities__link] (html/do->
