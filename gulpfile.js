@@ -30,7 +30,7 @@ var build_path = {
   html: output_path + '/',
   js: output_path + '/javascripts/',
   images: output_path + '/images',
-  fonts: output_path + '/stylesheets/fonts/',
+  fonts: output_path + '/fonts/',
   library: output_path + '/library/'
 };
 
