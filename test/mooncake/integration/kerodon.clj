@@ -45,7 +45,7 @@
 
 (def app (h/create-app (c/create-config) mongo-store {}))
 
-(def app-with-activity-sources-from-yaml (h/create-app (c/create-config) mongo-store (a/load-activity-sources "test-activity-sources.yml")))
+(def app-with-activity-sources-from-yaml (h/create-app (c/create-config) mongo-store (a/load-activity-sources-from-resource "test-activity-sources.yml")))
 
 (defn drop-db! []
   (let [{:keys [conn db]} (monger/connect-via-uri test-db-uri)]

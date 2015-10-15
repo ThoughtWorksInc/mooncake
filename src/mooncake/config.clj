@@ -37,6 +37,9 @@
 (defn auth-url [config-m]
   (get-env config-m :auth-url))
 
+(defn activity-source-file [config-m]
+  (get-env config-m :activity-source-file))
+
 (defn sync-interval [config-m]
   (Integer. (get-env config-m :sync-interval 60)))
 

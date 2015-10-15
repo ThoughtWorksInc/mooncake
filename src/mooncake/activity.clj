@@ -12,14 +12,14 @@
   (:import [org.jose4j.jwk JsonWebKeySet VerificationJwkSelector]
            [org.jose4j.jws JsonWebSignature]))
 
-(defn load-activity-sources [activity-resource-name]
+(defn load-activity-sources-from-resource [activity-resource-name]
   (-> activity-resource-name
       io/resource
       slurp
       yaml/parse-string))
 
-(def activity-sources
-  (load-activity-sources "activity-sources.yml"))
+(defn load-activity-sources []
+  (load-activity-sources-from-resource "activity-sources.yml"))
 
 (defn verify-and-return-payload [json-web-key-set-url jws]
   (let [jwk-set-response (http/get json-web-key-set-url {:accept :json})

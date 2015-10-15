@@ -127,7 +127,7 @@
   (let [config-m (config/create-config)
         mongo-db (mongo/get-mongo-db (config/mongo-uri config-m))
         store (mongo/create-mongo-store mongo-db)
-        activity-sources a/activity-sources]
+        activity-sources (a/load-activity-sources)]
     (if-let [stub-user (config/stub-user config-m)]
       (when-not (user/find-user store stub-user)
         (user/create-user! store nil stub-user)))

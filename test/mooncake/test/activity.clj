@@ -123,7 +123,7 @@
                  (a/log-invalid-activity invalid-activity {:published :blank}) => anything))))
 
 (fact "can load activity sources from a resource"
-      (a/load-activity-sources "test-activity-sources.yml") => {:test-activity-source-1 {:url  "https://test-activity.src/activities"
+      (a/load-activity-sources-from-resource "test-activity-sources.yml") => {:test-activity-source-1 {:url  "https://test-activity.src/activities"
                                                                                          :name "Test Activity Source 1"}
                                                                 :test-activity-source-2 {:url  "https://another-test-activity.src"
                                                                                          :name "Test Activity Source 2"}
