@@ -14,12 +14,14 @@
            [org.jose4j.jws JsonWebSignature]))
 
 (defn load-activity-sources-from-resource [activity-resource-name]
+  (log/info (format "Loading activity sources from resource [%s]" activity-resource-name))
   (-> activity-resource-name
       io/resource
       slurp
       yaml/parse-string))
 
 (defn load-activity-sources-from-file [file-name]
+  (log/info (format "Loading activity sources from file [%s]" file-name))
   (-> file-name
       slurp
       yaml/parse-string))
