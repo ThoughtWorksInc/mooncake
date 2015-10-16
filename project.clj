@@ -31,6 +31,15 @@
   :main mooncake.handler
   :profiles {:dev     {:dependencies   [[ring-mock "0.1.5"]
                                         [midje "1.7.0"]
+                                        [clj-webdriver "0.7.2" :exclusions [org.clojure/core.cache
+                                                                            org.seleniumhq.selenium/selenium-java
+                                                                            org.seleniumhq.selenium/selenium-server
+                                                                            org.seleniumhq.selenium/selenium-remote-driver
+                                                                            xml-apis]]
+                                        [xml-apis "1.4.01"]
+                                        [org.seleniumhq.selenium/selenium-server "2.45.0"]
+                                        [org.seleniumhq.selenium/selenium-java "2.45.0"]
+                                        [org.seleniumhq.selenium/selenium-remote-driver "2.45.0"]
                                         [kerodon "0.6.1"]]
                        :plugins        [[lein-environ "1.0.0"]
                                         [lein-midje "3.1.3"]
@@ -49,6 +58,7 @@
                                         "test"       ["do" "clean," "gulp," "midje," "cljs-test"]
                                         "test-cljs"  ["do" "clean," "gulp," "cljs-test"]
                                         "auto-cljs"  ["do" "test-cljs," "cljsbuild" "auto" "test"]
+                                        "browser"    ["do" "clean," "gulp," "midje" "mooncake.browser.*"]
                                         "gulp"       ["shell" "gulp" "build"]
                                         "stub"       ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]}
                        :cljsbuild      {:builds [{:id           "prod"
