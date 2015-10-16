@@ -26,12 +26,10 @@
       slurp
       yaml/parse-string))
 
-(def default-activity-sources (load-activity-sources-from-resource "activity-sources.yml"))
-
 (defn load-activity-sources [config-m]
   (if-let [f (config/activity-source-file config-m)]
     (load-activity-sources-from-file f)
-    default-activity-sources))
+    (load-activity-sources-from-resource "activity-sources.yml")))
 
 (defn verify-and-return-payload [json-web-key-set-url jws]
   (let [jwk-set-response (http/get json-web-key-set-url {:accept :json})

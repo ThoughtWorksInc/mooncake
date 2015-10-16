@@ -143,7 +143,7 @@
       (let [source-data {:source-1 {:url "the-url" :name "the-name"}}
             yaml (yaml/generate-string source-data)]
         (spit "test-activity-sources-file.yml" yaml)
-        (a/load-activity-sources {}) => a/default-activity-sources
+        (a/load-activity-sources {}) => (a/load-activity-sources-from-resource "activity-sources.yml")
         (a/load-activity-sources {:activity-source-file "blah"}) => (throws Exception)
         (a/load-activity-sources {:activity-source-file "test-activity-sources-file.yml"}) => source-data
         (io/delete-file "test-activity-sources-file.yml")))
