@@ -103,5 +103,6 @@
         (render-activity-stream activities)
         (render-older-activities-link (get-in request [:context :is-last-page])
                                       (get-in request [:params :page-number]))
-        (render-newer-activities-link (get-in request [:params :page-number])))))
+        (render-newer-activities-link (get-in request [:params :page-number]))
+        (vh/add-script "js/main.js"))))
 

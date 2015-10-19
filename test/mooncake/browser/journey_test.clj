@@ -69,15 +69,14 @@
                       (stop-server @server)))]
 
   (try
-    (facts "feedpage loads more activities when load more is triggered" :browser
+    ;TODO CW + NE | 223 | next up page numbers
+    (future-facts "feedpage loads more activities when load more is triggered" :browser
            (wd/to (str localhost "/d-cent-sign-in"))
            (wd/current-url) => (contains (str localhost "/"))
            (wait-for-selector mooncake-feed-body)
            (count-activity-items) => 50
-           ;(wd/click ".func--load-activities__link") todo 16/10/2015 - NE + CW | 228 | browser test for JS hot loading of feed activities
-           ;(count-activity-items) => 100
-           )
-
+           (wd/click ".func--load-activities__link")
+           (count-activity-items) => 100)
 
     (catch Exception e
       (throw e))))
