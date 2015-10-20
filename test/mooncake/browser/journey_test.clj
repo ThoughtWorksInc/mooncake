@@ -6,7 +6,8 @@
             [mooncake.test.test-helpers.db :as dbh]
             [mooncake.handler :as h]
             [mooncake.integration.kerodon :as kero]
-            [mooncake.activity :as a]))
+            [mooncake.activity :as a]
+            [mooncake.config :as config]))
 
 (def localhost "localhost:5439")
 
@@ -67,7 +68,7 @@
 
 (against-background
   [(before :contents (do (reset! server (start-server))
-                         (kero/create-dummy-activities @test-store 100)
+                         (kero/create-dummy-activities @test-store (* 2 config/activities-per-page))
                          (start-browser)))
    (after :contents (do
                       (stop-browser)
@@ -79,12 +80,9 @@
              (wd/to (str localhost "/d-cent-sign-in"))
              (wd/current-url) => (contains (str localhost "/"))
              (wait-for-selector mooncake-feed-body)
-             (count-activity-items) => 50
+             (count-activity-items) => config/activities-per-page
              (wd/click ".func--load-activities__link")
-             (wait-and-count 100)
-             (count-activity-items) => 100
-             (wd/click ".func--load-activities__link")
-             (count-activity-items) => 100
-             (wd/displayed? ".func--max-activities") => true))
+             (wait-and-count (* 2 config/activities-per-page))
+             (count-activity-items) => (* 2 config/activities-per-page)))
     (catch Exception e
       (throw e))))

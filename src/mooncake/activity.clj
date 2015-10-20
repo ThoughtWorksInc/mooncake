@@ -128,7 +128,7 @@
 
 (defn is-last-page? [page-number total-activities]
   (try
-    (<= (/ total-activities config/activities-per-page) page-number)
+    (== (Math/ceil (/ total-activities config/activities-per-page)) page-number)
     (catch Exception e
       false)))
 
