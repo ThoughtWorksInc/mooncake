@@ -60,23 +60,31 @@
 (defn count-activity-items []
   (count (wd/elements ".func--activity-item")))
 
+(defn wait-and-count [count]
+  (try (wd/wait-until #(= count (count-activity-items)) 5000)
+       (catch Exception e
+         (throw e))))
+
 (against-background
   [(before :contents (do (reset! server (start-server))
-                         (kero/create-dummy-activities @test-store 230)
+                         (kero/create-dummy-activities @test-store 100)
                          (start-browser)))
    (after :contents (do
                       (stop-browser)
                       (stop-server @server)))]
 
   (try
-    ;TODO CW + NE | 223 | next up page numbers
-    (future-facts "feedpage loads more activities when load more is triggered" :browser
-           (wd/to (str localhost "/d-cent-sign-in"))
-           (wd/current-url) => (contains (str localhost "/"))
-           (wait-for-selector mooncake-feed-body)
-           (count-activity-items) => 50
-           (wd/click ".func--load-activities__link")
-           (count-activity-items) => 100)
-
+    (when mooncake.config/js-loading-feature?
+      (facts "feedpage loads more activities when load more is triggered" :browser
+             (wd/to (str localhost "/d-cent-sign-in"))
+             (wd/current-url) => (contains (str localhost "/"))
+             (wait-for-selector mooncake-feed-body)
+             (count-activity-items) => 50
+             (wd/click ".func--load-activities__link")
+             (wait-and-count 100)
+             (count-activity-items) => 100
+             (wd/click ".func--load-activities__link")
+             (count-activity-items) => 100
+             (wd/displayed? ".func--max-activities") => true))
     (catch Exception e
       (throw e))))

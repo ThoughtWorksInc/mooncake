@@ -61,4 +61,7 @@
     (get-env config-m :mongo-uri)
     "mongodb://localhost:27017/mooncake"))
 
-(def activities-per-page 50)
+(def js-loading-feature? false)
+
+(def activities-per-page
+  (if js-loading-feature? 3 50))

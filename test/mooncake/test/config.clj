@@ -19,3 +19,6 @@
 (fact "can get sync-interval as integer"
       (c/sync-interval {}) => 60
       (c/sync-interval {:sync-interval "30"}) => 30)
+
+(fact "feature toggle for js-loading is always false"
+      c/js-loading-feature? => false)
