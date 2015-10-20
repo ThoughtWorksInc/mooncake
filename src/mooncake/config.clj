@@ -60,3 +60,5 @@
     (get-docker-mongo-uri config-m)
     (get-env config-m :mongo-uri)
     "mongodb://localhost:27017/mooncake"))
+
+(def activities-per-page 50)

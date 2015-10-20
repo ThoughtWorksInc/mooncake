@@ -5,7 +5,8 @@
             [mooncake.test.test-helpers.db :as dbh]
             [mooncake.db.user :as user]
             [mooncake.db.mongo :as mongo]
-            [mooncake.db.activity :as a]))
+            [mooncake.db.activity :as a]
+            [mooncake.config :as config]))
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
@@ -103,7 +104,7 @@
 (facts "about pagination"
        (let [store (dbh/create-in-memory-store)
              _ (user/create-user! store ...user-id... ...username...)
-             _ (dbh/create-dummy-activities store 60)
+             _ (dbh/create-dummy-activities store (+ 1 config/activities-per-page))
              valid-page-number "2"
              invalid-page-number "ABC"
              too-tiny-of-a-page-number "0"
@@ -117,7 +118,7 @@
                          response (fc/feed store request)]
 
                      (:body response) => (contains "TestData0")
-                     (:body response) =not=> (contains "TestData10")))
+                     (:body response) =not=> (contains (str "TestData" config/activities-per-page))))
 
              (fact "empty page number params is passed in get request and defaults to 1"
                    (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
@@ -127,7 +128,7 @@
                          response (fc/feed store request)]
 
                      (:body response) =not=> (contains "TestData0")
-                     (:body response) => (contains "TestData10")))
+                     (:body response) => (contains (str "TestData" config/activities-per-page))))
 
              (fact "page number cannot be non-numbers"
                    (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}

@@ -17,7 +17,8 @@
             [mooncake.db.mongo :as mongo]
             [mooncake.db.activity :as adb]
             [clj-time.format :as f]
-            [clj-time.core :as t]))
+            [clj-time.core :as t]
+            [mooncake.config :as config]))
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
@@ -336,7 +337,7 @@
                  (kh/selector-not-present ks/older-activities-link)))
        (fact "Multiple pages"
              (drop-db!)
-             (create-dummy-activities mongo-store 101)
+             (create-dummy-activities mongo-store (+ 1 (* 2 config/activities-per-page)))
              (-> (k/session app-with-activity-sources-from-yaml)
                  sign-in!
                  (k/visit (routes/path :feed))

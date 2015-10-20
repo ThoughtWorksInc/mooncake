@@ -3,7 +3,8 @@
             [mooncake.db.user :as user]
             [mooncake.helper :as mh]
             [mooncake.controller.customise-feed :as cfc]
-            [mooncake.view.feed :as f]))
+            [mooncake.view.feed :as f]
+            [mooncake.config :as config]))
 
 (defn activity-src-preferences->feed-query [preferences-for-an-activity-src]
   (let [selected-types (map :id (filter :selected (:activity-types preferences-for-an-activity-src)))]
@@ -17,7 +18,7 @@
 (defn last-page-number [total-activities]
   (if (= total-activities 0)
     1
-    (Math/ceil (/ total-activities 50))))
+    (Math/ceil (/ total-activities config/activities-per-page))))
 
 (defn parse-page-number [params]
   (try

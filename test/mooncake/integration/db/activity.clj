@@ -3,7 +3,8 @@
             [clj-time.core :as time]
             [mooncake.db.activity :as activity]
             [mooncake.test.test-helpers.db :as dbh]
-            [mooncake.db.mongo :as mongo]))
+            [mooncake.db.mongo :as mongo]
+            [mooncake.config :as config]))
 
 (fact "can store an activity"
       (dbh/with-mongo-do
@@ -123,9 +124,9 @@
        (dbh/with-mongo-do
          (fn [db]
            (let [store (mongo/create-mongo-store db)]
-             (dbh/create-dummy-activities store 51)
-             (fact "activities are fetched in batches of 50"
-                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source (keyword "@type") ["Create"]}] {}) => (n-of anything 50))
+             (dbh/create-dummy-activities store (+ 1 config/activities-per-page))
+             (fact "activities are fetched in batches"
+                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source (keyword "@type") ["Create"]}] {}) => (n-of anything config/activities-per-page))
 
-             (fact "activities are paginated with 50 per page"
+             (fact "activities are paginated with correct batch amount per page"
                    (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source (keyword "@type") ["Create"]}] {:page-number 2}) => (one-of anything))))))

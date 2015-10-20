@@ -5,7 +5,8 @@
             [clojure.java.io :as io]
             [mooncake.activity :as a]
             [mooncake.test.test-helpers.db :as dbh]
-            [mooncake.db.activity :as activity])
+            [mooncake.db.activity :as activity]
+            [mooncake.config :as config])
   (:import (java.net ConnectException)))
 
 (def nine-oclock "2015-01-01T09:00:00.000Z")
@@ -126,11 +127,11 @@
 
 (fact "can load activity sources from a resource"
       (a/load-activity-sources-from-resource "test-activity-sources.yml") => {:test-activity-source-1 {:url  "https://test-activity.src/activities"
-                                                                                         :name "Test Activity Source 1"}
-                                                                :test-activity-source-2 {:url  "https://another-test-activity.src"
-                                                                                         :name "Test Activity Source 2"}
-                                                                :test-activity-source-3 {:url  "https://yet-another-test-activity.src"
-                                                                                         :name "Test Activity Source 3"}})
+                                                                                                       :name "Test Activity Source 1"}
+                                                                              :test-activity-source-2 {:url  "https://another-test-activity.src"
+                                                                                                       :name "Test Activity Source 2"}
+                                                                              :test-activity-source-3 {:url  "https://yet-another-test-activity.src"
+                                                                                                       :name "Test Activity Source 3"}})
 
 (fact "can load activity sources from file"
       (let [source-data {:source-1 {:url "the-url" :name "the-name"}}
@@ -220,8 +221,9 @@
 (tabular
   (fact "is-last-page returns true when on the last page"
         (a/is-last-page? ?page-number ?total-activities) => ?result)
-        ?page-number   ?total-activities   ?result
-         1              30                  true
-         2              60                  true
-         2              101                 false
-         3              150                 true)
+  ?page-number  ?total-activities                       ?result
+  1             (- config/activities-per-page 1)        true
+  2             (+ config/activities-per-page 1)        true
+  2             (+ 1 (* 2 config/activities-per-page))  false
+  3             (* 3 config/activities-per-page)        true)
+

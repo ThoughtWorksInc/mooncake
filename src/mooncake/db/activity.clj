@@ -2,7 +2,8 @@
   (:require [mooncake.domain.activity :as domain]
             [mooncake.db.mongo :as mongo]
             [clj-time.coerce :as time-coerce]
-            [clj-time.core :as time]))
+            [clj-time.core :as time]
+            [mooncake.config :as config]))
 
 (def activity-collection "activity")
 (def activity-metadata-collection "activityMetaData")
@@ -35,7 +36,7 @@
   (mongo/fetch-all store activity-collection))
 
 (defn fetch-activities-by-activity-sources-and-types [store activity-sources-and-types options-m]
-  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types (merge {:sort {:published :descending} :limit 50} options-m)))
+  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types (merge {:sort {:published :descending} :limit config/activities-per-page} options-m)))
 
 (defn store-activity! [store activity]
   (let [activity-src (domain/activity->activity-src activity)
