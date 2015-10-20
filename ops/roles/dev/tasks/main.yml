@@ -1,7 +1,7 @@
 ---
  - name: install git
    apt: name=git state=present
-   
+
  - name: add nodesource apt-key
    apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
 
@@ -39,3 +39,6 @@
 
  - name: install xvfb
    apt: name=xvfb state=present
+
+ - name: install phantomjs
+   apt: name=phantomjs state=present
