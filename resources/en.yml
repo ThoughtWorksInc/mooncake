@@ -24,6 +24,8 @@ feed:
   older-link: Older
   load-link: Load more
 
+  suspicious-activity: Some details we use to verify this activity's validity are missing
+
 empty-feed:
   page-title: There are no activities to show
   intro: Customise your feed here

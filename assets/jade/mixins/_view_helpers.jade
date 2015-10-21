@@ -1,7 +1,5 @@
 mixin streamItem(title, author, activityAction, sourceClass, trusted)
-  - var trustedClass = (trusted==false ? 'activity-item__suspicious' : '')
-
-  li.activity-item.clj--activity-item.func--activity-item(class="#{sourceClass} #{trustedClass}")
+  li.activity-item.clj--activity-item.func--activity-item(class="#{sourceClass}")
     a.activity-item__link.clj--activity-item__link.func--activity-item__link(href="#")
       .activity-item__avatar
         span.avatar__initials.clj--avatar__initials !C
@@ -12,6 +10,9 @@ mixin streamItem(title, author, activityAction, sourceClass, trusted)
         = " "
         time.activity-item__time.clj--activity-item__time(datetime="10:32") !2 minutes ago
       h3.activity-item__title.clj--activity-item__title.func--activity-item__title !#{title}
+      if trusted==false
+        a.activity-item__suspicious.clj--STRIP
+          span.activity-item__suspicious--onhover-message-box(data-l8n="html:feed/suspicious-activity") !Some details we use to verify this activity's validity are missing
 
 mixin streamItemWarning()
   li.activity-error.clj--STRIP
