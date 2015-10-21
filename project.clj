@@ -56,14 +56,15 @@
                                         :client-secret "fake stonecutter client secret"
                                         :auth-url      "fake stonecutter auth url"
                                         :mongo-uri     "mongodb://localhost:27017/mooncake-dev"}
-                       :aliases        {"cljs-build" ["cljsbuild" "once" "prod"]
-                                        "cljs-test"  ["cljsbuild" "once" "test"]
-                                        "test"       ["do" "clean," "gulp," "midje," "cljs-test"]
-                                        "test-cljs"  ["do" "clean," "gulp," "cljs-test"]
-                                        "auto-cljs"  ["do" "test-cljs," "cljsbuild" "auto" "test"]
-                                        "browser"    ["do" "clean," "gulp," "midje" "mooncake.browser.*"]
-                                        "gulp"       ["shell" "gulp" "build"]
-                                        "stub"       ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]}
+                       :aliases        {"cljs-build"      ["cljsbuild" "once" "prod"]
+                                        "cljs-test"       ["cljsbuild" "once" "test"]
+                                        "test"            ["do" "clean," "gulp," "cljs-test," "midje" ]
+                                        "test-cljs"       ["do" "clean," "gulp," "cljs-test"]
+                                        "auto-cljs"       ["do" "test-cljs," "cljsbuild" "auto" "test"]
+                                        "browser"         ["do" "clean," "gulp," "midje" "mooncake.browser.*"]
+                                        "gulp"            ["shell" "gulp" "build"]
+                                        "stub"            ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]
+                                        "auto-no-browser" ["test" ":autotest" "src/" "test/mooncake/test/" "test/mooncake/integration/"]}
                        :cljsbuild      {:builds [{:id           "prod"
                                                   :source-paths ["src-cljs"]
                                                   :compiler     {:output-to     "resources/public/js/main.js"

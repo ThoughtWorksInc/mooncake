@@ -130,3 +130,34 @@
 
              (fact "activities are paginated with correct batch amount per page"
                    (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source (keyword "@type") ["Create"]}] {:page-number 2}) => (one-of anything))))))
+
+(let [latest-time "2015-08-12T00:00:02.000Z"
+      second-latest-time "2015-08-12T00:00:01.000Z"
+      oldest-time "2015-08-12T00:00:00.000Z"]
+  (tabular
+    (fact "fetching activities with timestamp"
+          (dbh/with-mongo-do
+            (fn [db]
+              (let [
+                    store (mongo/create-mongo-store db)
+                    activity1 {:displayName      "KCat"
+                               :published        oldest-time
+                               :activity-src     "source-1"
+                               (keyword "@type") "Create"}
+                    activity2 {:displayName      "KCat"
+                               :published        second-latest-time
+                               :activity-src     "source-1"
+                               (keyword "@type") "Create"}
+                    activity3 {:displayName      "JDon"
+                               :published        latest-time
+                               :activity-src     "source-1"
+                               (keyword "@type") "Create"}]
+                (activity/store-activity! store activity1)
+                (activity/store-activity! store activity2)
+                (activity/store-activity! store activity3)
+                (activity/fetch-activities-by-timestamp store [{:activity-src :source-1 (keyword "@type") ["Create"]}] ?timestamp) => ?result))))
+    ?timestamp            ?result
+    oldest-time           []
+    second-latest-time    [activity1]
+    latest-time           [activity2
+                           activity1]))

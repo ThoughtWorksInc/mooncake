@@ -71,6 +71,20 @@
           (fact "if page number is nil it will default to the first page"
                 (mongo/find-items-by-alternatives store collection-name [{}] {:limit 2 :page-number nil}) => (two-of anything)))))
 
+(defn test-find-items-by-timestamps [store]
+  (fact {:midje/name (str (type store) " -- test-find-items-by-timestamp queries items that are older than provided timestamp")}
+        (let [latest-time "2015-08-12T00:00:02.000Z"
+              second-latest-time "2015-08-12T00:00:01.000Z"
+              oldest-time "2015-08-12T00:00:00.000Z"
+              item1 {:some-index-key "rebecca" :published latest-time}
+              item2 {:some-index-key "barry" :published second-latest-time}
+              item3 {:some-index-key "zane" :published oldest-time}
+              _ (mongo/store-with-id! store collection-name :some-index-key item1)
+              _ (mongo/store-with-id! store collection-name :some-index-key item2)
+              _ (mongo/store-with-id! store collection-name :some-index-key item3)]
+
+          (mongo/find-items-by-timestamp store collection-name [{}] {} second-latest-time) => (just [item3]))))
+
 (defn test-fetch-total-count-by-query [store]
   (fact {:midje/name (str (type store) " -- test-fetch-total-count-by-query gets the total number of items which match the query")}
         (let [item1 {:some-index-key "rebecca" :some-other-key "other"}
@@ -121,6 +135,7 @@
             test-upsert
             test-find-item
             test-find-items-by-alternatives
+            test-find-items-by-timestamps
             test-fetch-total-count-by-query
             test-duplicate-key
             test-fetch-all-items

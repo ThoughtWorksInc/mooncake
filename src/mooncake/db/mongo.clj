@@ -14,6 +14,8 @@
     "Find an item matching the query-map.")
   (find-items-by-alternatives [this coll value-map-vector options-m]
     "Find items whose properties match properties of at least one of the provided maps.")
+  (find-items-by-timestamp [this coll value-map-vector options-m timestamp]
+    "Find items whose published time is less than given timestamp")
   (fetch-total-count-by-query [this coll value-map-vector]
     "Get total count of items that match the query.")
   (store! [this coll item]
@@ -100,7 +102,22 @@
     (mcoll/update mongo-db coll query {mop/$set {key-param value}} {:upsert true}))
 
   (add-to-set! [this coll query key-param value]
-    (mcoll/update mongo-db coll query {mop/$addToSet {key-param value}} {:upsert true})))
+    (mcoll/update mongo-db coll query {mop/$addToSet {key-param value}} {:upsert true}))
+
+  (find-items-by-timestamp [this coll value-map-vector options-m timestamp]
+    (if (not-empty value-map-vector)
+      (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
+            sort-query-map (options-m->sort-query-map options-m)
+            timestamp-query-map {:published {mop/$lt timestamp}}
+            batch-size (:limit options-m)
+            aggregation-pipeline (cond-> []
+                                         :always (conj {mop/$match mongo-query-map})
+                                         :always (conj {mop/$match timestamp-query-map})
+                                         (not (empty? sort-query-map)) (conj {mop/$sort sort-query-map})
+                                         (not (nil? batch-size)) (conj {mop/$limit batch-size}))]
+        (->> (mcoll/aggregate mongo-db coll aggregation-pipeline)
+             (map dissoc-id)))
+      [])))
 
 
 (defn create-mongo-store [mongodb]
@@ -114,3 +131,4 @@
 
 (defn get-mongo-db [mongo-uri]
   (:db (get-mongo-db-and-conn mongo-uri)))
+

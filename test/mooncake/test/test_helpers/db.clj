@@ -28,7 +28,7 @@
 
 (def neutral-comp-fn (constantly 0))
 
-(defn options-m->comp-fn [options-m]
+(defn options-m->compare-fn [options-m]
   (if-let [sort-key (first (keys (:sort options-m)))]
     (let [ordering-key (get-in options-m [:sort sort-key])
           ordering-multiplier (get {:ascending 1 :descending -1} ordering-key 0)]
@@ -54,6 +54,10 @@
       (partial drop (* batch-size (- page-number 1)))
       identity)))
 
+(defn timestamp-fn [timestamp]
+  (partial filter
+    #(> 0 (compare (:published %) timestamp))))
+
 (defrecord MemoryStore [data]
   mongo/Store
   (fetch [this coll id]
@@ -71,7 +75,7 @@
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
     (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
-    (let [comp-fn (options-m->comp-fn options-m)
+    (let [comp-fn (options-m->compare-fn options-m)
           batch-fn (options-m->batch-fn options-m)
           skip-fn (options-m->skip-fn options-m)]
       (->> value-map-vector
@@ -109,8 +113,18 @@
     (if-let [item (find-item-with-id @data coll query)]
       (swap! data assoc-in [coll (:_id item)] (update item key-param conj-unique value))
       (let [id (UUID/randomUUID)]
-        (swap! data assoc-in [coll id] (assoc query :_id id key-param [value]))))))
+        (swap! data assoc-in [coll id] (assoc query :_id id key-param [value])))))
 
+  (find-items-by-timestamp [this coll value-map-vector options-m timestamp]
+    (let [comp-fn (options-m->compare-fn options-m)
+          batch-fn (options-m->batch-fn options-m)
+          timestamp-fn (timestamp-fn timestamp)]
+      (->> value-map-vector
+           (map #(find-by-map-query this coll %))
+           (apply set/union)
+           (sort comp-fn)
+           timestamp-fn
+           batch-fn))))
 
 (defn create-in-memory-store
   ([] (create-in-memory-store {}))
