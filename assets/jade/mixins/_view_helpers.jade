@@ -49,7 +49,7 @@ mixin feedItem(feedName, isOn, isTrusted)
   li.feed-item.clj--feed-item
     fieldset.feed-item__fieldset
       p.feed-item__name.clj--feed-item__name #{feedName}
-      span.feed-item__trusted.clj--STRIP(data-l8n="content:customised-feed/feed-digitally-signed-false")
+      span.feed-item__trusted.clj--feed-item__signed.func--feed-item__signed(data-l8n="content:customise-feed/feed-digitally-signed-false")
         if !isTrusted
           | !Unconfirmed source
         else

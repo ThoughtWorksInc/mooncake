@@ -38,6 +38,10 @@
     (html/at feed-item-snippet [html/root]
              (html/clone-for [activity-source activity-source-preferences]
                              [:.clj--feed-item__name] (html/content (:name activity-source))
+                             [:.clj--feed-item__signed] (html/set-attr :data-l8n
+                                                                       (if (:signed? activity-source)
+                                                                         "content:customise-feed/feed-digitally-signed-true"
+                                                                         "content:customise-feed/feed-digitally-signed-false"))
                              [:.clj--src-checkbox] (html/do->
                                                      (html/remove-class "checkbox--all")
                                                      (html/remove-class "checkbox--some")

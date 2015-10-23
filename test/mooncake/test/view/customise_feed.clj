@@ -166,3 +166,21 @@
 
          (fact "no acitivity type items are displayed"
                (html/select page [:.clj--feed-item-child]) => empty?)))
+
+(facts "activity source shows whether they can be signed"
+       (let [activity-source-preferences [{:id             "signed-activity-src"
+                                           :name           "Signed Source"
+                                           :url            "some url"
+                                           :signed?        true
+                                           :selected       true
+                                           :activity-types []}
+                                          {:id       "unsigned-activity-src"
+                                           :name     "Unsigned Source"
+                                           :url      "other url"
+                                           :selected false}]
+             context {:activity-source-preferences activity-source-preferences}
+             page (cf/customise-feed {:context context :t {}})
+             [first-activity-source-signed-status second-activity-source-signed-status] (html/select page [:.clj--feed-item__signed])]
+
+         (:data-l8n (:attrs first-activity-source-signed-status)) => "content:customise-feed/feed-digitally-signed-true"
+         (:data-l8n (:attrs second-activity-source-signed-status)) => "content:customise-feed/feed-digitally-signed-false"))
