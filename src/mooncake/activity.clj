@@ -59,8 +59,8 @@
         (json/parse-string (.getUnverifiedPayload jws) true)))))
 
 (defn is-signed-response? [activity-source-response]
-  (and (get-in activity-source-response [:body :jws-signed-payload])
-       (get-in activity-source-response [:body :jku])))
+  (some? (and (get-in activity-source-response [:body :jws-signed-payload])
+       (get-in activity-source-response [:body :jku]))))
 
 (defn get-json-from-activity-source [url query-params]
   (try

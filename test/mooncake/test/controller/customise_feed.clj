@@ -97,7 +97,6 @@
                  (-> fourth-child-checkbox :attrs :id) => "yet-another-activity-src_-_Add"
                  (-> fourth-child-checkbox :attrs :checked) => "checked"))))
 
-
 (facts "about generate-activity-source-preferences with no user preferences"
        (let [activity-sources {:activity-src             {:name "C. Activity Source"
                                                           :url  "some url"
@@ -120,9 +119,9 @@
          (fact "they are sorted by name"
                (map :name result) => ["A. Another Source" "B. Yet Another Source" "C. Activity Source"])
          (fact "activity types are selected by default"
-               result => [{:name "A. Another Source" :id "another-activity-src" :url "another url" :activity-types [{:id "Type1" :selected true}]}
-                          {:name "B. Yet Another Source" :id "yet-another-activity-src" :url "yet another url" :activity-types [{:id "Type2" :selected true}]}
-                          {:name "C. Activity Source" :id "activity-src" :url "some url" :activity-types [{:id "Type1" :selected true}
+               result => [{:name "A. Another Source" :id "another-activity-src" :url "another url" :signed? false :activity-types [{:id "Type1" :selected true}]}
+                          {:name "B. Yet Another Source" :id "yet-another-activity-src" :url "yet another url" :signed? false :activity-types [{:id "Type2" :selected true}]}
+                          {:name "C. Activity Source" :id "activity-src" :url "some url" :signed? false :activity-types [{:id "Type1" :selected true}
                                                                                                           {:id "Type2" :selected true}]}])))
 
 (facts "about generate-activity-type-preferences"
@@ -180,3 +179,26 @@
                                                              {:id       "Question"
                                                               :selected false}]}]
                  (cf/create-user-feed-settings-for-source :activity-src single-activity-source-configuration submitted-parameters) => expected-user-feed-settings))))
+
+(facts "about signed activitiy sources"
+       (fact "generate activity source should return information on whether the source is signed or not"
+             (against-background
+               (clj-http.client/get "signed url" anything) => {:body {:jws-signed-payload "test signed payload" :jku "jwk endpoint"}}
+               (clj-http.client/get "unsigned url" anything) => {:body {}})
+
+             (let [activity-sources {:signed-activity-src   {:name           "A. Another Source"
+                                                             :url            "signed url"
+                                                             :activity-types ["Type1"]}
+                                     :unsigned-activity-src {:name           "B. Yet Another Source"
+                                                             :url            "unsigned url"
+                                                             :activity-types ["Type2"]}}
+                   non-existent-user-feed-preferences nil
+                   result (cf/generate-activity-source-preferences activity-sources non-existent-user-feed-preferences)]
+
+               (fact "signed source should return true for signed activity sources"
+                     (:id (first result)) => "signed-activity-src"
+                     (:signed? (first result)) => true)
+
+               (fact "unsigned source should return false for signed?"
+                     (:id (second result)) => "unsigned-activity-src"
+                     (:signed? (second result)) => false))))

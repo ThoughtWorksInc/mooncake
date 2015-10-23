@@ -1,7 +1,10 @@
 (ns mooncake.controller.customise-feed
-  (:require [mooncake.db.user :as user]
+  (:require [clj-http.client :as http]
+            [mooncake.db.user :as user]
+            [mooncake.activity :as a]
             [mooncake.helper :as mh]
-            [mooncake.view.customise-feed :as cfv]))
+            [mooncake.view.customise-feed :as cfv]
+            [clojure.tools.logging :as log]))
 
 (def default-feed-type-selected-value true)
 
@@ -58,10 +61,19 @@
     feed-preferences-for-activity-source
     {}))
 
+(defn is-signed-activity-src? [url]
+  (try
+    (let [test-response (http/get url {:accept :json :as :json})]
+      (a/is-signed-response? test-response))
+    (catch Exception e
+      (log/error "Activity url provided did not respond as expected")
+      false)))
+
 (defn generate-activity-source-preferences [activity-sources user-feed-settings]
   (->> (map (fn [[k v]] (let [preferences-for-activity-source (get-feed-preferences-for-activity-source user-feed-settings k)]
                           (assoc v
                             :id (name k)
+                            :signed? (is-signed-activity-src? (:url v))
                             :activity-types (generate-activity-type-preferences
                                               (:activity-types v)
                                               (:types preferences-for-activity-source)))))
