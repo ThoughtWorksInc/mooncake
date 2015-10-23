@@ -5,7 +5,16 @@
             [mooncake.db.user :as user]
             [mooncake.handler :as h]
             [mooncake.routes :as routes]
-            [mooncake.test.test-helpers.enlive :as eh]))
+            [mooncake.test.test-helpers.enlive :as eh]
+            [ring.mock.request :as mock]))
+
+(fact "can be split requests between html site and api"
+      (let [site-handler (fn [r] :site)
+            api-handler (fn [r] :api)
+            handler (h/splitter site-handler api-handler)]
+
+        (-> (mock/request :get "/blah") handler) => :site
+        (-> (mock/request :get "/api/blah") handler) => :api))
 
 (facts "about site-handlers"
        (fact "throws an exception when stonecutter oauth configuration is invalid"
@@ -100,5 +109,13 @@
                                             :some-other-key ...some-other-value...}})]
         (:session response) => {}
         response => (eh/check-redirects-to (routes/absolute-path {} :sign-in))))
+
+(fact "can be split requests between html site and api"
+      (let [site-handler (fn [r] :site)
+            api-handler (fn [r] :api)
+            handler (h/splitter site-handler api-handler)]
+
+        (-> (mock/request :get "/blah") handler) => :site
+        (-> (mock/request :get "/api/blah") handler) => :api))
 
 

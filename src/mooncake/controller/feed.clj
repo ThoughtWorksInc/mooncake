@@ -4,7 +4,11 @@
             [mooncake.helper :as mh]
             [mooncake.controller.customise-feed :as cfc]
             [mooncake.view.feed :as f]
-            [mooncake.config :as config]))
+            [mooncake.config :as config]
+            [mooncake.db.activity :as dba]
+            [cheshire.core :as json]
+            [clojure.tools.logging :as log]
+            [ring.util.response :as r]))
 
 (defn activity-src-preferences->feed-query [preferences-for-an-activity-src]
   (let [selected-types (map :id (filter :selected (:activity-types preferences-for-an-activity-src)))]
@@ -30,6 +34,15 @@
   (when page-number
     (and (> page-number 0) (<= page-number (last-page-number total-activities)))))
 
+(defn activities->json [activities]
+  (map (partial json/generate-string) activities))
+
+(defn retrieve-activities [request]
+  (log/debug "Retrieving activities: " request)
+  (let [response ""]
+    (-> (r/response response)
+        (r/content-type "application/json"))))
+
 (defn feed [store request]
   (let [context (:context request)
         params (:params request)
@@ -47,6 +60,5 @@
         updated-context (-> context
                             (assoc :is-last-page is-last-page)
                             (assoc :activities activities))]
-
     (when (page-number-is-in-correct-range page-number total-activities)
       (mh/enlive-response (f/feed (assoc request :context updated-context :params updated-params)) request))))

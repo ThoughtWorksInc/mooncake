@@ -44,9 +44,9 @@
 (def test-db-uri "mongodb://localhost:27017/mooncake")
 (def mongo-store (mongo/create-mongo-store (mongo/get-mongo-db test-db-uri)))
 
-(def app (h/create-app (c/create-config) mongo-store {}))
+(def app (h/create-site-app (c/create-config) mongo-store {}))
 
-(def app-with-activity-sources-from-yaml (h/create-app (c/create-config) mongo-store (a/load-activity-sources-from-resource "test-activity-sources.yml")))
+(def app-with-activity-sources-from-yaml (h/create-site-app (c/create-config) mongo-store (a/load-activity-sources-from-resource "test-activity-sources.yml")))
 
 (defn drop-db! []
   (let [{:keys [conn db]} (monger/connect-via-uri test-db-uri)]
@@ -152,7 +152,7 @@
 
 (def server (atom nil))
 (defn start-server [] (swap! server (fn [_] (ring-jetty/run-jetty
-                                              (h/create-app (c/create-config) mongo-store {})
+                                              (h/create-site-app (c/create-config) mongo-store {})
                                               {:host "127.0.0.1" :port 3000 :join? false}))))
 (defn stop-server [] (.stop @server))
 
@@ -169,7 +169,7 @@
    (after :contents (stop-server))]
   (facts "Stub activities are rendered"
          (drop-db!)
-         (-> (k/session (h/create-app (c/create-config) mongo-store {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
+         (-> (k/session (h/create-site-app (c/create-config) mongo-store {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
              sign-in!
              (k/visit (routes/path :feed))
              (kh/check-page-is "/" ks/feed-page-body)
@@ -276,7 +276,7 @@
 
 (facts "Invalid activity source responses are handled gracefully"
        (drop-db!)
-       (-> (k/session (h/create-app (c/create-config) mongo-store {:invalid-activity-src {:url "http://localhost:6666/not-an-activity-source"}}))
+       (-> (k/session (h/create-site-app (c/create-config) mongo-store {:invalid-activity-src {:url "http://localhost:6666/not-an-activity-source"}}))
            sign-in!
            (k/visit (routes/absolute-path (c/create-config) :feed))
            (kh/check-page-is "/" ks/feed-page-body)))
@@ -284,7 +284,7 @@
 (facts "Error page is shown if an exception is thrown"
        (against-background
          (h/sign-in anything) =throws=> (Exception.))
-       (-> (k/session (h/create-app (c/create-config) mongo-store {}))
+       (-> (k/session (h/create-site-app (c/create-config) mongo-store {}))
            (k/visit (routes/absolute-path (c/create-config) :sign-in))
            (kh/response-status-is 500)
            (kh/selector-exists ks/error-500-page-body)))

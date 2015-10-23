@@ -109,12 +109,15 @@
         (m/wrap-just-these-handlers #(m/wrap-activity-sources-and-types store activity-sources %)
                                     #{:feed :show-customise-feed :customise-feed}))))
 
+(defn api-handlers []
+  {:retrieve-activities fc/retrieve-activities})
+
 (defn wrap-defaults-config [secure?]
   (-> (if secure? (assoc ring-mw/secure-site-defaults :proxy true) ring-mw/site-defaults)
       (assoc-in [:session :cookie-attrs :max-age] 3600)
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
-(defn create-app [config-m store activity-sources]
+(defn create-site-app [config-m store activity-sources]
   (a/sync-activities! store activity-sources)               ;; Ensure database is populated before starting app
   (-> (scenic/scenic-handler routes/routes (site-handlers config-m store activity-sources) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
@@ -122,16 +125,33 @@
       (m/wrap-error-handling internal-server-error-handler)
       (tower-ring/wrap-tower (t/config-translation))))
 
+(defn- create-api-app []
+  (-> (scenic/scenic-handler routes/routes (api-handlers))
+      (ring-mw/wrap-defaults ring-mw/api-defaults)
+      (m/wrap-error-handling internal-server-error-handler))) ;todo which error handlers - ne
+
+(defn splitter [site api]
+  (fn [request]
+    (let [uri (-> request :uri)]
+      (if (.startsWith uri "/api")
+        (api request)
+        (site request)))))
+
+(defn create-app [config-m store activity-sources]
+  (splitter (create-site-app config-m store activity-sources)
+            (create-api-app)))
+
 (defn -main [& args]
   (let [config-m (config/create-config)
         mongo-db (mongo/get-mongo-db (config/mongo-uri config-m))
         store (mongo/create-mongo-store mongo-db)
-        activity-sources (a/load-activity-sources config-m)]
+        activity-sources (a/load-activity-sources config-m)
+        app (create-app config-m store activity-sources)]
     (if-let [stub-user (config/stub-user config-m)]
       (when-not (user/find-user store stub-user)
         (user/create-user! store nil stub-user)))
     (migration/run-migrations mongo-db)
     (schedule/schedule (a/sync-activities-task store activity-sources) (config/sync-interval config-m))
-    (ring-jetty/run-jetty (create-app config-m store activity-sources)
+    (ring-jetty/run-jetty app
                           {:port (config/port config-m)
                            :host (config/host config-m)})))

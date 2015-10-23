@@ -41,7 +41,7 @@
 
 (defn start-server []
   (let [activity-sources (a/load-activity-sources-from-resource "test-activity-sources.yml")
-        app-routes (h/create-app stub-config-map @test-store activity-sources)]
+        app-routes (h/create-site-app stub-config-map @test-store activity-sources)]
     (loop [server (run-jetty app-routes {:port test-port :host "localhost" :join? false})]
       (if (.isStarted server)
         server
