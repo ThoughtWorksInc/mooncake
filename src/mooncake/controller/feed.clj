@@ -35,7 +35,9 @@
     (and (> page-number 0) (<= page-number (last-page-number total-activities)))))
 
 (defn activities->json [activities]
-  (map (partial json/generate-string) activities))
+  (let [list-of-activities (map (partial json/generate-string) activities)
+        joined-list-of-activities (clojure.string/join ", " list-of-activities)]
+    (str "{\"activities\": [" joined-list-of-activities "]}")))
 
 (defn retrieve-activities [request]
   (log/debug "Retrieving activities: " request)

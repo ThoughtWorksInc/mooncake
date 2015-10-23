@@ -6,7 +6,10 @@
             [mooncake.db.user :as user]
             [mooncake.db.mongo :as mongo]
             [mooncake.db.activity :as a]
-            [mooncake.config :as config]))
+            [mooncake.config :as config]
+            [ring.mock.request :as mock]
+            [mooncake.routes :as routes]
+            [cheshire.core :as json]))
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
@@ -156,3 +159,15 @@
                          response (fc/feed store request)]
 
                      (:status response) => nil))))
+
+(fact "activities are transformed into the correct json format"
+      (let [activities [{:displayName      "KCat"
+                         :published        "2015-08-12T00:00:01.000Z"
+                         :activity-src     "source-1"
+                         (keyword "@type") "Create"}
+                        {:displayName      "JDog"
+                         :published        "2015-08-12T00:00:00.000Z"
+                         :activity-src     "source-1"
+                         (keyword "@type") "Create"}]
+            json (fc/activities->json activities)]
+        json => "{\"activities\": [{\"displayName\":\"KCat\",\"published\":\"2015-08-12T00:00:01.000Z\",\"activity-src\":\"source-1\",\"@type\":\"Create\"}, {\"displayName\":\"JDog\",\"published\":\"2015-08-12T00:00:00.000Z\",\"activity-src\":\"source-1\",\"@type\":\"Create\"}]}"))
