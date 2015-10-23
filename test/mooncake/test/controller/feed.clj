@@ -170,4 +170,27 @@
                          :activity-src     "source-1"
                          (keyword "@type") "Create"}]
             json (fc/activities->json activities)]
-        json => "{\"activities\": [{\"displayName\":\"KCat\",\"published\":\"2015-08-12T00:00:01.000Z\",\"activity-src\":\"source-1\",\"@type\":\"Create\"}, {\"displayName\":\"JDog\",\"published\":\"2015-08-12T00:00:00.000Z\",\"activity-src\":\"source-1\",\"@type\":\"Create\"}]}"))
+        json => "{\n  \"activities\" : [ {\n    \"displayName\" : \"KCat\",\n    \"published\" : \"2015-08-12T00:00:01.000Z\",\n    \"activity-src\" : \"source-1\",\n    \"@type\" : \"Create\"\n  }, {\n    \"displayName\" : \"JDog\",\n    \"published\" : \"2015-08-12T00:00:00.000Z\",\n    \"activity-src\" : \"source-1\",\n    \"@type\" : \"Create\"\n  } ]\n}"))
+
+(facts "about which activities are retrieved"
+       (let [store (dbh/create-in-memory-store)
+             _ (mongo/store! store a/activity-collection activity-src-1--enabled-type)
+             _ (mongo/store! store a/activity-collection activity-src-1--disabled-type)
+             _ (mongo/store! store a/activity-collection activity-src-2--no-preference-type)
+             _ (user/create-user! store ...user-id... ...username...)
+             _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
+                                                                                          {:id "Disabled" :selected false}]}})
+             request {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
+                                                   :activity-src-2 {:activity-types ["No-preference"]}}}
+                      :t       (constantly "")
+                      :session {:username ...username...}}
+             response (fc/retrieve-activities store request)]
+
+         (fact "enabled activity types are shown"
+               (:body response) => (contains "Activity source 1: enabled type"))
+
+         (fact "disabled activity types are not shown"
+               (:body response) =not=> (contains "Activity source 1: disabled type"))
+
+         (fact "no-preference activity types are shown"
+               (:body response) => (contains "Activity source 2: no preference expressed"))))

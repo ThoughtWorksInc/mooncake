@@ -101,16 +101,14 @@
          :customise-feed       (partial cfc/customise-feed store)
          :stub-activities      stub-activities
          :stonecutter-sign-in  (partial stonecutter-sign-in stonecutter-config)
-         :stonecutter-callback (partial stonecutter-callback stonecutter-config store)}
+         :stonecutter-callback (partial stonecutter-callback stonecutter-config store)
+         :retrieve-activities  (partial fc/retrieve-activities store)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback
                                      :stub-activities :show-create-account :create-account})
         (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-error-handler) #{})
         (m/wrap-just-these-handlers #(m/wrap-activity-sources-and-types store activity-sources %)
-                                    #{:feed :show-customise-feed :customise-feed}))))
-
-(defn api-handlers []
-  {:retrieve-activities fc/retrieve-activities})
+                                    #{:feed :show-customise-feed :customise-feed :retrieve-activities}))))
 
 (defn wrap-defaults-config [secure?]
   (-> (if secure? (assoc ring-mw/secure-site-defaults :proxy true) ring-mw/site-defaults)
@@ -125,28 +123,12 @@
       (m/wrap-error-handling internal-server-error-handler)
       (tower-ring/wrap-tower (t/config-translation))))
 
-(defn- create-api-app []
-  (-> (scenic/scenic-handler routes/routes (api-handlers))
-      (ring-mw/wrap-defaults ring-mw/api-defaults)
-      (m/wrap-error-handling internal-server-error-handler))) ;todo which error handlers - ne
-
-(defn splitter [site api]
-  (fn [request]
-    (let [uri (-> request :uri)]
-      (if (.startsWith uri "/api")
-        (api request)
-        (site request)))))
-
-(defn create-app [config-m store activity-sources]
-  (splitter (create-site-app config-m store activity-sources)
-            (create-api-app)))
-
 (defn -main [& args]
   (let [config-m (config/create-config)
         mongo-db (mongo/get-mongo-db (config/mongo-uri config-m))
         store (mongo/create-mongo-store mongo-db)
         activity-sources (a/load-activity-sources config-m)
-        app (create-app config-m store activity-sources)]
+        app (create-site-app config-m store activity-sources)]
     (if-let [stub-user (config/stub-user config-m)]
       (when-not (user/find-user store stub-user)
         (user/create-user! store nil stub-user)))

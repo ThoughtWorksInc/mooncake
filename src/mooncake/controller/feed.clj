@@ -35,13 +35,19 @@
     (and (> page-number 0) (<= page-number (last-page-number total-activities)))))
 
 (defn activities->json [activities]
-  (let [list-of-activities (map (partial json/generate-string) activities)
-        joined-list-of-activities (clojure.string/join ", " list-of-activities)]
-    (str "{\"activities\": [" joined-list-of-activities "]}")))
+  (json/generate-string {:activities activities} {:pretty true}))
 
-(defn retrieve-activities [request]
-  (log/debug "Retrieving activities: " request)
-  (let [response ""]
+(defn retrieve-activities [store request]
+  (let [timestamp "3000-08-12T00:00:00.000Z"
+        username (get-in request [:session :username])
+        user (user/find-user store username)
+        user-feed-settings (:feed-settings user)
+        context (:context request)
+        activity-sources (:activity-sources context)
+        feed-query (generate-feed-query user-feed-settings activity-sources)
+        activities (dba/fetch-activities-by-timestamp store feed-query timestamp)
+        jsonified-activities (activities->json activities)
+        response jsonified-activities]
     (-> (r/response response)
         (r/content-type "application/json"))))
 
