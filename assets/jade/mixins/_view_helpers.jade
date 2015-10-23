@@ -44,11 +44,16 @@ mixin feedItemChild(feedName, activityType, isOn)
       input.feed-item-child__checkbox.clj--feed-item-child__checkbox.func--feed-item-child__checkbox(type="checkbox", id="#{feedInputID}", name="#{feedInputID}", value="true", checked=isOn)
       span.feed-item-child__name.clj--feed-item-child__name.func--feed-item-child__name #{activityType}
 
-mixin feedItem(feedName, isOn)
+mixin feedItem(feedName, isOn, isTrusted)
   - var feedInputID = feedName.replace(/ /g, "").toLowerCase();
   li.feed-item.clj--feed-item
     fieldset.feed-item__fieldset
       p.feed-item__name.clj--feed-item__name #{feedName}
+      span.feed-item__trusted.clj--STRIP(data-l8n="content:customised-feed/feed-digitally-signed-false")
+        if !isTrusted
+          | !Unconfirmed source
+        else
+          | !Confirmed trusted source
       .feed-item__toggle-checkbox
         .checkbox.checkbox--none.clj--src-checkbox
       if block
