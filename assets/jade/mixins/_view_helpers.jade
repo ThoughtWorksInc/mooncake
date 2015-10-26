@@ -1,4 +1,4 @@
-mixin streamItem(title, author, activityAction, sourceClass, trusted)
+mixin streamItem(title, author, activityAction, sourceClass, isUntrustedSource, isUnverifiedSignature)
   li.activity-item.clj--activity-item.func--activity-item(class="#{sourceClass}")
     a.activity-item__link.clj--activity-item__link.func--activity-item__link(href="#")
       .activity-item__avatar
@@ -10,9 +10,8 @@ mixin streamItem(title, author, activityAction, sourceClass, trusted)
         = " "
         time.activity-item__time.clj--activity-item__time(datetime="10:32") !2 minutes ago
       h3.activity-item__title.clj--activity-item__title.func--activity-item__title !#{title}
-      if trusted==false
-        a.activity-item__suspicious.clj--STRIP
-          span.activity-item__suspicious--onhover-message-box(data-l8n="html:feed/suspicious-activity") !Some details we use to verify this activity's validity are missing
+      if isUntrustedSource==true || isUnverifiedSignature==true
+       +streamItemSuspicious(isUntrustedSource)
 
 mixin streamItemWarning()
   li.activity-error.clj--STRIP
@@ -28,14 +27,20 @@ mixin streamItemWarning()
     .activity-error__actions
       a.button(href="#", data-l8n="html:feed/error-button") !Show hidden items
 
+mixin streamItemSuspicious(isUntrustedSource)
+  if isUntrustedSource==true
+    a.activity-item__suspicious.activity-item__suspicious--untrusted-source.tooltips.clj--STRIP
+      span(data-l8n="content:feed/suspicious-activity-untrusted-source") !This activity comes from the unsigned source
+  else
+    a.activity-item__suspicious.activity-item__suspicious--unverified-signature.clj--STRIP
+      span(data-l8n="content:feed/suspicious-activity-unverified-signature") !Some details we use to verify this activity's validity are missing
+
 mixin emptyStreamItem()
   li.empty-stream.clj--empty-activity-item.func--empty-activity-item
     a.empty-stream__link.clj--empty-stream__link(href="./customise-feed")
       h1.empty-stream__title(data-l8n="content:empty-feed/page-title") !You haven't chosen any activity feeds to follow
       .empty-stream__icon
       p.empty-stream__intro(data-l8n="content:empty-feed/intro") !Customise your feed here
-
-
 
 mixin feedItemChild(feedName, activityType, isOn)
   - var feedInputID = feedName.replace(/ /g, "").toLowerCase() + "_-_" + activityType;

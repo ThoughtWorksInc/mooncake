@@ -24,7 +24,9 @@ feed:
   older-link: Older
   load-link: Load more
 
-  suspicious-activity: Some details we use to verify this activity's validity are missing
+  suspicious-suspicious-activity-unverified-signature: Some details we use to verify this activity's validity are missing
+  suspicious-suspicious-activity-unsigned-source: This activity comes from the unsigned source
+
 
 empty-feed:
   page-title: There are no activities to show
