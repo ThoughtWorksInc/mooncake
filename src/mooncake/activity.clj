@@ -56,7 +56,7 @@
       (verify-and-return-activities json-web-key-set-url jws)
       (catch Exception e
         (log/warn (str "Verification of signed activity response failed - attempting to return unsigned activities ----" e))
-        (json/parse-string (.getUnverifiedPayload jws) true)))))
+        (map #(assoc % :signed :verification-failed) (json/parse-string (.getUnverifiedPayload jws) true))))))
 
 (defn is-signed-response? [activity-source-response]
   (some? (and (get-in activity-source-response [:body :jws-signed-payload])

@@ -11,7 +11,8 @@
         (fn [db]
           (let [store (mongo/create-mongo-store db)
                 activity {:displayName "KCat"
-                          :published "2015-08-12T10:20:41.000Z"}]
+                          :published "2015-08-12T10:20:41.000Z"
+                          :signed "verification-failed"}]
             (activity/store-activity! store activity)
             (mongo/find-item store activity/activity-collection {:displayName "KCat"}) => activity))))
 

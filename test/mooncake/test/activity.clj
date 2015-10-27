@@ -87,10 +87,12 @@
              (a/poll-activity-sources (dbh/create-in-memory-store) {:signed-activity-source {:url "signed-activity-source-url"}})
              => [{(keyword "@type") "Create"
                   :activity-src     :signed-activity-source
-                  :published        "2015-10-06T11:23:50.000Z"}
+                  :published        "2015-10-06T11:23:50.000Z"
+                  :signed           :verification-failed}
                  {(keyword "@type") "Add"
                   :activity-src     :signed-activity-source
-                  :published        "2015-10-06T11:23:45.000Z"}]
+                  :published        "2015-10-06T11:23:45.000Z"
+                  :signed           :verification-failed}]
              (provided
                (http/get "signed-activity-source-url" {:accept :json
                                                        :as     :json}) => {:body {:jku                "OOPS_WRONG"
