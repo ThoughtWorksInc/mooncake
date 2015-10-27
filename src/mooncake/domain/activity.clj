@@ -38,3 +38,6 @@
 
 (defn activity->default-action-text [activity]
   (str "- " (activity->object-type activity) " - " (activity->type activity)))
+
+(defn activity->signed [activity]
+  (:signed activity))

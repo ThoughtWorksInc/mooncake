@@ -18,7 +18,8 @@
 
 (defn generate-activity-stream-items [enlive-m activities]
   (let [activity-source-indexes (index-activity-sources activities)
-        activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])]
+        activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])
+        activity-stream-item-untrusted-source-warning-message (html/select enlive-m [[:.clj--activity-item html/first-of-type :.clj--activity-item__suspicious--untrusted-source]])]
     (html/at activity-stream-item [html/root]
              (html/clone-for [activity activities]
                              [:.clj--activity-item] (html/do->
@@ -37,7 +38,12 @@
                                                               (if (= :default action-text-key)
                                                                 (html/content (domain/activity->default-action-text activity))
                                                                 (html/set-attr :data-l8n (activity-action-message-translation action-text-key))))
-                             [:.clj--activity-item__title] (html/content (vh/limit-text-length-if-above max-characters-in-title (domain/activity->object-display-name activity)))))))
+                             [:.clj--activity-item__title] (html/content (vh/limit-text-length-if-above max-characters-in-title (domain/activity->object-display-name activity)))
+                             [:.clj--activity-item__suspicious] (let [action-signed (domain/activity->signed activity)]
+                                                                  (if (or (= action-signed false) (= action-signed nil))
+                                                                    (-> (html/content activity-stream-item-untrusted-source-warning-message)
+                                                                        (html/remove-class "clj--STRIP"))
+                                                                    identity))))))
 
 (defn add-activities [enlive-m activities]
   (let [activity-stream-items (generate-activity-stream-items enlive-m activities)]
