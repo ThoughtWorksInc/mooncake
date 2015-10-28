@@ -19,7 +19,9 @@
 (defn generate-activity-stream-items [enlive-m activities]
   (let [activity-source-indexes (index-activity-sources activities)
         activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])
-        activity-stream-item-untrusted-source-warning-message (html/select enlive-m [[:.clj--activity-item html/first-of-type :.clj--activity-item__suspicious--untrusted-source]])]
+        library-m (vh/load-template "public/library.html")
+        activity-stream-item-untrusted-source-snippet (first (html/select library-m [:.clj--activity-item__suspicious--untrusted-source]))
+        activity-stream-item-unverified-signature-snippet (first (html/select library-m [:.clj--activity-item__suspicious--unverified-signature]))]
     (html/at activity-stream-item [html/root]
              (html/clone-for [activity activities]
                              [:.clj--activity-item] (html/do->
@@ -40,10 +42,15 @@
                                                                 (html/set-attr :data-l8n (activity-action-message-translation action-text-key))))
                              [:.clj--activity-item__title] (html/content (vh/limit-text-length-if-above max-characters-in-title (domain/activity->object-display-name activity)))
                              [:.clj--activity-item__suspicious] (let [action-signed (domain/activity->signed activity)]
-                                                                  (if (or (= action-signed false) (= action-signed nil))
-                                                                    (-> (html/content activity-stream-item-untrusted-source-warning-message)
-                                                                        (html/remove-class "clj--STRIP"))
-                                                                    identity))))))
+                                                                  (case action-signed
+                                                                    (or false nil) (html/do->
+                                                                                     (html/substitute activity-stream-item-untrusted-source-snippet)
+                                                                                     (html/remove-class "clj--STRIP"))
+                                                                    :verification-failed (html/do->
+                                                                                           (html/substitute activity-stream-item-unverified-signature-snippet)
+                                                                                           (html/remove-class "clj--STRIP"))
+                                                                    nil))))))
+
 
 (defn add-activities [enlive-m activities]
   (let [activity-stream-items (generate-activity-stream-items enlive-m activities)]
@@ -117,4 +124,3 @@
         (render-newer-activities-link (get-in request [:params :page-number]))
         feature-toggle-view
         (vh/add-script "js/main.js"))))
-

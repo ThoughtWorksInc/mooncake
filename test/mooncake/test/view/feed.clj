@@ -181,9 +181,20 @@
                                                                                                                  "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
                                                                                                                  "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
                                                                                           :url              "http://objective8.dcentproject.eu/objectives/7"}
-                                                                    :signed              false}]
+                                                                    :signed              false}
+                                                                   {:activity-src        "an-objective8-activity-src"
+                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                                                    (keyword "@type")    "Create"
+                                                                    :actor               {(keyword "@type") "Person"
+                                                                                          :displayName      "QRacoon"}
+                                                                    :object              {(keyword "@type") "Objective"
+                                                                                          :displayName      (str "Loremxipsumxdolorxsitxametyxconsecteturx"
+                                                                                                                 "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
+                                                                                                                 "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
+                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}
+                                                                    :signed              :verification-failed}]
                                      :active-activity-source-keys [...active-activity-source-key...]}})
-            [first-activity-item second-activity-item] (html/select page [:.clj--activity-item])]
+            [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
         first-activity-item => (eh/text-is? [:.clj--activity-item__title] (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "
                                                                                "eleifend et egestas sit amet, tincidunt ac augue. Mauris\u2026"))
@@ -191,7 +202,10 @@
                                                                                 "txegestasxsitxametyxtinciduntxacxauguezxMaurisxpellent\u2026"))
         (facts "about warning messages"
                (fact "no warning sign gets displayed if the activity is signed"
-                     first-activity-item => (eh/has-class? [:.clj--activity-item__suspicious] "clj--STRIP"))
+                     first-activity-item =not=> (eh/has-class? [:.clj--activity-item] "clj--activity-item__suspicious"))
                (fact "a corresponding warning sign gets displayed if the activity is unsigned"
                      second-activity-item =not=> (eh/has-class? [:.clj--activity-item__suspicious] "clj--STRIP")
-                     second-activity-item => (eh/has-class? [:.clj--activity-item__suspicious] "clj--activity-item__suspicious--untrusted-source")))))
+                     second-activity-item => (eh/has-class? [:.clj--activity-item__suspicious] "clj--activity-item__suspicious--untrusted-source"))
+               (fact "a corresponding warning sign gets displayed if verification of the activity failed"
+                     third-activity-item =not=> (eh/has-class? [:.clj--activity-item__suspicious] "clj--STRIP")
+                     third-activity-item => (eh/has-class? [:.clj--activity-item__suspicious] "clj--activity-item__suspicious--unverified-signature")))))

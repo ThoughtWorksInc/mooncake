@@ -60,3 +60,13 @@ block content
         h3.library-title Empty activity feed item
         ul.library__demo
           +emptyStreamItem
+
+      .library-item
+        h3.library-title Unsigned activity warning
+        ul.library__demo
+          +streamItemSuspicious(true)
+
+      .library-item
+        h3.library-title Unverified signature warning
+        ul.library__demo
+          +streamItemSuspicious(false)
