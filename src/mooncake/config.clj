@@ -64,4 +64,4 @@
 (def js-loading-feature? false)
 
 (def activities-per-page
-  (if js-loading-feature? 3 50))
+  (if js-loading-feature? 4 50))

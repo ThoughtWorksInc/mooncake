@@ -9,7 +9,8 @@
             [mooncake.config :as config]
             [ring.mock.request :as mock]
             [mooncake.routes :as routes]
-            [cheshire.core :as json]))
+            [cheshire.core :as json]
+            [mooncake.test.test-helpers.activities :as act]))
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
@@ -160,17 +161,18 @@
 
                      (:status response) => nil))))
 
+(defn remove-whitespace-and-new-lines [s]
+  (-> s
+      (clojure.string/replace " " "")
+      (clojure.string/replace "\n" "")))
+
 (fact "activities are transformed into the correct json format"
-      (let [activities [{:displayName      "KCat"
-                         :published        "2015-08-12T00:00:01.000Z"
-                         :activity-src     "source-1"
-                         (keyword "@type") "Create"}
-                        {:displayName      "JDog"
-                         :published        "2015-08-12T00:00:00.000Z"
-                         :activity-src     "source-1"
-                         (keyword "@type") "Create"}]
-            json (fc/activities->json activities)]
-        json => "{\n  \"activities\" : [ {\n    \"displayName\" : \"KCat\",\n    \"published\" : \"2015-08-12T00:00:01.000Z\",\n    \"activity-src\" : \"source-1\",\n    \"@type\" : \"Create\"\n  }, {\n    \"displayName\" : \"JDog\",\n    \"published\" : \"2015-08-12T00:00:00.000Z\",\n    \"activity-src\" : \"source-1\",\n    \"@type\" : \"Create\"\n  } ]\n}"))
+      (let [activities [act/activity-KCat
+                        act/activity-JDog]
+            request {}
+            json (fc/activities->json activities request)]
+
+        (remove-whitespace-and-new-lines json) => (remove-whitespace-and-new-lines (str "{\"activities\":[" act/json-for-KCat "," act/json-for-JDog "]}"))))
 
 (facts "about which activities are retrieved"
        (let [store (dbh/create-in-memory-store)
@@ -184,7 +186,7 @@
                                                    :activity-src-2 {:activity-types ["No-preference"]}}}
                       :t       (constantly "")
                       :session {:username ...username...}}
-             response (fc/retrieve-activities store request)]
+             response (fc/feed store request)]
 
          (fact "enabled activity types are shown"
                (:body response) => (contains "Activity source 1: enabled type"))

@@ -363,4 +363,3 @@
                  (kh/check-page-is "/" ks/feed-page-body)
                  (kh/params-contains :query-string "page-number=1"))))
 
-

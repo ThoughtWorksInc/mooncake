@@ -42,11 +42,11 @@
           page ?newer-link-hidden (eh/has-class? [:.clj--newer-activities__link] "clj--STRIP")
           page ?older-link-hidden (eh/has-class? [:.clj--older-activities__link] "clj--STRIP")))
 
-  ?page-number  ?is-last-page ?newer-link-hidden  ?older-link-hidden
-  1             false         =>                  =not=>
-  2             true          =not=>              =>
-  1             true          =>                  =>
-  3             false         =not=>              =not=>)
+  ?page-number ?is-last-page ?newer-link-hidden ?older-link-hidden
+  1 false => =not=>
+  2 true =not=> =>
+  1 true => =>
+  3 false =not=> =not=>)
 
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
@@ -160,40 +160,40 @@
 
 (fact "activities are rendered on the page"
       (let [page (fv/feed {:context {:activities
-                                                                  [{:activity-src        "an-objective8-activity-src"
-                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "JDog"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      (str "Lorem ipsum dolor sit amet, consectetur "
-                                                                                                                 "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
-                                                                                                                 "amet, tincidunt ac augue. Mauris pellentesque sed.")
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}
-                                                                    :signed              true}
-                                                                   {:activity-src        "an-objective8-activity-src"
-                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "HCat"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      (str "Loremxipsumxdolorxsitxametyxconsecteturx"
-                                                                                                                 "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
-                                                                                                                 "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}
-                                                                    :signed              false}
-                                                                   {:activity-src        "an-objective8-activity-src"
-                                                                    (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "QRacoon"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      (str "Loremxipsumxdolorxsitxametyxconsecteturx"
-                                                                                                                 "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
-                                                                                                                 "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}
-                                                                    :signed              :verification-failed}]
-                                     :active-activity-source-keys [...active-activity-source-key...]}})
+                                      [{:activity-src        "an-objective8-activity-src"
+                                        (keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                        (keyword "@type")    "Create"
+                                        :actor               {(keyword "@type") "Person"
+                                                              :displayName      "JDog"}
+                                        :object              {(keyword "@type") "Objective"
+                                                              :displayName      (str "Lorem ipsum dolor sit amet, consectetur "
+                                                                                     "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
+                                                                                     "amet, tincidunt ac augue. Mauris pellentesque sed.")
+                                                              :url              "http://objective8.dcentproject.eu/objectives/7"}
+                                        :signed              true}
+                                       {:activity-src        "an-objective8-activity-src"
+                                        (keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                        (keyword "@type")    "Create"
+                                        :actor               {(keyword "@type") "Person"
+                                                              :displayName      "HCat"}
+                                        :object              {(keyword "@type") "Objective"
+                                                              :displayName      (str "Loremxipsumxdolorxsitxametyxconsecteturx"
+                                                                                     "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
+                                                                                     "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
+                                                              :url              "http://objective8.dcentproject.eu/objectives/7"}
+                                        :signed              false}
+                                       {:activity-src        "an-objective8-activity-src"
+                                        (keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                        (keyword "@type")    "Create"
+                                        :actor               {(keyword "@type") "Person"
+                                                              :displayName      "QRacoon"}
+                                        :object              {(keyword "@type") "Objective"
+                                                              :displayName      (str "Loremxipsumxdolorxsitxametyxconsecteturx"
+                                                                                     "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
+                                                                                     "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
+                                                              :url              "http://objective8.dcentproject.eu/objectives/7"}
+                                        :signed              :verification-failed}]
+                                        :active-activity-source-keys [...active-activity-source-key...]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
         first-activity-item => (eh/text-is? [:.clj--activity-item__title] (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "

@@ -14,9 +14,6 @@
       slurp
       load-translations-from-string))
 
-(def translation-map
-  (load-translations-from-file "en.yml"))
-
 (defn translation-map [file-name]
   (load-translations-from-file file-name))
 
