@@ -167,7 +167,7 @@
 (against-background
   [(before :contents (start-server))
    (after :contents (stop-server))]
-  (facts "Stub activities are rendered"
+  (facts "Stub activities from the unsigned source are rendered"
          (drop-db!)
          (-> (k/session (h/create-site-app (c/create-config) mongo-store {:stub-activity-source {:url "http://127.0.0.1:3000/stub-activities"}}))
              sign-in!
@@ -175,7 +175,37 @@
              (kh/check-page-is "/" ks/feed-page-body)
              (page-contains-feed-item first "Stub activity title" "Barry" "- STUB_ACTIVITY - Create" "http://stub-activity.url")
              (page-contains-feed-item second "Objective title" "John Doe" "created an objective" "http://objective-activity.url")
-             (page-contains-feed-item #(nth % 2) "Question title" "Jane Q. Public" "asked a question" "http://question-activity.url"))))
+             (page-contains-feed-item #(nth % 2) "Question title" "Jane Q. Public" "asked a question" "http://question-activity.url")
+             (kh/selector-exists ks/untrusted-source-warning-icon))))
+
+(against-background
+  [(before :contents (start-server))
+   (after :contents (stop-server))]
+  (facts "Stub activities from the signed source are rendered"
+         (drop-db!)
+         (-> (k/session (h/create-site-app (c/create-config) mongo-store {:stub-activity-source {:url "http://127.0.0.1:3000/stub-signed-activities"}}))
+             sign-in!
+             (k/visit (routes/path :feed))
+             (kh/check-page-is "/" ks/feed-page-body)
+             (page-contains-feed-item first "Stub activity title" "Barry" "- STUB_ACTIVITY - Create" "http://stub-activity.url")
+             (page-contains-feed-item second "Objective title" "John Doe" "created an objective" "http://objective-activity.url")
+             (page-contains-feed-item #(nth % 2) "Question title" "Jane Q. Public" "asked a question" "http://question-activity.url")
+             (kh/selector-not-present ks/untrusted-source-warning-icon))))
+
+(against-background
+  [(before :contents (start-server))
+   (after :contents (stop-server))]
+  (future-facts "Stub activities with unverified signature from the signed source are rendered"
+         (drop-db!)
+         (-> (k/session (h/create-site-app (c/create-config) mongo-store {:stub-activity-source {:url "http://127.0.0.1:3000/stub-signed-activities-verification-failure"}}))
+             sign-in!
+             (k/visit (routes/path :feed))
+             (kh/check-page-is "/" ks/feed-page-body)
+             (page-contains-feed-item first "Stub activity title" "Barry" "- STUB_ACTIVITY - Create" "http://stub-activity.url")
+             (page-contains-feed-item second "Objective title" "John Doe" "created an objective" "http://objective-activity.url")
+             (page-contains-feed-item #(nth % 2) "Question title" "Jane Q. Public" "asked a question" "http://question-activity.url")
+             (kh/selector-not-present ks/untrusted-source-warning-icon)
+             (kh/selector-exists ks/unverified-signature-warning-icon))))
 
 (facts "User can see current feed preferences"
        (-> (k/session (clean-app-with-activity-sources-from-yaml-and-activity-types-populated-in-db))

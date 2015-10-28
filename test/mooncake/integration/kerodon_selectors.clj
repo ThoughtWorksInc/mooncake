@@ -24,5 +24,6 @@
 (def customise-feed-page-feed-item-child-checkbox :.func--feed-item-child__checkbox)
 (def newer-activities-link :.func--newer-activities__link)
 (def older-activities-link :.func--older-activities__link)
-(def load-more-link :.func--load-activities__link)
+(def untrusted-source-warning-icon :.func--activity-item__suspicious--untrusted-source)
+(def unverified-signature-warning-icon :.func--activity-item__suspicious--unverified-signature)
 

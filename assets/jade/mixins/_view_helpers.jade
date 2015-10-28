@@ -29,11 +29,11 @@ mixin streamItemWarning()
 
 mixin streamItemSuspicious(isUntrustedSource)
   if isUntrustedSource==true
-    a.activity-item__suspicious.clj--activity-item__suspicious.activity-item__suspicious--untrusted-source.clj--activity-item__suspicious--untrusted-source.clj--STRIP
+    a.activity-item__suspicious.clj--activity-item__suspicious.activity-item__suspicious--untrusted-source.clj--activity-item__suspicious--untrusted-source.func--activity-item__suspicious--untrusted-source.clj--STRIP
       span(data-l8n="content:feed/suspicious-activity-untrusted-source")
         | !This activity's source could not be verified
   else
-    a.activity-item__suspicious.clj--activity-item__suspicious.activity-item__suspicious--unverified-signature.clj--activity-item__suspicious--unverified-signature.clj--STRIP
+    a.activity-item__suspicious.clj--activity-item__suspicious.activity-item__suspicious--unverified-signature.clj--activity-item__suspicious--unverified-signature.func--activity-item__suspicious--unverified-signature.clj--STRIP
       span(data-l8n="content:feed/suspicious-activity-unverified-signature")
         | !Some details we use to verify this activity's validity are missing
 

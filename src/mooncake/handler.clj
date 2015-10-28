@@ -65,6 +65,27 @@
       r/response
       (r/content-type "application/json")))
 
+(defn stub-signed-activities [request]
+  (-> "stub-signed-activities.json"
+      io/resource
+      slurp
+      r/response
+      (r/content-type "application/json")))
+
+(defn stub-signed-activities-verification-failure [request]
+  (-> "stub-signed-activities-verification-failure.json"
+      io/resource
+      slurp
+      r/response
+      (r/content-type "application/json")))
+
+(defn stub-web-key-set [request]
+  (-> "stub-web-key-set.json"
+      io/resource
+      slurp
+      r/response
+      (r/content-type "application/json")))
+
 (defn internal-server-error-handler [request]
   (-> (error/internal-server-error request)
       (mh/enlive-response request)
@@ -92,20 +113,25 @@
   (let [stonecutter-config (create-stonecutter-config config-m)]
     (when (= :invalid-configuration stonecutter-config)
       (throw (Exception. "Invalid mooncake configuration. Application launch aborted.")))
-    (-> {:feed                 (partial fc/feed store)
-         :sign-in              sign-in
-         :sign-out             sign-out
-         :show-create-account  cac/show-create-account
-         :create-account       (partial cac/create-account store)
-         :show-customise-feed  (partial cfc/show-customise-feed store)
-         :customise-feed       (partial cfc/customise-feed store)
-         :stub-activities      stub-activities
-         :stonecutter-sign-in  (partial stonecutter-sign-in stonecutter-config)
-         :stonecutter-callback (partial stonecutter-callback stonecutter-config store)
-         :retrieve-activities  (partial fc/retrieve-activities store)}
+    (-> {:feed                                        (partial fc/feed store)
+         :sign-in                                     sign-in
+         :sign-out                                    sign-out
+         :show-create-account                         cac/show-create-account
+         :create-account                              (partial cac/create-account store)
+         :show-customise-feed                         (partial cfc/show-customise-feed store)
+         :customise-feed                              (partial cfc/customise-feed store)
+         :stub-activities                             stub-activities
+         :stub-signed-activities                      stub-signed-activities
+         :stub-signed-activities-verification-failure stub-signed-activities
+         :stub-web-key-set                            stub-web-key-set
+         :stonecutter-sign-in                         (partial stonecutter-sign-in stonecutter-config)
+         :stonecutter-callback                        (partial stonecutter-callback stonecutter-config store)
+         :retrieve-activities                         (partial fc/retrieve-activities store)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback
-                                     :stub-activities :show-create-account :create-account})
+                                     :stub-activities :stub-signed-activities :stub-web-key-set
+                                     :stub-signed-activities-verification-failure
+                                     :show-create-account :create-account})
         (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-error-handler) #{})
         (m/wrap-just-these-handlers #(m/wrap-activity-sources-and-types store activity-sources %)
                                     #{:feed :show-customise-feed :customise-feed :retrieve-activities}))))
