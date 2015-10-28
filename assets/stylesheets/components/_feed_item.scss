@@ -53,9 +53,9 @@ $feed-item-legend--height: 61px;
   }
 }
 
-.feed-item__trusted {
+.feed-item__trustworthiness {
   display: block;
-  padding: 5px 20px 20px 20px;
+  padding: 5px 20px 20px 0;
   @include font-size(12px);
   font-weight: normal;
   line-height: 1.1;
