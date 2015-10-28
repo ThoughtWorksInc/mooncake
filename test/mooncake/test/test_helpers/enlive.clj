@@ -3,7 +3,8 @@
             [net.cgrand.enlive-html :as html]
             [mooncake.helper :as mh]
             [mooncake.translation :as t]
-            [mooncake.routes :as routes]))
+            [mooncake.routes :as routes]
+            [clojure.tools.logging :as log]))
 
 (defn check-redirects-to [path]
   (midje/checker [response] (and
@@ -20,6 +21,14 @@
   (let [untranslated-string-regex #"(?!!DOCTYPE|!IEMobile)!\w+"]
     (midje/chatty-checker [response-body] (empty? (re-seq untranslated-string-regex response-body)))))
 
+(defn translations-fn [translation-map]
+  (fn [translation-key]
+    (let [key1 (keyword (namespace translation-key))
+          key2 (keyword (name translation-key))
+          translation (get-in translation-map [key1 key2])]
+      (when-not translation (log/warn (str "No translation found for " translation-key)))
+      translation)))
+
 (defn test-translations
   ([page-name view-fn]
    (test-translations page-name view-fn {} {}))
@@ -27,7 +36,7 @@
    (test-translations page-name view-fn context {}))
   ([page-name view-fn context request]
    (midje/fact {:midje/name (format "Checking all translations exist for %s" page-name)}
-               (let [translator (t/translations-fn t/translation-map)
+               (let [translator (translations-fn t/translation-map)
                      page (-> (assoc request :context (assoc context :translator translator))
                               view-fn
                               (mh/enlive-response {:t {}})

@@ -2,35 +2,23 @@
   (:require [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
-            [traduki.core :as t]
-            [taoensso.tower :as tower]))
+            [traduki.core :as t]))
 
 (defn load-translations-from-string [s]
   (yaml/parse-string s))
 
-(defn load-translations-from-file [file-name]
+(defn translation-map [file-name]
   (-> file-name
       io/resource
       slurp
       load-translations-from-string))
-
-(defn translation-map [file-name]
-  (load-translations-from-file file-name))
-
-(defn translations-fn [translation-map]
-  (fn [translation-key]
-    (let [key1 (keyword (namespace translation-key))
-          key2 (keyword (name translation-key))
-          translation (get-in translation-map [key1 key2])]
-      (when-not translation (log/warn (str "No translation found for " translation-key)))
-      translation)))
 
 (defn config-translation []
   {:dictionary                 {:en (translation-map "en.yml")
                                 :fi (translation-map "fi.yml")}
    :dev-mode?                  false
    :fallback-locale            :en
-   :log-missing-translation-fn (fn [{:keys [locales ks ns] :as args}]
+   :log-missing-translation-fn (fn [{:keys [locales ks ns]}]
                                  (log/warn (str "Missing translation! locales: " locales
                                                 ", keys: " ks ", namespace: " ns)))})
 
