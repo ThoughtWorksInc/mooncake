@@ -63,3 +63,28 @@
              (activity/fetch-activity-types store) => {"source-1" ["Create" "Question"]
                                                        "source-2" ["Create"]}))))
 
+(facts "About adding :signed false status to activities that do not have :signed"
+       (dbh/with-mongo-do
+         (fn [db]
+           (let [store (mongo/create-mongo-store db)
+                 activity1-with-signed {:displayName      "KCat"
+                                        :published        "2015-08-12T10:20:41.000Z"
+                                        :activity-src     "source-1"
+                                        (keyword "@type") "Create"
+                                        :signed           true}
+                 activity2-without-signed {:displayName      "JDog"
+                                           :published        "2015-08-12T10:20:42.000Z"
+                                           :activity-src     "source-1"
+                                           (keyword "@type") "Question"}
+                 activity2-with-signed {:displayName      "JDog"
+                                        :published        "2015-08-12T10:20:42.000Z"
+                                        :activity-src     "source-1"
+                                        (keyword "@type") "Question"
+                                        :signed           false}]
+             (activity/fetch-activities store) => ()
+             (mongo/store! store activity/activity-collection activity1-with-signed)
+             (mongo/store! store activity/activity-collection activity2-without-signed)
+             (activity/fetch-activities store) => [activity1-with-signed activity2-without-signed]
+             (m/add-signed-false-status-to-activities! db)
+             (activity/fetch-activities store) => [activity1-with-signed activity2-with-signed]))))
+
