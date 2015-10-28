@@ -1,6 +1,7 @@
 (ns mooncake.jstest.test-utils
   (:require [cemerick.cljs.test]
-            [dommy.core :as dommy])
+            [dommy.core :as dommy]
+            [dommy.core :as d])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing run-tests]]
                    [dommy.core :refer [sel1 sel]]))
 
@@ -30,6 +31,9 @@
 
 (defn test-unchecked [elem]
   (is (= false (.-checked elem))))
+
+(defn test-string-contains [str s]
+  (is (not= -1 (.indexOf str s))))
 
 
 ;; Getters and setters
