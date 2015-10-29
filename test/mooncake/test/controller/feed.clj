@@ -1,15 +1,13 @@
 (ns mooncake.test.controller.feed
   (:require [midje.sweet :refer :all]
             [mooncake.controller.feed :as fc]
+            [mooncake.activity :as a]
             [mooncake.test.test-helpers.enlive :as eh]
             [mooncake.test.test-helpers.db :as dbh]
             [mooncake.db.user :as user]
             [mooncake.db.mongo :as mongo]
-            [mooncake.db.activity :as a]
+            [mooncake.db.activity :as adb]
             [mooncake.config :as config]
-            [ring.mock.request :as mock]
-            [mooncake.routes :as routes]
-            [cheshire.core :as json]
             [mooncake.test.test-helpers.activities :as act]))
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
@@ -18,12 +16,12 @@
 
 (fact "feed handler displays activities retrieved from activity sources"
       (let [store (dbh/create-in-memory-store)]
-        (mongo/store! store a/activity-collection {:actor            {(keyword "@type") "Person"
+        (mongo/store! store adb/activity-collection {:actor            {(keyword "@type") "Person"
                                                                       :displayName      "JDog"}
                                                    :published        ten-oclock
                                                    :activity-src     "OpenAhjo"
                                                    (keyword "@type") "Activity"})
-        (mongo/store! store a/activity-collection {:actor            {(keyword "@type") "Person"
+        (mongo/store! store adb/activity-collection {:actor            {(keyword "@type") "Person"
                                                                       :displayName      "KCat"}
                                                    :published        twelve-oclock
                                                    :activity-src     "objective8"
@@ -58,9 +56,9 @@
 
 (facts "about which activities feed handler displays"
        (let [store (dbh/create-in-memory-store)
-             _ (mongo/store! store a/activity-collection activity-src-1--enabled-type)
-             _ (mongo/store! store a/activity-collection activity-src-1--disabled-type)
-             _ (mongo/store! store a/activity-collection activity-src-2--no-preference-type)
+             _ (mongo/store! store adb/activity-collection activity-src-1--enabled-type)
+             _ (mongo/store! store adb/activity-collection activity-src-1--disabled-type)
+             _ (mongo/store! store adb/activity-collection activity-src-2--no-preference-type)
              _ (user/create-user! store ...user-id... ...username...)
              _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}})
@@ -170,15 +168,15 @@
       (let [activities [act/activity-KCat
                         act/activity-JDog]
             request {}
-            json (fc/activities->json activities request)]
+            json (a/activities->json activities request)]
 
         (remove-whitespace-and-new-lines json) => (remove-whitespace-and-new-lines (str "{\"activities\":[" act/json-for-KCat "," act/json-for-JDog "]}"))))
 
 (facts "about which activities are retrieved"
        (let [store (dbh/create-in-memory-store)
-             _ (mongo/store! store a/activity-collection activity-src-1--enabled-type)
-             _ (mongo/store! store a/activity-collection activity-src-1--disabled-type)
-             _ (mongo/store! store a/activity-collection activity-src-2--no-preference-type)
+             _ (mongo/store! store adb/activity-collection activity-src-1--enabled-type)
+             _ (mongo/store! store adb/activity-collection activity-src-1--disabled-type)
+             _ (mongo/store! store adb/activity-collection activity-src-2--no-preference-type)
              _ (user/create-user! store ...user-id... ...username...)
              _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}})

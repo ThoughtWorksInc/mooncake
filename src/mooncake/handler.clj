@@ -8,6 +8,7 @@
             [stonecutter-oauth.client :as soc]
             [stonecutter-oauth.jwt :as so-jwt]
             [mooncake.activity :as a]
+            [mooncake.activity-updater :as au]
             [mooncake.config :as config]
             [mooncake.db.mongo :as mongo]
             [mooncake.helper :as mh]
@@ -21,8 +22,7 @@
             [mooncake.view.sign-in :as si]
             [mooncake.db.migration :as migration]
             [mooncake.db.user :as user]
-            [mooncake.schedule :as schedule]
-            [clojure.tools.logging :as log])
+            [mooncake.schedule :as schedule])
   (:gen-class))
 
 (defn sign-in [request]
@@ -142,7 +142,7 @@
       (assoc-in [:session :cookie-name] "mooncake-session")))
 
 (defn create-site-app [config-m store activity-sources]
-  (a/sync-activities! store activity-sources)               ;; Ensure database is populated before starting app
+  (au/sync-activities! store activity-sources)               ;; Ensure database is populated before starting app
   (-> (scenic/scenic-handler routes/routes (site-handlers config-m store activity-sources) not-found-handler)
       (ring-mw/wrap-defaults (wrap-defaults-config (config/secure? config-m)))
       (m/wrap-config config-m)
@@ -159,7 +159,7 @@
       (when-not (user/find-user store stub-user)
         (user/create-user! store nil stub-user)))
     (migration/run-migrations mongo-db)
-    (schedule/schedule (a/sync-activities-task store activity-sources) (config/sync-interval config-m))
+    (schedule/schedule (au/sync-activities-task store activity-sources) (config/sync-interval config-m))
     (ring-jetty/run-jetty app
                           {:port (config/port config-m)
                            :host (config/host config-m)})))

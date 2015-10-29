@@ -61,19 +61,11 @@
     feed-preferences-for-activity-source
     {}))
 
-(defn is-signed-activity-src? [url]
-  (try
-    (let [test-response (http/get url {:accept :json :as :json})]
-      (a/is-signed-response? test-response))
-    (catch Exception e
-      (log/error "Activity url provided did not respond as expected")
-      false)))
-
 (defn generate-activity-source-preferences [activity-sources user-feed-settings]
   (->> (map (fn [[k v]] (let [preferences-for-activity-source (get-feed-preferences-for-activity-source user-feed-settings k)]
                           (assoc v
                             :id (name k)
-                            :signed? (is-signed-activity-src? (:url v))
+                            :signed? (a/is-signed-activity-src? (:url v))
                             :activity-types (generate-activity-type-preferences
                                               (:activity-types v)
                                               (:types preferences-for-activity-source)))))
