@@ -13,6 +13,7 @@
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
+(def next-day "2015-01-02T12:00:00.000Z")
 
 (fact "feed handler displays activities retrieved from activity sources"
       (let [store (dbh/create-in-memory-store)]
@@ -183,8 +184,9 @@
              request {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
                                                    :activity-src-2 {:activity-types ["No-preference"]}}}
                       :t       (constantly "")
-                      :session {:username ...username...}}
-             response (fc/feed store request)]
+                      :session {:username ...username...}
+                      :params {:timestamp next-day}}
+             response (fc/retrieve-activities store request)]
 
          (fact "enabled activity types are shown"
                (:body response) => (contains "Activity source 1: enabled type"))
