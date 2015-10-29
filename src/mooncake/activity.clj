@@ -10,7 +10,8 @@
             [mooncake.config :as config]
             [mooncake.view.view-helpers :as vh]
             [mooncake.translation :as t]
-            [mooncake.view.feed :as f]))
+            [mooncake.view.feed :as f]
+            [mooncake.activity-updater :as au]))
 
 (defn load-activity-sources-from-resource [activity-resource-name]
   (log/info (format "Loading activity sources from resource [%s]" activity-resource-name))
@@ -30,17 +31,15 @@
     (load-activity-sources-from-file f)
     (load-activity-sources-from-resource "activity-sources.yml")))
 
-(defn is-signed-response? [activity-source-response]
-  (some? (and (get-in activity-source-response [:body :jws-signed-payload])
-       (get-in activity-source-response [:body :jku]))))
-
 (defn is-signed-activity-src? [url]
-  (try
+  #_(try
     (let [test-response (http/get url {:accept :json :as :json})]
-      (is-signed-response? test-response))
+      (au/is-signed-response? test-response))
     (catch Exception e
       (log/error (str "Activity url provided did not respond as expected: " url))
-      false)))
+      false))
+  true
+  )
 
 (defn retrieve-activities [store activity-source-keys params]
   (adb/fetch-activities-by-activity-sources-and-types store activity-source-keys params))

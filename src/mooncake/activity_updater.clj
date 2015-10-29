@@ -3,7 +3,6 @@
             [clj-time.coerce :as time-coerce]
             [mooncake.db.activity :as adb]
             [mooncake.domain.activity :as domain]
-            [mooncake.activity :as a]
             [mooncake.helper :as mh]
             [clojure.tools.logging :as log]
             [cheshire.core :as json]
@@ -38,12 +37,16 @@
         (log/warn (str "Verification of signed activity response failed - attempting to return unsigned activities ----" e))
         (map #(assoc % :signed :verification-failed) (json/parse-string (.getUnverifiedPayload jws) true))))))
 
+(defn is-signed-response? [activity-source-response]
+  (some? (and (get-in activity-source-response [:body :jws-signed-payload])
+              (get-in activity-source-response [:body :jku]))))
+
 (defn get-json-from-activity-source [url query-params]
   (try
     (let [query-map (if query-params {:accept :json :as :json :query-params query-params}
                                      {:accept :json :as :json})
           activity-source-response (http/get url query-map)]
-      (if (a/is-signed-response? activity-source-response)
+      (if (is-signed-response? activity-source-response)
         (handle-signed-activity-source-response activity-source-response)
         (handle-unsigned-activity-source-response activity-source-response)))
     (catch Exception e
