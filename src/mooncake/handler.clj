@@ -122,7 +122,7 @@
          :customise-feed                              (partial cfc/customise-feed store)
          :stub-activities                             stub-activities
          :stub-signed-activities                      stub-signed-activities
-         :stub-signed-activities-verification-failure stub-signed-activities
+         :stub-signed-activities-verification-failure stub-signed-activities-verification-failure
          :stub-web-key-set                            stub-web-key-set
          :stonecutter-sign-in                         (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback                        (partial stonecutter-callback stonecutter-config store)

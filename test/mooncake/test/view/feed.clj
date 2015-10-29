@@ -192,7 +192,7 @@
                                                                                      "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
                                                                                      "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
                                                               :url              "http://objective8.dcentproject.eu/objectives/7"}
-                                        :signed              :verification-failed}]
+                                        :signed              "verification-failed"}]
                                         :active-activity-source-keys [...active-activity-source-key...]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 

@@ -49,7 +49,7 @@
                                                                     (or false nil) (html/do->
                                                                                      (html/substitute activity-stream-item-untrusted-source-snippet)
                                                                                      (html/remove-class "clj--STRIP"))
-                                                                    :verification-failed (html/do->
+                                                                    "verification-failed" (html/do->
                                                                                            (html/substitute activity-stream-item-unverified-signature-snippet)
                                                                                            (html/remove-class "clj--STRIP"))
                                                                     nil))))))

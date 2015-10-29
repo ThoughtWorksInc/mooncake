@@ -4,7 +4,7 @@ GET  /sign-out                                     sign-out
 GET  /stub-activities                              stub-activities
 GET  /stub-signed-activities                       stub-signed-activities
 GET  /stub-signed-activities-verification-failure  stub-signed-activities-verification-failure
-GET  /stub-web-key-set                             stub-activities
+GET  /stub-web-key-set                             stub-web-key-set
 GET  /create-account                               show-create-account
 POST /create-account                               create-account
 GET  /d-cent-sign-in                               stonecutter-sign-in
