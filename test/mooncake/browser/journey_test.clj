@@ -76,13 +76,19 @@
 
   (try
     (when mooncake.config/js-loading-feature?
-      (facts "feedpage loads more activities when load more is triggered" :browser
+      (facts "about feedpage" :browser
              (wd/to (str localhost "/d-cent-sign-in"))
              (wd/current-url) => (contains (str localhost "/"))
              (wait-for-selector mooncake-feed-body)
              (count-activity-items) => config/activities-per-page
-             (wd/click ".func--load-activities__link")
-             (wait-and-count (* 2 config/activities-per-page))
-             (count-activity-items) => (* 2 config/activities-per-page)))
+
+             (fact "pagination buttons are removed when javascript is enabled"
+                   (wd/css-finder ".func--newer-activities__link") => empty?
+                   (wd/css-finder ".func--older-activities__link") => empty?)
+
+             (fact "more activities are loaded when load more is triggered"
+                   (wd/click ".func--load-activities__link")
+                   (wait-and-count (* 2 config/activities-per-page))
+                   (count-activity-items) => (* 2 config/activities-per-page))))
     (catch Exception e
       (throw e))))

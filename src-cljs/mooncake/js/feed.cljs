@@ -3,10 +3,8 @@
             [dommy.core :as d]
             [hickory.core :as hic]
             [hickory.render :as hic-r]
-            [cognitect.transit :as t])
+            [mooncake.js.dom :as dom])
   (:require-macros [dommy.core :as dm]))
-
-(def r (t/reader :json))
 
 (defn set-author-initials! [activity feed-item]
   (let [author (get-in activity ["actor" "displayName"])
@@ -42,9 +40,13 @@
     (d/remove-attr! (dm/sel1 feed-item :.clj--activity-item__action) "data-l8n")
     (d/set-text! (dm/sel1 feed-item :.clj--activity-item__action) action-text)))
 
+(defn hide-pagination-buttons []
+  (dom/remove-if-present! :.clj--newer-activities__link)
+  (dom/remove-if-present! :.clj--older-activities__link))
+
 (defn handler [response]
   (let [activities (get response "activities")
-        feed-items (. (dm/sel1 :.clj--activity-stream) -innerHTML)
+        feed-items (. (dm/sel1 :.clj--activity-stream) -innerHTML) ; TODO use css just select one?
         feed-items-as-hic (map hic/as-hickory (hic/parse-fragment feed-items))
         feed-item (first feed-items-as-hic)]
     (doseq [activity activities]

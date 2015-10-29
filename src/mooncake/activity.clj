@@ -38,8 +38,7 @@
     (catch Exception e
       (log/error (str "Activity url provided did not respond as expected: " url))
       false))
-  true
-  )
+  true)
 
 (defn retrieve-activities [store activity-source-keys params]
   (adb/fetch-activities-by-activity-sources-and-types store activity-source-keys params))

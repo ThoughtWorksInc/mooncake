@@ -59,10 +59,10 @@
                                         :mongo-uri     "mongodb://localhost:27017/mooncake-dev"}
                        :aliases        {"cljs-build"      ["cljsbuild" "once" "prod"]
                                         "cljs-test"       ["cljsbuild" "once" "test"]
-                                        "test"            ["do" "clean," "gulp," "cljs-test," "midje" ]
+                                        "test"            ["do" "clean," "gulp," "cljs-test," "cljs-build," "midje" ]
                                         "test-cljs"       ["do" "clean," "gulp," "cljs-test"]
                                         "auto-cljs"       ["do" "test-cljs," "cljsbuild" "auto" "test"]
-                                        "browser"         ["do" "clean," "gulp," "midje" "mooncake.browser.*"]
+                                        "browser"         ["do" "clean," "gulp," "cljs-build," "midje" "mooncake.browser.*"]
                                         "gulp"            ["shell" "gulp" "build"]
                                         "stub"            ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]
                                         "auto-no-browser" ["test" ":autotest" "src/" "test/mooncake/test/" "test/mooncake/integration/"]}
