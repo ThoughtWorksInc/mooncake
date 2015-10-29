@@ -59,9 +59,9 @@
 (defn error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
-(def load-activities-link ".clj--load-activities__link")
+(def load-older-activities-link ".clj--load-activities__link")
 
-(defn load-more-activities [e]
+(defn load-older-activities [e]
   (let [stream (dm/sel1 :.clj--activity-stream)
         last-activity (.-lastChild stream)
         selector (dm/sel1 last-activity :.clj--activity-item__time)

@@ -156,9 +156,9 @@
                 (activity/store-activity! store activity1)
                 (activity/store-activity! store activity2)
                 (activity/store-activity! store activity3)
-                (activity/fetch-activities-by-timestamp store [{:activity-src :source-1 (keyword "@type") ["Create"]}] ?timestamp) => ?result))))
-    ?timestamp            ?result
-    oldest-time           []
-    second-latest-time    [activity1]
-    latest-time           [activity2
-                           activity1]))
+                (activity/fetch-activities-by-timestamp store [{:activity-src :source-1 (keyword "@type") ["Create"]}] ?timestamp ?older-items-requested) => ?result))))
+    ?older-items-requested ?timestamp            ?result
+    true                    oldest-time           []
+    true                    second-latest-time    [activity1]
+    true                    latest-time           [activity2
+                                                   activity1]))

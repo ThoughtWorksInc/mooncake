@@ -54,9 +54,10 @@
       (partial drop (* batch-size (- page-number 1)))
       identity)))
 
-(defn timestamp-fn [timestamp]
-  (partial filter
-    #(> 0 (compare (:published %) timestamp))))
+(defn timestamp-fn [timestamp older-items-requested?]
+  (let [comparitor (if older-items-requested? > <)]
+    (partial filter
+             #(comparitor 0 (compare (:published %) timestamp)))))
 
 (defrecord MemoryStore [data]
   mongo/Store
@@ -115,10 +116,10 @@
       (let [id (UUID/randomUUID)]
         (swap! data assoc-in [coll id] (assoc query :_id id key-param [value])))))
 
-  (find-items-by-timestamp [this coll value-map-vector options-m timestamp]
+  (find-items-by-timestamp [this coll value-map-vector options-m timestamp older-items-requested?]
     (let [comp-fn (options-m->compare-fn options-m)
           batch-fn (options-m->batch-fn options-m)
-          timestamp-fn (timestamp-fn timestamp)]
+          timestamp-fn (timestamp-fn timestamp older-items-requested?)]
       (->> value-map-vector
            (map #(find-by-map-query this coll %))
            (apply set/union)

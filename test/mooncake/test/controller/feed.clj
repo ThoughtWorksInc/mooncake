@@ -14,6 +14,7 @@
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-01T12:00:00.000Z")
 (def next-day "2015-01-02T12:00:00.000Z")
+(def previous-day "2014-12-31T12:00:00.000Z")
 
 (fact "feed handler displays activities retrieved from activity sources"
       (let [store (dbh/create-in-memory-store)]
@@ -173,7 +174,14 @@
 
         (remove-whitespace-and-new-lines json) => (remove-whitespace-and-new-lines (str "{\"activities\":[" act/json-for-KCat "," act/json-for-JDog "]}"))))
 
-(facts "about which activities are retrieved"
+(defn request-with-timestamp [timestamp-params]
+  {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
+                                :activity-src-2 {:activity-types ["No-preference"]}}}
+   :t       (constantly "")
+   :session {:username ...username...}
+   :params timestamp-params})
+
+(facts "about which activities are retrieved and updated"
        (let [store (dbh/create-in-memory-store)
              _ (mongo/store! store adb/activity-collection activity-src-1--enabled-type)
              _ (mongo/store! store adb/activity-collection activity-src-1--disabled-type)
@@ -181,18 +189,27 @@
              _ (user/create-user! store ...user-id... ...username...)
              _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}})
-             request {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
-                                                   :activity-src-2 {:activity-types ["No-preference"]}}}
-                      :t       (constantly "")
-                      :session {:username ...username...}
-                      :params {:timestamp next-day}}
-             response (fc/retrieve-activities store request)]
+             response-for-retrieving (fc/retrieve-activities store (request-with-timestamp {:timestamp next-day}))
+             response-for-updating (fc/retrieve-activities store (request-with-timestamp {:timestamp-from previous-day}))]
+         (facts "retrieving older activities"
 
-         (fact "enabled activity types are shown"
-               (:body response) => (contains "Activity source 1: enabled type"))
+                (fact "enabled activity types are shown"
+                      (:body response-for-retrieving) => (contains "Activity source 1: enabled type"))
 
-         (fact "disabled activity types are not shown"
-               (:body response) =not=> (contains "Activity source 1: disabled type"))
+                (fact "disabled activity types are not shown"
+                      (:body response-for-retrieving) =not=> (contains "Activity source 1: disabled type"))
 
-         (fact "no-preference activity types are shown"
-               (:body response) => (contains "Activity source 2: no preference expressed"))))
+                (fact "no-preference activity types are shown"
+                      (:body response-for-retrieving) => (contains "Activity source 2: no preference expressed")))
+
+         (facts "retrieving newer activities"
+
+                (fact "enabled activity types are shown"
+                      (:body response-for-updating) => (contains "Activity source 1: enabled type"))
+
+                (fact "disabled activity types are not shown"
+                      (:body response-for-updating) =not=> (contains "Activity source 1: disabled type"))
+
+                (fact "no-preference activity types are shown"
+                      (:body response-for-updating) => (contains "Activity source 2: no preference expressed")))))
+

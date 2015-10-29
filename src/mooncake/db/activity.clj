@@ -35,8 +35,8 @@
 (defn fetch-activities [store]
   (mongo/fetch-all store activity-collection))
 
-(defn fetch-activities-by-timestamp [store activity-sources-and-types timestamp]
-  (mongo/find-items-by-timestamp store activity-collection activity-sources-and-types {:sort {:published :descending} :limit config/activities-per-page} timestamp))
+(defn fetch-activities-by-timestamp [store activity-sources-and-types timestamp older-items-requested?]
+  (mongo/find-items-by-timestamp store activity-collection activity-sources-and-types {:sort {:published :descending} :limit config/activities-per-page} timestamp older-items-requested?))
 
 (defn fetch-activities-by-activity-sources-and-types [store activity-sources-and-types options-m]
   (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types (merge {:sort {:published :descending} :limit config/activities-per-page} options-m)))

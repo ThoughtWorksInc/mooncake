@@ -14,7 +14,7 @@
 
 (defn start []
   (f/hide-pagination-buttons)
-  (setup-listener f/load-activities-link :click f/load-more-activities)
+  (setup-listener f/load-older-activities-link :click f/load-older-activities)
   (setup-multi-listeners cf/type-checkbox-selector :change cf/type-checkbox-changed)
   (setup-multi-listeners cf/src-checkbox-selector :click cf/src-checkbox-clicked))
 

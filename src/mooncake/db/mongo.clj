@@ -14,7 +14,7 @@
     "Find an item matching the query-map.")
   (find-items-by-alternatives [this coll value-map-vector options-m]
     "Find items whose properties match properties of at least one of the provided maps.")
-  (find-items-by-timestamp [this coll value-map-vector options-m timestamp]
+  (find-items-by-timestamp [this coll value-map-vector options-m timestamp older-items-requested?]
     "Find items whose published time is less than given timestamp")
   (fetch-total-count-by-query [this coll value-map-vector]
     "Get total count of items that match the query.")
@@ -49,6 +49,11 @@
   (if (nil? page-number)
     0
     (* (- page-number 1) batch-size)))
+
+(defn comparitor [older-items-requested?]
+  (if older-items-requested?
+    mop/$lt
+    mop/$gt))
 
 (defrecord MongoStore [mongo-db]
   Store
@@ -104,11 +109,11 @@
   (add-to-set! [this coll query key-param value]
     (mcoll/update mongo-db coll query {mop/$addToSet {key-param value}} {:upsert true}))
 
-  (find-items-by-timestamp [this coll value-map-vector options-m timestamp]
+  (find-items-by-timestamp [this coll value-map-vector options-m timestamp older-items-requested?]
     (if (not-empty value-map-vector)
       (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
             sort-query-map (options-m->sort-query-map options-m)
-            timestamp-query-map {:published {mop/$lt timestamp}}
+            timestamp-query-map {:published {(comparitor older-items-requested?) timestamp}}
             batch-size (:limit options-m)
             aggregation-pipeline (cond-> []
                                          :always (conj {mop/$match mongo-query-map})

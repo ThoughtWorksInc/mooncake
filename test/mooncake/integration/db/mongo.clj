@@ -83,7 +83,8 @@
               _ (mongo/store-with-id! store collection-name :some-index-key item2)
               _ (mongo/store-with-id! store collection-name :some-index-key item3)]
 
-          (mongo/find-items-by-timestamp store collection-name [{}] {} second-latest-time) => (just [item3]))))
+          (mongo/find-items-by-timestamp store collection-name [{}] {} second-latest-time true) => (just [item3])
+          (mongo/find-items-by-timestamp store collection-name [{}] {} second-latest-time false) => (just [item1]))))
 
 (defn test-fetch-total-count-by-query [store]
   (fact {:midje/name (str (type store) " -- test-fetch-total-count-by-query gets the total number of items which match the query")}

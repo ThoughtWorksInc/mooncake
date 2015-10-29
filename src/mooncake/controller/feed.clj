@@ -16,11 +16,14 @@
     (:feed-settings user)))
 
 (defn retrieve-activities [store request]
-  (let [timestamp (get-in request [:params :timestamp])
+  (let [timestamp-to (get-in request [:params :timestamp])
+        timestamp-from (get-in request [:params :timestamp-from])
         context (:context request)
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query (generate-user-feed-settings store request) activity-sources)
-        activities (dba/fetch-activities-by-timestamp store feed-query timestamp)
+        older-items-requested? (nil? timestamp-from)
+        timestamp (or timestamp-to timestamp-from)
+        activities (dba/fetch-activities-by-timestamp store feed-query timestamp older-items-requested?)
         jsonified-activities (a/activities->json activities request)
         response jsonified-activities]
     (-> (r/response response)
