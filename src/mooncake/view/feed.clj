@@ -24,10 +24,12 @@
         activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])
         library-m (vh/load-template "public/library.html")
         activity-stream-item-untrusted-source-snippet (first (html/select library-m [:.clj--activity-item__suspicious--untrusted-source]))
-        activity-stream-item-unverified-signature-snippet (first (html/select library-m [:.clj--activity-item__suspicious--unverified-signature]))]
+        activity-stream-item-unverified-signature-snippet (first (html/select library-m [:.clj--activity-item__suspicious--unverified-signature]))
+        original-activity-src-class (re-find #"activity-src-\d+" (-> activity-stream-item first :attrs :class))]
     (html/at activity-stream-item [html/root]
              (html/clone-for [activity activities]
                              [:.clj--activity-item] (html/do->
+                                                      (html/remove-class original-activity-src-class)
                                                       (html/add-class (str "activity-src-"
                                                                            (get activity-source-indexes (domain/activity->activity-src activity)))))
                              [:.clj--avatar__initials] (html/content (-> (domain/activity->actor-display-name activity)

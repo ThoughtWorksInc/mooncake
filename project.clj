@@ -28,7 +28,6 @@
                  [prismatic/dommy "1.1.0"]
                  [cljs-ajax "0.3.14"]
                  [ring/ring-json "0.4.0"]
-                 [hickory "0.5.4"]
                  [org.bitbucket.b_c/jose4j "0.4.4"]
                  [org.slf4j/slf4j-simple "1.7.12"]]
   :main mooncake.handler
