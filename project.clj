@@ -57,7 +57,7 @@
                                         :auth-url      "fake stonecutter auth url"
                                         :mongo-uri     "mongodb://localhost:27017/mooncake-dev"}
                        :aliases        {"cljs-build"      ["cljsbuild" "once" "prod"]
-                                        "cljs-test"       ["cljsbuild" "once" "test"]
+                                        "cljs-test"       ["cljsbuild" "test"]
                                         "test"            ["do" "clean," "gulp," "cljs-test," "cljs-build," "midje" ]
                                         "test-cljs"       ["do" "clean," "gulp," "cljs-test"]
                                         "auto-cljs"       ["do" "test-cljs," "cljsbuild" "auto" "test"]
@@ -73,10 +73,10 @@
                                                                  :pretty-print  false}}
                                                  {:id             "test"
                                                   :source-paths   ["src-cljs" "test-cljs"]
-                                                  :notify-command ["phantomjs" :cljs.test/runner "target/cljs/testable.js"]
                                                   :compiler       {:output-to     "target/cljs/testable.js"
                                                                    :optimizations :whitespace
-                                                                   :pretty-print  true}}]}}
+                                                                   :pretty-print  true}}]
+                                        :test-commands {"phantom" ["phantomjs" :runner "target/cljs/testable.js"]}}}
              :stub    {:env {:stub-user "MRS STUBBY"}}
              :uberjar {:hooks       [leiningen.cljsbuild]
                        :env         {:production true}
