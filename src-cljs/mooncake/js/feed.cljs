@@ -59,9 +59,7 @@
 (defn error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
-(def load-older-activities-link ".clj--load-activities__link")
-
-(defn load-older-activities [e]
+(defn load-more-activities []
   (let [stream (dm/sel1 :.clj--activity-stream)
         last-activity (.-lastChild stream)
         selector (dm/sel1 last-activity :.clj--activity-item__time)
@@ -69,3 +67,12 @@
     (GET (str "/api/activities?timestamp=" timestamp)
          {:handler       handler
           :error-handler error-handler})))
+
+(defn load-more-activities-at-end-of-page []
+  (let [document-element (.-documentElement js/document)
+        document-body (.-body js/document)
+        scroll-top (or (and document-element (.-scrollTop document-element)) (.-scrollTop document-body))
+        scroll-height (or (and document-element (.-scrollHeight document-element)) (.-scrollHeight document-body))
+        window-height (.-innerHeight js/window)
+        scrolled-to-bottom? (>= (+ scroll-top window-height) scroll-height)]
+    (when scrolled-to-bottom? (load-more-activities))))

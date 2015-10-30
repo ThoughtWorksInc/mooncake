@@ -1,7 +1,6 @@
 (ns mooncake.jstest.test-utils
   (:require [cemerick.cljs.test]
-            [dommy.core :as dommy]
-            [dommy.core :as d])
+            [dommy.core :as dommy])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing run-tests]]
                    [dommy.core :refer [sel1 sel]]))
 
@@ -13,7 +12,6 @@
 
 (defn print-html []
   (print (dommy/html (sel1 :html))))
-
 
 ;; Assertions
 

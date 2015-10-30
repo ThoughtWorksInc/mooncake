@@ -86,9 +86,11 @@
                    (wd/css-finder ".func--newer-activities__link") => empty?
                    (wd/css-finder ".func--older-activities__link") => empty?)
 
-             (fact "more activities are loaded when load more is triggered"
-                   (wd/click ".func--load-activities__link")
-                   (wait-and-count (* 2 config/activities-per-page))
-                   (count-activity-items) => (* 2 config/activities-per-page))))
+             (fact "more activities are loaded when page is scrolled to the bottom"
+                   (let [page-length (:height (wd/element-size "body"))]
+                     (wd/window-resize {:height 500})
+                     (wd/execute-script (str "scroll(0, " page-length ");"))
+                     (wait-and-count (* 2 config/activities-per-page))
+                     (count-activity-items)) => (* 2 config/activities-per-page))))
     (catch Exception e
       (throw e))))
