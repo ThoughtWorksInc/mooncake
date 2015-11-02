@@ -45,6 +45,11 @@
                                    :published        ten-oclock
                                    :activity-src     "activity-src-1"
                                    (keyword "@type") "Enabled"})
+(def activity-src-1--previous-day {:actor            {(keyword "@type") "Person"
+                                                      :displayName      "Activity source 1: previous day"}
+                                   :published        previous-day
+                                   :activity-src     "activity-src-1"
+                                   (keyword "@type") "Enabled"})
 (def activity-src-1--disabled-type {:actor            {(keyword "@type") "Person"
                                                        :displayName      "Activity source 1: disabled type"}
                                     :published        eleven-oclock
@@ -184,6 +189,7 @@
 (facts "about which activities are retrieved and updated"
        (let [store (dbh/create-in-memory-store)
              _ (mongo/store! store adb/activity-collection activity-src-1--enabled-type)
+             _ (mongo/store! store adb/activity-collection activity-src-1--previous-day)
              _ (mongo/store! store adb/activity-collection activity-src-1--disabled-type)
              _ (mongo/store! store adb/activity-collection activity-src-2--no-preference-type)
              _ (user/create-user! store ...user-id... ...username...)
@@ -211,5 +217,10 @@
                       (:body response-for-updating) =not=> (contains "Activity source 1: disabled type"))
 
                 (fact "no-preference activity types are shown"
-                      (:body response-for-updating) => (contains "Activity source 2: no preference expressed")))))
+                      (:body response-for-updating) => (contains "Activity source 2: no preference expressed"))
+
+                (fact "activity with timestamp in query parameter is not shown"
+                      (:body response-for-updating) =not=> (contains "Activity source 1: previous day")))))
+
+
 
