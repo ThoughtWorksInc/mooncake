@@ -15,7 +15,7 @@
   \"published\" : \"2015-08-12T00:00:00.000Z\",
   \"activity-src\" : \"source-1\",
   \"@type\" : \"Create\",
-  \"activity-src-no\" : 1,
+  \"activity-src-no\" : 0,
   \"formatted-time\" : \"2 months ago\",
   \"action-text\" : \"--Create\",
   \"limited-title\" : null}")
@@ -25,7 +25,7 @@
     \"published\" : \"2015-08-12T00:00:01.000Z\",
     \"activity-src\" : \"source-2\",
     \"@type\" : \"Create\",
-    \"activity-src-no\" : 0,
+    \"activity-src-no\" : 1,
     \"formatted-time\" : \"2 months ago\",
     \"action-text\" : \"--Create\",
     \"limited-title\" : null}")

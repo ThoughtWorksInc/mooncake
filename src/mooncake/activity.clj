@@ -1,6 +1,5 @@
 (ns mooncake.activity
-  (:require [clj-http.client :as http]
-            [clj-yaml.core :as yaml]
+  (:require [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [cheshire.core :as json]
@@ -10,8 +9,7 @@
             [mooncake.config :as config]
             [mooncake.view.view-helpers :as vh]
             [mooncake.translation :as t]
-            [mooncake.view.feed :as f]
-            [mooncake.activity-updater :as au]))
+            [mooncake.view.feed :as f]))
 
 (defn add-index [i [k v]]
   [k (assoc v :index i)])
@@ -93,20 +91,20 @@
         translation (f/activity-action-message-translation action-text-key)]
     (when translation (clojure.string/split translation #"/"))))
 
-(defn assoc-extra-information [activity-index-sources request activity]
-  (let [translation-keys (activity->translation-keys activity)
+(defn assoc-extra-information [request activity]
+  (let [activity-sources (get-in request [:context :activity-sources])
+        translation-keys (activity->translation-keys activity)
         page-key (keyword (first translation-keys))
         action-key (keyword (last translation-keys))
         locale-key (keyword (t/get-locale-from-request request))
         action-text (if (empty? translation-keys) (a/activity->default-action-text activity)
                                                   (get-in request [:tconfig :dictionary locale-key page-key action-key]))]
     (-> activity
-        (assoc :activity-src-no (get activity-index-sources (a/activity->activity-src activity)))
+        (assoc :activity-src-no (f/activity-source-index activity activity-sources))
         (assoc :formatted-time (mh/humanise-time (a/activity->published activity)))
         (assoc :action-text action-text)
         (assoc :limited-title (vh/limit-text-length-if-above f/max-characters-in-title (a/activity->object-display-name activity))))))
 
 (defn activities->json [activities request]
-  (let [activity-index-sources (f/index-activity-sources activities)
-        updated-activities (map (partial assoc-extra-information activity-index-sources request) activities)]
+  (let [updated-activities (map (partial assoc-extra-information request) activities)]
     (json/generate-string {:activities updated-activities} {:pretty true})))
