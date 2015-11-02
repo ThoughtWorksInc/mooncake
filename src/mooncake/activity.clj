@@ -13,18 +13,33 @@
             [mooncake.view.feed :as f]
             [mooncake.activity-updater :as au]))
 
+(defn add-index [i [k v]]
+  [k (assoc v :index i)])
+
+(defn add-source-indices [source-map]
+  (->>
+    source-map
+    (sort-by key)
+    (map add-index (range))
+    (into {})))
+
+(defn parse-activity-source-yaml [yaml]
+  (-> yaml
+      yaml/parse-string
+      add-source-indices))
+
 (defn load-activity-sources-from-resource [activity-resource-name]
   (log/info (format "Loading activity sources from resource [%s]" activity-resource-name))
   (-> activity-resource-name
       io/resource
       slurp
-      yaml/parse-string))
+      parse-activity-source-yaml))
 
 (defn load-activity-sources-from-file [file-name]
   (log/info (format "Loading activity sources from file [%s]" file-name))
   (-> file-name
       slurp
-      yaml/parse-string))
+      parse-activity-source-yaml))
 
 (defn load-activity-sources [config-m]
   (if-let [f (config/activity-source-file config-m)]
