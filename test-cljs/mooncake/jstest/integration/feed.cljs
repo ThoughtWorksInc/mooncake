@@ -26,16 +26,7 @@
                               "action-text" "created an activity"}]})
 
 (defn set-initial-state []
-  (tu/set-html! feed-page-template)
-  (app/start))
-
-(deftest about-hiding-pagination-buttons
-         (testing "pagination buttons are hidden on page load"
-                  (set-initial-state)
-                  (is (nil? (sel1 :.func--older-activities__link))
-                      "older button does not exist")
-                  (is (nil? (sel1 :.func--newer-activities__link))
-                      "new button does not exist")))
+  (tu/set-html! feed-page-template))
 
 (deftest about-loading-more-activities
          (testing "load more button converts json into new activity elements"

@@ -110,12 +110,6 @@
                                                           (html/add-class "clj--STRIP")))
       (html/at enlive-m [:.clj--older-activities__link] (html/do->
                                                           (html/set-attr :href (feed-path-url-with-page-number inc-page-number)))))))
-
-(defn feature-toggle-view [enlive-m]
-  (if mooncake.config/js-loading-feature?
-    enlive-m
-    (html/at enlive-m [:.clj--load-activities__link] (html/add-class "clj--STRIP"))))
-
 (defn feed [request]
   (let [activities (get-in request [:context :activities])]
     (-> (vh/load-template "public/feed.html")
@@ -126,5 +120,4 @@
         (render-older-activities-link (get-in request [:context :is-last-page])
                                       (get-in request [:params :page-number]))
         (render-newer-activities-link (get-in request [:params :page-number]))
-        feature-toggle-view
         (vh/add-script "js/main.js"))))

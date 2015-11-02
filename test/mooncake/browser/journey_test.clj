@@ -75,22 +75,20 @@
                       (stop-server @server)))]
 
   (try
-    (when mooncake.config/js-loading-feature?
-      (facts "about feedpage" :browser
-             (wd/to (str localhost "/d-cent-sign-in"))
-             (wd/current-url) => (contains (str localhost "/"))
-             (wait-for-selector mooncake-feed-body)
-             (count-activity-items) => config/activities-per-page
+    (facts "about feedpage" :browser
+           (wd/to (str localhost "/d-cent-sign-in"))
+           (wd/current-url) => (contains (str localhost "/"))
+           (wait-for-selector mooncake-feed-body)
+           (count-activity-items) => config/activities-per-page
 
-             (fact "pagination buttons are removed when javascript is enabled"
-                   (wd/css-finder ".func--newer-activities__link") => empty?
-                   (wd/css-finder ".func--older-activities__link") => empty?)
+           (fact "pagination buttons are removed when javascript is enabled"
+                 (wd/css-finder ".func--newer-activities__link") => empty?
+                 (wd/css-finder ".func--older-activities__link") => empty?)
 
-             (fact "more activities are loaded when page is scrolled to the bottom"
-                   (let [page-length (:height (wd/element-size "body"))]
-                     (wd/window-resize {:height 500})
-                     (wd/execute-script (str "scroll(0, " page-length ");"))
-                     (wait-and-count (* 2 config/activities-per-page))
-                     (count-activity-items)) => (* 2 config/activities-per-page))))
+           (fact "more activities are loaded when page is scrolled to the bottom"
+                 (let [page-length (:height (wd/element-size "body"))]
+                   (wd/execute-script (str "scroll(0, " page-length ");"))
+                   (wait-and-count (* 2 config/activities-per-page))
+                   (count-activity-items)) => (* 2 config/activities-per-page)))
     (catch Exception e
       (throw e))))

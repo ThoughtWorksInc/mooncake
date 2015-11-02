@@ -54,7 +54,10 @@
         (set-link! activity new-feed-item)
         (set-src-class! activity new-feed-item)
         (set-action! activity new-feed-item)
-        (d/append! (dm/sel1 :.clj--activity-stream) new-feed-item)))))
+        (d/append! (dm/sel1 :.clj--activity-stream) new-feed-item)))
+    (if (empty? activities)
+      (d/unlisten! js/window :scroll load-more-activities-if-at-end-of-page)
+      (load-more-activities-if-at-end-of-page))))
 
 (defn error-handler [response]
   (.log js/console (str "something bad happened: " response)))
@@ -68,11 +71,9 @@
          {:handler       handler
           :error-handler error-handler})))
 
-(defn load-more-activities-at-end-of-page []
-  (let [document-element (.-documentElement js/document)
-        document-body (.-body js/document)
-        scroll-top (or (and document-element (.-scrollTop document-element)) (.-scrollTop document-body))
-        scroll-height (or (and document-element (.-scrollHeight document-element)) (.-scrollHeight document-body))
-        window-height (.-innerHeight js/window)
-        scrolled-to-bottom? (>= (+ scroll-top window-height) scroll-height)]
-    (when scrolled-to-bottom? (load-more-activities))))
+(defn load-more-activities-if-at-end-of-page []
+  (let [window-height (.-innerHeight js/window)
+        scrolled-to-bottom? (>= (+ (dom/scroll-amount) window-height) (dom/page-length))]
+    (.log js/console "scrolled to end? "scrolled-to-bottom? "on right page?" (dom/body-has-class? "cljs--feed-page"))
+    (when (and scrolled-to-bottom? (dom/body-has-class? "cljs--feed-page"))
+      (load-more-activities))))

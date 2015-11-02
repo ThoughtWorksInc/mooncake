@@ -2,8 +2,11 @@
   (:require [cemerick.cljs.test]
             [mooncake.js.feed :as jsf]
             [dommy.core :as d]
-            [mooncake.jstest.test-utils :as tu])
+            [mooncake.jstest.test-utils :as tu]
+            [mooncake.js.feed :as feed]
+            [dommy.core :as dommy])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
+                   [mooncake.jstest.macros :refer [load-template]]
                    [dommy.core :as dm]))
 
 (def activity {"actor" {"displayName" "Bob"}
@@ -28,6 +31,11 @@
         feed-item (d/create-element "li")]
     (set! (. feed-item -innerHTML) feed-item-html)
     feed-item))
+
+(defonce feed-page-template (load-template "public/feed.html"))
+
+(defn set-initial-state []
+  (tu/set-html! feed-page-template))
 
 (deftest updates-activity-information
          (testing "author is updated"
@@ -55,3 +63,17 @@
                   (let [action-elem (jsf/set-action! activity (create-feed-item))]
                     (is (= (d/text action-elem) "created an activity"))
                     (is (= (d/attr action-elem "data-l8n") nil)))))
+
+(deftest removes-event-listener
+         (testing "scroll listener is removed if response contains no activities"
+                  (feed/handler {"activities" []})
+                  (is (empty? (dommy/event-listeners js/window)))))
+
+(deftest about-hiding-pagination-buttons
+         (testing "pagination buttons are hidden on page load"
+                  (set-initial-state)
+                  (feed/hide-pagination-buttons)
+                  (is (nil? (dm/sel1 :.func--older-activities__link))
+                      "older button does not exist")
+                  (is (nil? (dm/sel1 :.func--newer-activities__link))
+                      "new button does not exist")))
