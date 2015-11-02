@@ -32,7 +32,7 @@
          (testing "load more button converts json into new activity elements"
                   (set-initial-state)
                   (is (= 14 (count (sel :.clj--activity-item))))
-                  (feed/handler response)
+                  (feed/handler (constantly nil) response)
                   (let [activity-items (sel :.clj--activity-item)
                         activity-15 (nth activity-items 14)
                         activity-16 (nth activity-items 15)]

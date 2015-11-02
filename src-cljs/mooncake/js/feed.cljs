@@ -42,7 +42,7 @@
   (dom/remove-if-present! :.clj--newer-activities__link)
   (dom/remove-if-present! :.clj--older-activities__link))
 
-(defn handler [response]
+(defn handler [load-activities-fn response]
   (let [activities (get response "activities")
         feed-item (dm/sel1 :.clj--activity-item)]
     (doseq [activity activities]
@@ -56,19 +56,19 @@
         (set-action! activity new-feed-item)
         (d/append! (dm/sel1 :.clj--activity-stream) new-feed-item)))
     (if (empty? activities)
-      (d/unlisten! js/window :scroll load-more-activities-if-at-end-of-page)
-      (load-more-activities-if-at-end-of-page))))
+      (d/unlisten! js/window :scroll load-activities-fn)
+      (load-activities-fn))))
 
 (defn error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
-(defn load-more-activities []
+(defn load-more-activities [load-activities-fn]
   (let [stream (dm/sel1 :.clj--activity-stream)
         last-activity (.-lastChild stream)
         selector (dm/sel1 last-activity :.clj--activity-item__time)
         timestamp (d/attr selector "datetime")]
     (GET (str "/api/activities?timestamp-to=" timestamp)
-         {:handler       handler
+         {:handler       (partial handler load-activities-fn)
           :error-handler error-handler})))
 
 (defn load-more-activities-if-at-end-of-page []
@@ -76,4 +76,4 @@
         scrolled-to-bottom? (>= (+ (dom/scroll-amount) window-height) (dom/page-length))]
     (.log js/console "scrolled to end? "scrolled-to-bottom? "on right page?" (dom/body-has-class? "cljs--feed-page"))
     (when (and scrolled-to-bottom? (dom/body-has-class? "cljs--feed-page"))
-      (load-more-activities))))
+      (load-more-activities load-more-activities-if-at-end-of-page))))

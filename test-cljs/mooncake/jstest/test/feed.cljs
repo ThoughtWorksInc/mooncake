@@ -66,7 +66,7 @@
 
 (deftest removes-event-listener
          (testing "scroll listener is removed if response contains no activities"
-                  (feed/handler {"activities" []})
+                  (feed/handler feed/load-more-activities-if-at-end-of-page {"activities" []})
                   (is (empty? (dommy/event-listeners js/window)))))
 
 (deftest about-hiding-pagination-buttons
