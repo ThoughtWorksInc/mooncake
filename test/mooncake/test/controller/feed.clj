@@ -195,7 +195,7 @@
              _ (user/create-user! store ...user-id... ...username...)
              _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}})
-             response-for-retrieving (fc/retrieve-activities store (request-with-timestamp {:timestamp next-day}))
+             response-for-retrieving (fc/retrieve-activities store (request-with-timestamp {:timestamp-to next-day}))
              response-for-updating (fc/retrieve-activities store (request-with-timestamp {:timestamp-from previous-day}))]
          (facts "retrieving older activities"
 

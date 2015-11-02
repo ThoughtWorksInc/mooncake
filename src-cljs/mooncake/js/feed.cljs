@@ -64,7 +64,7 @@
         last-activity (.-lastChild stream)
         selector (dm/sel1 last-activity :.clj--activity-item__time)
         timestamp (d/attr selector "datetime")]
-    (GET (str "/api/activities?timestamp=" timestamp)
+    (GET (str "/api/activities?timestamp-to=" timestamp)
          {:handler       handler
           :error-handler error-handler})))
 

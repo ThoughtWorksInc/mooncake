@@ -16,7 +16,7 @@
     (:feed-settings user)))
 
 (defn retrieve-activities [store request]
-  (let [timestamp-to (get-in request [:params :timestamp])
+  (let [timestamp-to (get-in request [:params :timestamp-to])
         timestamp-from (get-in request [:params :timestamp-from])
         context (:context request)
         activity-sources (:activity-sources context)
