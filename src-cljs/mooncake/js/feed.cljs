@@ -38,30 +38,29 @@
     (d/remove-attr! (dm/sel1 feed-item :.clj--activity-item__action) "data-l8n")
     (d/set-text! (dm/sel1 feed-item :.clj--activity-item__action) action-text)))
 
-(defn hide-pagination-buttons []
-  (dom/remove-if-present! :.clj--newer-activities__link)
-  (dom/remove-if-present! :.clj--older-activities__link))
+(defn- create-new-feed-item [activity new-feed-item]
+  (set-author-initials! activity new-feed-item)
+  (set-author! activity new-feed-item)
+  (set-title! activity new-feed-item)
+  (set-time! activity new-feed-item)
+  (set-link! activity new-feed-item)
+  (set-src-class! activity new-feed-item)
+  (set-action! activity new-feed-item))
 
-(defn append-new-activities [load-activities-fn response]
+(defn append-old-activities [load-activities-fn response]
   (let [activities (get response "activities")
         feed-item (dm/sel1 :.clj--activity-item)]
     (doseq [activity activities]
       (let [new-feed-item (.cloneNode feed-item true)]
-        (set-author-initials! activity new-feed-item)
-        (set-author! activity new-feed-item)
-        (set-title! activity new-feed-item)
-        (set-time! activity new-feed-item)
-        (set-link! activity new-feed-item)
-        (set-src-class! activity new-feed-item)
-        (set-action! activity new-feed-item)
+        (create-new-feed-item activity new-feed-item)
         (d/append! (dm/sel1 :.clj--activity-stream) new-feed-item)))
     (if (empty? activities)
       (d/unlisten! js/window :scroll load-activities-fn)
       (load-activities-fn))))
 
-(defn handler [load-activities-fn response]
+(defn older-activities-handler [load-activities-fn response]
   (js/setTimeout
-    #(append-new-activities load-activities-fn response)
+    #(append-old-activities load-activities-fn response)
     1000))
 
 (defn error-handler [response]
@@ -73,7 +72,7 @@
         selector (dm/sel1 last-activity :.clj--activity-item__time)
         timestamp (d/attr selector "datetime")]
     (GET (str "/api/activities?timestamp-to=" timestamp)
-         {:handler       (partial handler load-activities-fn)
+         {:handler       (partial older-activities-handler load-activities-fn)
           :error-handler error-handler})))
 
 (defn load-more-activities-if-at-end-of-page []
@@ -81,3 +80,19 @@
         scrolled-to-bottom? (>= (+ (dom/scroll-amount) window-height) (dom/page-length))]
     (when (and scrolled-to-bottom? (dom/body-has-class? "cljs--feed-page"))
       (load-more-activities load-more-activities-if-at-end-of-page))))
+
+(defn newer-activities-handler [response]
+  (let [activities (get response "activities")
+        feed-item (dm/sel1 :.clj--activity-item)]
+    (doseq [activity (reverse activities)]
+      (let [new-feed-item (.cloneNode feed-item true)]
+        (create-new-feed-item activity new-feed-item)
+        (d/prepend! (dm/sel1 :.clj--activity-stream) new-feed-item)))
+    (if (not (empty? activities))
+      (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)]
+              (dom/add-if-not-present show-new-items-link "show-new-activities-link")))
+    ))
+
+(defn hide-pagination-buttons []
+  (dom/remove-if-present! :.clj--newer-activities__link)
+  (dom/remove-if-present! :.clj--older-activities__link))

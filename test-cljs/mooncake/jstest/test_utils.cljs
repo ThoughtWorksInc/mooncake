@@ -33,6 +33,9 @@
 (defn test-string-contains [str s]
   (is (not= -1 (.indexOf str s))))
 
+(defn test-string-does-not-contain [str s]
+  (is (= -1 (.indexOf str s))))
+
 
 ;; Getters and setters
 

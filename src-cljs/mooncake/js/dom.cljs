@@ -17,8 +17,14 @@
   (when-let [e (dm/sel1 selector)]
     (d/remove! e)))
 
+(defn add-if-not-present [selector class]
+  (when (not (d/has-class? selector class))
+    (d/add-class! selector class)))
+
 (defn string-contains [str s]
   (not= -1 (.indexOf str s)))
 
 (defn body-has-class? [class-str]
   (string-contains (d/class (dm/sel1 :body)) class-str))
+
+

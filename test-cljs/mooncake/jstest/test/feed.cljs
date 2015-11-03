@@ -1,6 +1,6 @@
 (ns mooncake.jstest.test.feed
   (:require [cemerick.cljs.test]
-            [mooncake.js.feed :as jsf]
+            [mooncake.js.feed :as feed]
             [dommy.core :as d]
             [mooncake.jstest.test-utils :as tu]
             [mooncake.js.feed :as feed]
@@ -39,34 +39,34 @@
 
 (deftest updates-activity-information
          (testing "author is updated"
-                  (let [author-elem (jsf/set-author! activity (create-feed-item))]
+                  (let [author-elem (feed/set-author! activity (create-feed-item))]
                     (is (= (d/text author-elem) "Bob"))))
          (testing "id is updated"
-                  (let [id-elem (jsf/set-author-initials! activity (create-feed-item))]
+                  (let [id-elem (feed/set-author-initials! activity (create-feed-item))]
                     (is (= (d/text id-elem) "B"))))
          (testing "title is updated"
-                  (let [title-elem (jsf/set-title! activity (create-feed-item))]
+                  (let [title-elem (feed/set-title! activity (create-feed-item))]
                     (is (= (d/text title-elem) "Bob's Activity"))))
          (testing "time is updated"
-                  (let [time-elem (jsf/set-time! activity (create-feed-item))]
+                  (let [time-elem (feed/set-time! activity (create-feed-item))]
                     (is (= (d/text time-elem) "2 weeks ago"))
                     (is (= (d/attr time-elem "datetime") "2016-12-11T01:24:45.192Z"))))
          (testing "link is updated"
                   (let [feed-item (create-feed-item)
                         link-elem (dm/sel1 feed-item :.clj--activity-item__link)]
-                    (jsf/set-link! activity feed-item)
+                    (feed/set-link! activity feed-item)
                     (is (= (d/attr link-elem "href") "http://activity-src.co.uk/bob"))))
          (testing "source class is updated"
-                  (let [src-class-elem (jsf/set-src-class! activity (create-feed-item))]
+                  (let [src-class-elem (feed/set-src-class! activity (create-feed-item))]
                     (tu/test-string-contains (d/class src-class-elem) "activity-src-1")))
          (testing "action is updated"
-                  (let [action-elem (jsf/set-action! activity (create-feed-item))]
+                  (let [action-elem (feed/set-action! activity (create-feed-item))]
                     (is (= (d/text action-elem) "created an activity"))
                     (is (= (d/attr action-elem "data-l8n") nil)))))
 
 (deftest removes-event-listener
          (testing "scroll listener is removed if response contains no activities"
-                  (feed/append-new-activities feed/load-more-activities-if-at-end-of-page {"activities" []})
+                  (feed/append-old-activities feed/load-more-activities-if-at-end-of-page {"activities" []})
                   (is (empty? (dommy/event-listeners js/window)))))
 
 (deftest about-hiding-pagination-buttons
@@ -77,3 +77,4 @@
                       "older button does not exist")
                   (is (nil? (dm/sel1 :.func--newer-activities__link))
                       "new button does not exist")))
+
