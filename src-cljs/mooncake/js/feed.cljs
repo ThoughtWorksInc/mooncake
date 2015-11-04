@@ -5,6 +5,8 @@
   (:require-macros [dommy.core :as dm]
                    [mooncake.js.config :refer [polling-interval-ms]]))
 
+(def reveal-new-activities-link :.clj--reveal-new-activities__link)
+
 (defn set-author-initials! [activity feed-item]
   (let [author (get-in activity ["actor" "displayName"])
         initial (-> author first str clojure.string/upper-case)]
@@ -84,6 +86,11 @@
 
 (defn update-new-activities-link-text [length]
   (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) (str "View " length " new activities")))
+
+(defn reveal-new-activities [e]
+  (let [new-activities (dm/sel :.hidden-new-activity)]
+    (doseq [activity new-activities]
+      (d/remove-class! activity "hidden-new-activity"))))
 
 (defn newer-activities-handler [polling-fn response]
   (let [activities (get response "activities")

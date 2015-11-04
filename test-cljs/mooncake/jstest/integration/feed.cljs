@@ -28,7 +28,8 @@
 (def empty-response {"activities" []})
 
 (defn set-initial-state []
-  (tu/set-html! feed-page-template))
+  (tu/set-html! feed-page-template)
+  (app/start))
 
 (deftest about-loading-old-activities
          (testing "load more button converts json into new activity elements"
@@ -66,11 +67,16 @@
                   (set-initial-state)
                   (feed/newer-activities-handler (constantly nil) response)
                   (tu/test-string-contains (dommy/text (sel1 :.func--reveal-new-activities__link)) "2"))
-         (testing "new activities are hidden before clicking show activity link"
+         (testing "new activities are hidden by default and revealed by clicking show activity link"
                   (set-initial-state)
                   (feed/newer-activities-handler (constantly nil) response)
                   (let [activity-items (sel :.clj--activity-item)
                         hidden-item-1 (nth activity-items 0)
                         hidden-item-2 (nth activity-items 1)]
                     (tu/test-string-contains (dommy/class hidden-item-1) "hidden-new-activity")
-                    (tu/test-string-contains (dommy/class hidden-item-2) "hidden-new-activity"))))
+                    (tu/test-string-contains (dommy/class hidden-item-2) "hidden-new-activity")
+
+                    (tu/click! :.func--reveal-new-activities__link)
+
+                    (tu/test-string-does-not-contain (dommy/class hidden-item-1) "hidden-new-activity")
+                    (tu/test-string-does-not-contain (dommy/class hidden-item-2) "hidden-new-activity"))))
