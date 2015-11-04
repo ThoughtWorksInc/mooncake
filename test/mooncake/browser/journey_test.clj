@@ -71,7 +71,7 @@
                          (kero/create-dummy-activities @test-store (* 2 config/activities-per-page))
                          (start-browser)))
    (after :contents (do
-                      ;(stop-browser)
+                      (stop-browser)
                       (stop-server @server)))]
 
   (try
