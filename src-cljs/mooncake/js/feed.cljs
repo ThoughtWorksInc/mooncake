@@ -90,7 +90,8 @@
 (defn reveal-new-activities [e]
   (let [new-activities (dm/sel :.hidden-new-activity)]
     (doseq [activity new-activities]
-      (d/remove-class! activity "hidden-new-activity"))))
+      (d/remove-class! activity "hidden-new-activity")))
+  (d/remove-class! (.-target e) "show-new-activities__link"))
 
 (defn newer-activities-handler [polling-fn response]
   (let [activities (get response "activities")

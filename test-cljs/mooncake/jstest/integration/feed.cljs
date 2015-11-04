@@ -79,4 +79,9 @@
                     (tu/click! :.func--reveal-new-activities__link)
 
                     (tu/test-string-does-not-contain (dommy/class hidden-item-1) "hidden-new-activity")
-                    (tu/test-string-does-not-contain (dommy/class hidden-item-2) "hidden-new-activity"))))
+                    (tu/test-string-does-not-contain (dommy/class hidden-item-2) "hidden-new-activity")))
+         (testing "reveal activities link is hidden after it is clicked"
+                  (set-initial-state)
+                  (feed/newer-activities-handler (constantly nil) response)
+                  (tu/click! :.func--reveal-new-activities__link)
+                  (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link")))
