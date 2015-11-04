@@ -2,16 +2,15 @@
   (:require [dommy.core :as d])
   (:require-macros [dommy.core :as dm]))
 
-(defn get-page-attr [attr]
+(defn get-scroll-top []
   (let [document-element (.-documentElement js/document)
         document-body (.-body js/document)]
-    (or (and document-element (aget document-element attr)) (aget document-body attr))))
+    (max (and document-body (.-scrollTop document-body)) (.-scrollTop document-element))))
 
-(defn scroll-amount []
-  (get-page-attr "scrollTop"))
-
-(defn page-length []
-  (get-page-attr "scrollHeight"))
+(defn get-scroll-height []
+  (let [document-element (.-documentElement js/document)
+        document-body (.-body js/document)]
+    (or (and document-element (.-scrollHeight document-element)) (.-scrollHeight document-body))))
 
 (defn remove-if-present! [selector]
   (when-let [e (dm/sel1 selector)]

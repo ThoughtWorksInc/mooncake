@@ -50,6 +50,9 @@
   (set-src-class! activity new-feed-item)
   (set-action! activity new-feed-item))
 
+(def request-not-in-progress
+  (atom true))
+
 (defn append-old-activities [load-activities-fn response]
   (let [activities (get response "activities")
         feed-item (dm/sel1 :.clj--activity-item)]
@@ -58,8 +61,10 @@
         (create-new-feed-item activity new-feed-item)
         (d/append! (dm/sel1 :.clj--activity-stream) new-feed-item)))
     (if (empty? activities)
-      (d/unlisten! js/window :scroll load-activities-fn)
-      (load-activities-fn))))
+      (do (swap! request-not-in-progress (constantly true))
+          (d/unlisten! js/window :scroll load-activities-fn))
+      (do (swap! request-not-in-progress (constantly true))
+          (load-activities-fn)))))
 
 (defn older-activities-handler [load-activities-fn response]
   (js/setTimeout
@@ -77,13 +82,17 @@
         last-activity (.-lastChild stream)
         selector (dm/sel1 last-activity :.clj--activity-item__time)
         timestamp (d/attr selector "datetime")]
-    (GET (str "/api/activities?timestamp-to=" timestamp)
-         {:handler       (partial older-activities-handler load-activities-fn)
-          :error-handler old-activities-error-handler})))
+    (when @request-not-in-progress
+      (do (swap! request-not-in-progress (constantly false))
+          (GET (str "/api/activities?timestamp-to=" timestamp)
+               {:handler       (partial older-activities-handler load-activities-fn)
+                :error-handler error-handler})))))
 
 (defn load-more-activities-if-at-end-of-page []
-  (let [window-height (.-innerHeight js/window)
-        scrolled-to-bottom? (>= (+ (dom/scroll-amount) window-height) (dom/page-length))]
+  (let [scroll-top (dom/get-scroll-top)
+        scroll-height (dom/get-scroll-height)
+        window-height (.-innerHeight js/window)
+        scrolled-to-bottom? (>= (+ scroll-top window-height) scroll-height)]
     (when (and scrolled-to-bottom? (dom/body-has-class? "cljs--feed-page"))
       (load-old-activities load-more-activities-if-at-end-of-page))))
 
