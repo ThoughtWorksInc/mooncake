@@ -65,4 +65,12 @@
          (testing "number of new activities is displayed in new activities link"
                   (set-initial-state)
                   (feed/newer-activities-handler (constantly nil) response)
-                  (tu/test-string-contains (dommy/text (sel1 :.func--reveal-new-activities__link)) "2")))
+                  (tu/test-string-contains (dommy/text (sel1 :.func--reveal-new-activities__link)) "2"))
+         (testing "new activities are hidden before clicking show activity link"
+                  (set-initial-state)
+                  (feed/newer-activities-handler (constantly nil) response)
+                  (let [activity-items (sel :.clj--activity-item)
+                        hidden-item-1 (nth activity-items 0)
+                        hidden-item-2 (nth activity-items 1)]
+                    (tu/test-string-contains (dommy/class hidden-item-1) "hidden-new-activity")
+                    (tu/test-string-contains (dommy/class hidden-item-2) "hidden-new-activity"))))
