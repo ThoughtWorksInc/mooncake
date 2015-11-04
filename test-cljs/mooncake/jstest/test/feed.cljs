@@ -78,3 +78,8 @@
                   (is (nil? (dm/sel1 :.func--newer-activities__link))
                       "new button does not exist")))
 
+(deftest updates-new-activity-link-text
+         (testing "activity link text is set to correct string"
+                  (set-initial-state)
+                  (let [new-activity-link (feed/update-new-activities-link-text 5)]
+                    (tu/test-string-contains (d/text new-activity-link) "5"))))

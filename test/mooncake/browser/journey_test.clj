@@ -89,6 +89,10 @@
                  (let [page-length (:height (wd/element-size "body"))]
                    (wd/execute-script (str "scroll(0, " page-length ");"))
                    (wait-and-count (* 2 config/activities-per-page))
-                   (count-activity-items)) => (* 2 config/activities-per-page)))
+                   (count-activity-items)) => (* 2 config/activities-per-page))
+           (fact "new activities are loaded when new activities exist and update is triggered"
+                 (wd/exists? ".show-new-activities__link") => false
+                 (kero/create-dummy-activity @test-store "2015-10-10T10:20:30")
+                 (wait-for-selector ".show-new-activities__link")))
     (catch Exception e
       (throw e))))

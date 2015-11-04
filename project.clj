@@ -55,7 +55,8 @@
                                         :client-id     "fake stonecutter client id"
                                         :client-secret "fake stonecutter client secret"
                                         :auth-url      "fake stonecutter auth url"
-                                        :mongo-uri     "mongodb://localhost:27017/mooncake-dev"}
+                                        :mongo-uri     "mongodb://localhost:27017/mooncake-dev"
+                                        :polling-interval "1000"}
                        :aliases        {"cljs-build"      ["cljsbuild" "once" "prod"]
                                         "cljs-test"       ["cljsbuild" "test"]
                                         "test"            ["do" "clean," "gulp," "cljs-test," "cljs-build," "midje" ]

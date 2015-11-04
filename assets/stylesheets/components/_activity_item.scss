@@ -164,4 +164,7 @@
 
 .reveal-new-activities__link {
   display: none;
+  &.show-new-activities-link {
+    display: block;
+  }
 }

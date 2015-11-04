@@ -46,10 +46,10 @@
           (testing "activities are prepended in the correct order"
                    (set-initial-state)
                    (is (= 14 (count (sel :.clj--activity-item))))
-                   (feed/newer-activities-handler empty-response)
+                   (feed/newer-activities-handler (constantly nil) empty-response)
                    (let [activity-items (sel :.clj--activity-item)]
                      (is (= 14 (count activity-items))))
-                   (feed/newer-activities-handler response)
+                   (feed/newer-activities-handler (constantly nil) response)
                    (let [activity-items (sel :.clj--activity-item)
                          activity-1 (nth activity-items 0)
                          activity-2 (nth activity-items 1)]
@@ -58,8 +58,11 @@
                      (is (= (dommy/text (sel1 activity-2 :.clj--activity-item__title)) "Bill's Activity"))))
          (testing "new activities triggers load new activities link"
                   (set-initial-state)
-                  (feed/newer-activities-handler empty-response)
+                  (feed/newer-activities-handler (constantly nil) empty-response)
                   (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities-link")
-                  (feed/newer-activities-handler response)
-                  (tu/test-string-contains (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities-link")))
-
+                  (feed/newer-activities-handler (constantly nil) response)
+                  (tu/test-string-contains (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities-link"))
+         (testing "number of new activities is displayed in new activities link"
+                  (set-initial-state)
+                  (feed/newer-activities-handler (constantly nil) response)
+                  (tu/test-string-contains (dommy/text (sel1 :.func--reveal-new-activities__link)) "2")))

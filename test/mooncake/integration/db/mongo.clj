@@ -89,7 +89,7 @@
               newer-items-requested false
               older-items-requested true]
 
-          (fact "can select activities based on timestamp and whether olde ror newer items are requested"
+          (fact "can select activities based on timestamp and whether older or newer items are requested"
                 (mongo/find-items-by-timestamp store collection-name [{}] {} second-oldest-time older-items-requested) => (just [item4])
                 (mongo/find-items-by-timestamp store collection-name [{}] {} second-latest-time newer-items-requested) => (just [item1]))
           (fact "can sort results by a given column and ordering"

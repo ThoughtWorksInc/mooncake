@@ -15,6 +15,7 @@
   (f/hide-pagination-buttons)
   (f/load-more-activities-if-at-end-of-page)
   (setup-listener js/window :scroll f/load-more-activities-if-at-end-of-page)
+  (f/check-for-new-activities)
   (setup-multi-listeners cf/type-checkbox-selector :change cf/type-checkbox-changed)
   (setup-multi-listeners cf/src-checkbox-selector :click cf/src-checkbox-clicked))
 

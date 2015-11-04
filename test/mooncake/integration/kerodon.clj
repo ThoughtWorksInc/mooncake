@@ -77,6 +77,13 @@
                (keyword "@type") "Create"}))
        (populate-db-with-stub-activities! store)))
 
+(defn create-dummy-activity [store timestamp]
+  (->> [{:actor     {:displayName (str "Single Activity")}
+         :published timestamp
+                    :activity-src "test-activity-source-1"
+                    (keyword "@type") "Create"}]
+       (populate-db-with-stub-activities! store)))
+
 (defn clean-app! []
   (drop-db!)
   app)

@@ -2,7 +2,8 @@
   (:require [ajax.core :refer [GET]]
             [dommy.core :as d]
             [mooncake.js.dom :as dom])
-  (:require-macros [dommy.core :as dm]))
+  (:require-macros [dommy.core :as dm]
+                   [mooncake.js.config :refer [polling-interval-ms]]))
 
 (defn set-author-initials! [activity feed-item]
   (let [author (get-in activity ["actor" "displayName"])
@@ -66,7 +67,7 @@
 (defn error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
-(defn load-more-activities [load-activities-fn]
+(defn load-old-activities [load-activities-fn]
   (let [stream (dm/sel1 :.clj--activity-stream)
         last-activity (.-lastChild stream)
         selector (dm/sel1 last-activity :.clj--activity-item__time)
@@ -79,20 +80,34 @@
   (let [window-height (.-innerHeight js/window)
         scrolled-to-bottom? (>= (+ (dom/scroll-amount) window-height) (dom/page-length))]
     (when (and scrolled-to-bottom? (dom/body-has-class? "cljs--feed-page"))
-      (load-more-activities load-more-activities-if-at-end-of-page))))
+      (load-old-activities load-more-activities-if-at-end-of-page))))
 
-(defn newer-activities-handler [response]
-  (let [activities (get response "activities")
-        feed-item (dm/sel1 :.clj--activity-item)]
-    (doseq [activity (reverse activities)]
-      (let [new-feed-item (.cloneNode feed-item true)]
-        (create-new-feed-item activity new-feed-item)
-        (d/prepend! (dm/sel1 :.clj--activity-stream) new-feed-item)))
+(defn update-new-activities-link-text [length]
+  (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) (str "View " length " new activities")))
+
+(defn newer-activities-handler [polling-fn response]
+  (let [activities (get response "activities")]
     (if (not (empty? activities))
       (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)]
-              (dom/add-if-not-present show-new-items-link "show-new-activities-link")))
-    ))
+              (update-new-activities-link-text (count activities))
+              (dom/add-if-not-present show-new-items-link "show-new-activities__link"))))
+  (polling-fn))
 
 (defn hide-pagination-buttons []
   (dom/remove-if-present! :.clj--newer-activities__link)
   (dom/remove-if-present! :.clj--older-activities__link))
+
+(defn load-new-activities [polling-fn]
+  (let [stream (dm/sel1 :.clj--activity-stream)
+        last-activity (.-firstChild stream)
+        selector (dm/sel1 last-activity :.clj--activity-item__time)
+        timestamp (d/attr selector "datetime")]
+    (.log js/console "SENDING REQUEST")
+    (GET (str "/api/activities?timestamp-from=" timestamp)
+         {:handler  (partial newer-activities-handler polling-fn)
+          :error-handler error-handler})))
+
+(defn check-for-new-activities []
+  (js/setTimeout
+    #(load-new-activities check-for-new-activities)
+    (polling-interval-ms)))
