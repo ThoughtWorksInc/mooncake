@@ -59,9 +59,9 @@
          (testing "new activities triggers load new activities link"
                   (set-initial-state)
                   (feed/newer-activities-handler (constantly nil) empty-response)
-                  (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities-link")
+                  (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link")
                   (feed/newer-activities-handler (constantly nil) response)
-                  (tu/test-string-contains (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities-link"))
+                  (tu/test-string-contains (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link"))
          (testing "number of new activities is displayed in new activities link"
                   (set-initial-state)
                   (feed/newer-activities-handler (constantly nil) response)

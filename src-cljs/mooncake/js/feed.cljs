@@ -86,7 +86,12 @@
   (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) (str "View " length " new activities")))
 
 (defn newer-activities-handler [polling-fn response]
-  (let [activities (get response "activities")]
+  (let [activities (get response "activities")
+        feed-item (dm/sel1 :.clj--activity-item)]
+    (doseq [activity (reverse activities)]
+      (let [new-feed-item (.cloneNode feed-item true)]
+        (create-new-feed-item activity new-feed-item)
+        (d/prepend! (dm/sel1 :.clj--activity-stream) new-feed-item)))
     (if (not (empty? activities))
       (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)]
               (update-new-activities-link-text (count activities))
