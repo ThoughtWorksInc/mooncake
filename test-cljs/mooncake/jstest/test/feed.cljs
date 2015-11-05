@@ -83,3 +83,10 @@
                   (set-initial-state)
                   (let [new-activity-link (feed/update-new-activities-link-text 5)]
                     (tu/test-string-contains (d/text new-activity-link) "5"))))
+
+(deftest about-displaying-new-activities-error
+         (testing "error handler displays error message"
+                  (set-initial-state)
+                  (tu/test-string-does-not-contain (d/class (dm/sel1 :.clj--new-activities__error)) "show-feed-activities__error")
+                  (feed/new-activities-error-handler {})
+                  (tu/test-string-contains (d/class (dm/sel1 :.clj--new-activities__error)) "show-feed-activities__error")))

@@ -22,11 +22,11 @@ feed:
 
   newer-link: Newer
   older-link: Older
-  load-link: Load more
 
   suspicious-activity-unverified-signature: Some details we use to verify this activity's validity are missing
   suspicious-activity-untrusted-source: This activity's source could not be verified
 
+  new-activities-error: There was an error retrieving new activities, please refresh the page.
 
 empty-feed:
   page-title: There are no activities to show

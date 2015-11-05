@@ -183,3 +183,12 @@
 .hidden-new-activity {
  display: none;
 }
+
+.new-activities__error {
+  display: none;
+  &.show-feed-activities__error {
+    display: block;
+    text-align: center;
+    padding: 10px;
+  }
+}

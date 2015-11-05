@@ -9,6 +9,7 @@ block headerScripts
 
 block content
   p.reveal-new-activities__link.func--reveal-new-activities__link.clj--reveal-new-activities__link
+  p.new-activities__error.clj--new-activities__error.flash-message--fail(data-l8n="content:feed/new-activities-error") !Error is here
   ul.stream.clj--activity-stream.func--activity-stream
     //+streamItemWarning()
     +streamItem('Increase bike safety in Soho by 30%', 'JOANNAB', 'created an objective', 'activity-src-0', true)

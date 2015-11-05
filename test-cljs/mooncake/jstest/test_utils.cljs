@@ -30,11 +30,13 @@
 (defn test-unchecked [elem]
   (is (= false (.-checked elem))))
 
-(defn test-string-contains [str s]
-  (is (not= -1 (.indexOf str s))))
+(defn test-string-contains [string s]
+  (is (not= -1 (.indexOf string s))
+      (str string " does not contain " s)))
 
-(defn test-string-does-not-contain [str s]
-  (is (= -1 (.indexOf str s))))
+(defn test-string-does-not-contain [string s]
+  (is (= -1 (.indexOf string s))
+      (str string " does not contain " s)))
 
 
 ;; Getters and setters

@@ -19,10 +19,10 @@ feed:
 
   newer-link: Newer in Finnish
   older-link: Older in Finnish
-  load-link: Load more in Finnish
 
   suspicious-suspicious-activity-unverified-signature: Some details we use to verify this activity's validity are missing in Finnish
 
+  new-activities-error: There was an error retrieving new activities in Finnish, please.
 
 empty-feed:
   page-title: There are no activities to show in Finnish

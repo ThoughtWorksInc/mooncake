@@ -66,7 +66,10 @@
     #(append-old-activities load-activities-fn response)
     1000))
 
-(defn error-handler [response]
+(defn new-activities-error-handler [response]
+  (d/add-class! (dm/sel1 :.clj--new-activities__error) "show-feed-activities__error"))
+
+(defn old-activities-error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
 (defn load-old-activities [load-activities-fn]
@@ -76,7 +79,7 @@
         timestamp (d/attr selector "datetime")]
     (GET (str "/api/activities?timestamp-to=" timestamp)
          {:handler       (partial older-activities-handler load-activities-fn)
-          :error-handler error-handler})))
+          :error-handler old-activities-error-handler})))
 
 (defn load-more-activities-if-at-end-of-page []
   (let [window-height (.-innerHeight js/window)
@@ -116,10 +119,9 @@
         last-activity (.-firstChild stream)
         selector (dm/sel1 last-activity :.clj--activity-item__time)
         timestamp (d/attr selector "datetime")]
-    (.log js/console "SENDING REQUEST")
     (GET (str "/api/activities?timestamp-from=" timestamp)
          {:handler  (partial newer-activities-handler polling-fn)
-          :error-handler error-handler})))
+          :error-handler new-activities-error-handler})))
 
 (defn check-for-new-activities []
   (js/setTimeout
