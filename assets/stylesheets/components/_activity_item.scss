@@ -162,33 +162,59 @@
   }
 }
 
+.hidden-new-activity {
+ display: none;
+}
+
+$activities-message-font-size-big-device: 16px;
+$activities-message-font-size-medium-device: 15px;
+$activities-message-font-size-small-device: 14px;
+
+.show-activities-message {
+  top: 0;
+  height: unset;
+  font-size: $activities-message-font-size-big-device;
+
+  @include width-to($medium_device) {
+    font-size: $activities-message-font-size-medium-device
+  }
+  @include width-to($small_device) {
+    font-size: $activities-message-font-size-small-device
+  }
+  padding: 10px;
+}
+
+.activities-message {
+  transition: all .3s ease-in;
+  position: relative;
+  text-align: center;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
 .reveal-new-activities__link {
-  display: none;
+  top: 50px;
+  @extend .activities-message;
   &.show-new-activities__link {
-    display: block;
-    text-align: center;
-    padding: 10px;
     margin-bottom: 0;
     background-color: white;
     color: #1ABC9C;
     cursor: pointer;
     border-bottom: 1px solid #ECF0F1;
-
+    @extend .show-activities-message;
     &:hover {
       background-color: rgba(255, 255, 255, 0.6)
     }
   }
 }
 
-.hidden-new-activity {
- display: none;
-}
-
 .new-activities__error {
-  display: none;
+  top: -50px;
+  margin: 10px 0;
+  @extend .activities-message;
   &.show-feed-activities__error {
-    display: block;
-    text-align: center;
-    padding: 10px;
+    @extend .flash-message--fail;
+    @extend .show-activities-message;
   }
 }
