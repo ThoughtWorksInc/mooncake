@@ -43,6 +43,18 @@
       (-> (r/status (r/response "") 400)
           (r/content-type "text/plain")))))
 
+(defn retrieve-activities-html [store request]
+  (let [timestamp-to (get-in request [:params :timestamp-to])
+        timestamp-from (get-in request [:params :timestamp-from])
+        context (:context request)
+        activity-sources (:activity-sources context)
+        feed-query (generate-feed-query (generate-user-feed-settings store request) activity-sources)
+        older-items-requested? (nil? timestamp-from)
+        timestamp (or timestamp-to timestamp-from)
+        activities (dba/fetch-activities-by-timestamp store feed-query timestamp older-items-requested?)
+        updated-context (assoc context :activities activities)]
+    (mh/enlive-response (f/feed-fragment (assoc request :context updated-context)) request)))
+
 (defn feed [store request]
   (let [params (:params request)
         context (:context request)

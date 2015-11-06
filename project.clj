@@ -73,11 +73,10 @@
                                                                  :optimizations :advanced
                                                                  :pretty-print  false}}
                                                  {:id             "test"
-                                                  :source-paths   ["src-cljs" "test-cljs"]
+                                                  :source-paths   ["src" "src-cljs" "test-cljs"]
                                                   :compiler       {:output-to     "target/cljs/testable.js"
                                                                    :optimizations :whitespace
-                                                                   :pretty-print  true}}]
-                                        :test-commands {"phantom" ["phantomjs" :runner "target/cljs/testable.js"]}}}
+                                                                   :pretty-print  true}}]                                        :test-commands {"phantom" ["phantomjs" :runner "target/cljs/testable.js"]}}}
              :stub    {:env {:stub-user "MRS STUBBY"}}
              :uberjar {:hooks       [leiningen.cljsbuild]
                        :env         {:production true}

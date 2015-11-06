@@ -11,4 +11,5 @@ GET  /d-cent-sign-in                               stonecutter-sign-in
 GET  /d-cent-callback                              stonecutter-callback
 GET  /customise-feed                               show-customise-feed
 GET  /api/activities                               retrieve-activities
+GET  /api/activities-html                          retrieve-activities-html
 POST /customise-feed                               customise-feed

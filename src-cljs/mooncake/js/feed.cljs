@@ -54,16 +54,13 @@
   (atom true))
 
 (defn append-old-activities [load-activities-fn response]
-  (let [activities (get response "activities")
-        feed-item (dm/sel1 :.clj--activity-item)]
-    (doseq [activity activities]
-      (let [new-feed-item (.cloneNode feed-item true)]
-        (create-new-feed-item activity new-feed-item)
-        (d/append! (dm/sel1 :.clj--activity-stream) new-feed-item)))
-    (if (empty? activities)
-      (do (swap! request-not-in-progress (constantly true))
+  (let [activity-stream (dm/sel1 :.clj--activity-stream)
+        original-list-html (. activity-stream -innerHTML)]
+    (set! (. activity-stream -innerHTML) (str original-list-html response))
+    (if (empty? response)
+      (do (reset! request-not-in-progress true)
           (d/unlisten! js/window :scroll load-activities-fn))
-      (do (swap! request-not-in-progress (constantly true))
+      (do (reset! request-not-in-progress true)
           (load-activities-fn)))))
 
 (defn older-activities-handler [load-activities-fn response]
@@ -83,8 +80,8 @@
         selector (dm/sel1 last-activity :.clj--activity-item__time)
         timestamp (d/attr selector "datetime")]
     (when @request-not-in-progress
-      (do (swap! request-not-in-progress (constantly false))
-          (GET (str "/api/activities?timestamp-to=" timestamp)
+      (do (reset! request-not-in-progress false)
+          (GET (str "/api/activities-html?timestamp-to=" timestamp)
                {:handler       (partial older-activities-handler load-activities-fn)
                 :error-handler old-activities-error-handler})))))
 

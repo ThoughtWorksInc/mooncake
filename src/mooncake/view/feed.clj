@@ -21,7 +21,7 @@
     nil))
 
 (defn activity-action-message-map [text]
- (when text (str "content:" text)))
+  (when text (str "content:" text)))
 
 (defn generate-activity-stream-items [enlive-m activities activity-sources]
   (let [activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])
@@ -54,12 +54,11 @@
                                                                                      (html/substitute activity-stream-item-untrusted-source-snippet)
                                                                                      (html/remove-class "clj--STRIP"))
                                                                     "verification-failed" (html/do->
-                                                                                           (html/substitute activity-stream-item-unverified-signature-snippet)
-                                                                                           (html/remove-class "clj--STRIP"))
+                                                                                            (html/substitute activity-stream-item-unverified-signature-snippet)
+                                                                                            (html/remove-class "clj--STRIP"))
                                                                     nil))))))
 
-(defn add-activities [enlive-m activities activity-sources]
-  (let [activity-stream-items (generate-activity-stream-items enlive-m activities activity-sources)]
+(defn add-activities [enlive-m activities activity-sources]  (let [activity-stream-items (generate-activity-stream-items enlive-m activities activity-sources)]
     (html/at enlive-m [:.clj--activity-stream]
              (html/content activity-stream-items))))
 
@@ -112,6 +111,13 @@
                                                           (html/add-class "clj--STRIP")))
       (html/at enlive-m [:.clj--older-activities__link] (html/do->
                                                           (html/set-attr :href (feed-path-url-with-page-number inc-page-number)))))))
+
+(defn feed-fragment [request]
+  (let [activities (get-in request [:context :activities])
+        activity-sources (get-in request [:context :activity-sources])]
+    (-> (vh/load-template "public/feed.html")
+        (generate-activity-stream-items activities activity-sources))))
+
 (defn feed [request]
   (let [activities (get-in request [:context :activities])
         activity-sources (get-in request [:context :activity-sources])]
