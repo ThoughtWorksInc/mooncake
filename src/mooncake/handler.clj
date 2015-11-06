@@ -126,7 +126,7 @@
          :stub-web-key-set                            stub-web-key-set
          :stonecutter-sign-in                         (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback                        (partial stonecutter-callback stonecutter-config store)
-         :retrieve-activities                         (partial fc/retrieve-activities store)}
+         :retrieve-activities                         (partial fc/feed-update store)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback
                                      :stub-activities :stub-signed-activities :stub-web-key-set

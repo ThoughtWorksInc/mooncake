@@ -196,8 +196,8 @@
              _ (user/create-user! store ...user-id... ...username...)
              _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}})
-             response-for-retrieving (fc/retrieve-activities store (request-with-timestamp {:timestamp-to next-day}))
-             response-for-updating (fc/retrieve-activities store (request-with-timestamp {:timestamp-from previous-day}))]
+             response-for-retrieving (fc/feed-update store (request-with-timestamp {:timestamp-to next-day}))
+             response-for-updating (fc/feed-update store (request-with-timestamp {:timestamp-from previous-day}))]
          (facts "retrieving older activities"
 
                 (fact "enabled activity types are shown"
@@ -221,7 +221,18 @@
                       (:body response-for-updating) => (contains "Activity source 2: no preference expressed"))
 
                 (fact "activity with timestamp in query parameter is not shown"
-                      (:body response-for-updating) =not=> (contains "Activity source 1: previous day")))))
+                      (:body response-for-updating) =not=> (contains "Activity source 1: previous day")))
+
+         (facts "error handling"
+                (let [bad-timestamp "2015-01-0110:00:00.000Z"
+                      bad-timestamp-response (fc/feed-update store (request-with-timestamp {:timestamp-to bad-timestamp}))]
+
+                  (fact "valid-timestamp? returns whether a timestamp is in the correct format"
+                        (fc/valid-timestamp? next-day) => truthy
+                        (fc/valid-timestamp? bad-timestamp) => falsey)
+
+                  (fact "invalid format for timestamp returns Bad Request"
+                        (:status bad-timestamp-response) => 400)))))
 
 
 

@@ -72,7 +72,7 @@
   (->> (range amount)
        (map (fn [counter]
               {:actor            {:displayName (str "TestData" counter)}
-               :published        (f/unparse (f/formatters :date-hour-minute-second) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
+               :published        (f/unparse (f/formatters :date-time) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
                :activity-src     "test-activity-source-1"
                (keyword "@type") "Create"}))
        (populate-db-with-stub-activities! store)))

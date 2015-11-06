@@ -86,7 +86,7 @@
       (do (swap! request-not-in-progress (constantly false))
           (GET (str "/api/activities?timestamp-to=" timestamp)
                {:handler       (partial older-activities-handler load-activities-fn)
-                :error-handler error-handler})))))
+                :error-handler old-activities-error-handler})))))
 
 (defn load-more-activities-if-at-end-of-page []
   (let [scroll-top (dom/get-scroll-top)

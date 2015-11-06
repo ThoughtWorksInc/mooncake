@@ -5,6 +5,7 @@
             [mooncake.controller.customise-feed :as cfc]
             [mooncake.view.feed :as f]
             [mooncake.db.activity :as dba]
+            [clj-time.format :as time]
             [ring.util.response :as r]))
 
 (defn generate-feed-query [feed-settings activity-sources]
@@ -15,19 +16,32 @@
         user (user/find-user store username)]
     (:feed-settings user)))
 
-(defn retrieve-activities [store request]
-  (let [timestamp-to (get-in request [:params :timestamp-to])
-        timestamp-from (get-in request [:params :timestamp-from])
-        context (:context request)
+(defn retrieve-activities [store request timestamp older-items-requested?]
+  (let [context (:context request)
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query (generate-user-feed-settings store request) activity-sources)
-        older-items-requested? (nil? timestamp-from)
-        timestamp (or timestamp-to timestamp-from)
         activities (dba/fetch-activities-by-timestamp store feed-query timestamp older-items-requested?)
         jsonified-activities (a/activities->json activities request)
         response jsonified-activities]
     (-> (r/response response)
         (r/content-type "application/json"))))
+
+(defn valid-timestamp? [timestamp]
+  (let [format (time/formatters :date-time)]
+    (try
+      (time/parse format timestamp)
+      (catch IllegalArgumentException e
+        false))))
+
+(defn feed-update [store request]
+  (let [timestamp-to (get-in request [:params :timestamp-to])
+        timestamp-from (get-in request [:params :timestamp-from])
+        older-items-requested? (nil? timestamp-from)
+        timestamp (or timestamp-to timestamp-from)]
+    (if (valid-timestamp? timestamp)
+      (retrieve-activities store request timestamp older-items-requested?)
+      (-> (r/status (r/response "") 400)
+          (r/content-type "text/plain")))))
 
 (defn feed [store request]
   (let [params (:params request)
