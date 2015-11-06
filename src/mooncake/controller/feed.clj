@@ -5,7 +5,6 @@
             [mooncake.controller.customise-feed :as cfc]
             [mooncake.view.feed :as f]
             [mooncake.db.activity :as dba]
-            [clj-time.format :as time]
             [ring.util.response :as r]))
 
 (defn generate-feed-query [feed-settings activity-sources]
@@ -27,11 +26,10 @@
         (r/content-type "application/json"))))
 
 (defn valid-timestamp? [timestamp]
-  (let [format (time/formatters :date-time)]
-    (try
-      (time/parse format timestamp)
-      (catch IllegalArgumentException e
-        false))))
+  (try
+    (mh/datetime-str->datetime timestamp)
+    (catch IllegalArgumentException e
+      false)))
 
 (defn feed-update [store request]
   (let [timestamp-to (get-in request [:params :timestamp-to])

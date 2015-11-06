@@ -110,7 +110,7 @@
         (create-new-feed-item activity new-feed-item)
         (d/add-class! new-feed-item "hidden-new-activity")
         (d/prepend! (dm/sel1 :.clj--activity-stream) new-feed-item)))
-    (if (not (empty? activities))
+    (when (not (empty? activities))
       (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)]
               (update-new-activities-link-text (count activities))
               (dom/add-if-not-present show-new-items-link "show-new-activities__link"))))
