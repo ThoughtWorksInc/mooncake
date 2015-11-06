@@ -5,6 +5,8 @@
   color: $purple;
   background-color: $white;
   border-bottom: 1px solid $grey_light;
+  max-height: 300px;
+  transition: max-height .8s linear;
   &__suspicious {
     position: relative;
     flex: 1;
@@ -163,7 +165,8 @@
 }
 
 .hidden-new-activity {
- display: none;
+ max-height: 0;
+ border-bottom: 0;
 }
 
 $activities-message-font-size-big-device: 16px;
@@ -171,8 +174,7 @@ $activities-message-font-size-medium-device: 15px;
 $activities-message-font-size-small-device: 14px;
 
 .show-activities-message {
-  top: 0;
-  height: unset;
+  max-height: 100px;
   font-size: $activities-message-font-size-big-device;
 
   @include width-to($medium_device) {
@@ -185,35 +187,32 @@ $activities-message-font-size-small-device: 14px;
 }
 
 .activities-message {
-  transition: all .3s ease-in;
+  transition: max-height .3s linear, padding .3s linear, margin .3s linear;
   position: relative;
   text-align: center;
-  height: 0;
+  max-height: 0;
   margin: 0;
   padding: 0;
 }
 
 .reveal-new-activities__link {
-  top: 50px;
+  background-color: white;
+  color: #1ABC9C;
+  cursor: pointer;
   @extend .activities-message;
   &.show-new-activities__link {
-    margin-bottom: 0;
-    background-color: white;
-    color: #1ABC9C;
-    cursor: pointer;
-    border-bottom: 1px solid #ECF0F1;
     @extend .show-activities-message;
+    border-bottom: 1px solid #ECF0F1;
     &:hover {
-      background-color: rgba(255, 255, 255, 0.6)
+      background-color: #F6F8F8;
     }
   }
 }
 
 .new-activities__error {
-  top: -50px;
-  margin: 10px 0;
   @extend .activities-message;
   &.show-feed-activities__error {
+    margin: 10px 0;
     @extend .flash-message--fail;
     @extend .show-activities-message;
   }
