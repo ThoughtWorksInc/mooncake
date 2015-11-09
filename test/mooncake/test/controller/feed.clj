@@ -196,8 +196,8 @@
              _ (user/create-user! store ...user-id... ...username...)
              _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}})
-             response-for-retrieving (fc/feed-update store (request-with-timestamp {:timestamp-to next-day}))
-             response-for-updating (fc/feed-update store (request-with-timestamp {:timestamp-from previous-day}))]
+             response-for-retrieving (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-to next-day}))
+             response-for-updating (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-from previous-day}))]
          (facts "retrieving older activities"
 
                 (fact "enabled activity types are shown"
@@ -225,7 +225,7 @@
 
          (facts "error handling"
                 (let [bad-timestamp "2015-01-0110:00:00.000Z"
-                      bad-timestamp-response (fc/feed-update store (request-with-timestamp {:timestamp-to bad-timestamp}))]
+                      bad-timestamp-response (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-to bad-timestamp}))]
 
                   (fact "valid-timestamp? returns whether a timestamp is in the correct format"
                         (fc/valid-timestamp? next-day) => truthy

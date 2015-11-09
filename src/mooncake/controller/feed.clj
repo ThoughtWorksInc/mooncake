@@ -20,10 +20,8 @@
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query (generate-user-feed-settings store request) activity-sources)
         activities (dba/fetch-activities-by-timestamp store feed-query timestamp older-items-requested?)
-        jsonified-activities (a/activities->json activities request)
-        response jsonified-activities]
-    (-> (r/response response)
-        (r/content-type "application/json"))))
+        updated-context (assoc context :activities activities :hide-activities? (not older-items-requested?))]
+    (mh/enlive-response (f/feed-fragment (assoc request :context updated-context)) request)))
 
 (defn valid-timestamp? [timestamp]
   (try
@@ -31,7 +29,7 @@
     (catch IllegalArgumentException e
       false)))
 
-(defn feed-update [store request]
+(defn retrieve-activities-html [store request]
   (let [timestamp-to (get-in request [:params :timestamp-to])
         timestamp-from (get-in request [:params :timestamp-from])
         older-items-requested? (nil? timestamp-from)
@@ -40,18 +38,6 @@
       (retrieve-activities store request timestamp older-items-requested?)
       (-> (r/status (r/response "") 400)
           (r/content-type "text/plain")))))
-
-(defn retrieve-activities-html [store request]
-  (let [timestamp-to (get-in request [:params :timestamp-to])
-        timestamp-from (get-in request [:params :timestamp-from])
-        context (:context request)
-        activity-sources (:activity-sources context)
-        feed-query (generate-feed-query (generate-user-feed-settings store request) activity-sources)
-        older-items-requested? (nil? timestamp-from)
-        timestamp (or timestamp-to timestamp-from)
-        activities (dba/fetch-activities-by-timestamp store feed-query timestamp older-items-requested?)
-        updated-context (assoc context :activities activities :hide-activities? (not older-items-requested?))]
-    (mh/enlive-response (f/feed-fragment (assoc request :context updated-context)) request)))
 
 (defn feed [store request]
   (let [params (:params request)
