@@ -12,7 +12,13 @@
   (keyword "@type"))
 
 (defmacro generate-test-html-data [data-map]
-  (let [enlive-m (vh/load-template "public/feed.html")
-        activity-sources {}
-        transformed-enlive (feed-view/generate-activity-stream-items enlive-m (:activities (eval data-map)) activity-sources)]
+  (let [activity-sources {}
+        request {:context {:activities (eval data-map) :activity-sources activity-sources :hide-activities? false}}
+        transformed-enlive (feed-view/feed-fragment request)]
+    (vh/enlive-to-str transformed-enlive)))
+
+(defmacro generate-test-html-data-hidden [data-map]
+  (let [activity-sources {}
+        request {:context {:activities (eval data-map) :activity-sources activity-sources :hide-activities? true}}
+        transformed-enlive (feed-view/feed-fragment request)]
     (vh/enlive-to-str transformed-enlive)))

@@ -5,53 +5,49 @@
             [mooncake.js.app :as app]
             [mooncake.js.feed :as feed])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
-                   [mooncake.jstest.macros :refer [load-template generate-test-html-data type-key]]
+                   [mooncake.jstest.macros :refer [load-template generate-test-html-data type-key generate-test-html-data-hidden]]
                    [dommy.core :refer [sel1 sel]]))
 
 (defonce feed-page-template (load-template "public/feed.html"))
 
-(def response {"activities" [{"actor" {"displayName" "Bob"}
-                              "limited-title" "Bob's Activity"
-                              "formatted-time" "2 weeks ago"
-                              "published" "2016-12-12T01:24:45.192Z"
-                              "object" {"url" "http://activity-src.co.uk/bob"}
-                              "activity-src-no" "1"
-                              "action-text" "created an activity"}
-                             {"actor" {"displayName" "Jessie"}
-                              "limited-title" "Jessie's Activity"
-                              "formatted-time" "2 weeks ago"
-                              "published" "2016-12-12T01:24:45.192Z"
-                              "object" {"url" "http://activity-src.co.uk/Jessie"}
-                              "activity-src-no" "1"
-                              "action-text" "created an activity"}]})
-
-
 (defn html-response []
-  (generate-test-html-data {:activities [{:actor                            {:displayName "Bob"}
-                                          :limited-title                    "Bob's Activity"
-                                          :published                        "2012-12-12T01:24:45.192Z"
-                                          (mooncake.jstest.macros/type-key) "Question"
-                                          :object                           {:url                              "http://activity-src.co.uk/bob"
-                                                                             :displayName                      "Save more trees?"
-                                                                             (mooncake.jstest.macros/type-key) "Something"}
-                                          :signed                           false}
-                                         {:actor                            {:displayName "Margaret"}
-                                          :limited-title                    "Margaret's Activity"
-                                          :published                        "2012-12-12T01:24:45.192Z"
-                                          (mooncake.jstest.macros/type-key) "Shut Down"
-                                          :object                           {:url                              "http://activity-src.co.uk/margaret"
-                                                                             :displayName                      "Save fewer mines!"
-                                                                             (mooncake.jstest.macros/type-key) "Coal Mine"}
-                                          :signed                           "verification-failed"}]}))
+  (generate-test-html-data [{:actor                            {:displayName "Bob"}
+                                :published                        "2012-12-12T01:24:45.192Z"
+                                (mooncake.jstest.macros/type-key) "Question"
+                                :object                           {:url                              "http://activity-src.co.uk/bob"
+                                                                   :displayName                      "Save more trees?"
+                                                                   (mooncake.jstest.macros/type-key) "Something"}
+                                :signed                           false}
+                               {:actor                            {:displayName "Margaret"}
+                                :published                        "2012-12-12T01:24:45.192Z"
+                                (mooncake.jstest.macros/type-key) "Shut Down"
+                                :object                           {:url                              "http://activity-src.co.uk/margaret"
+                                                                   :displayName                      "Save fewer mines!"
+                                                                   (mooncake.jstest.macros/type-key) "Coal Mine"}
+                                :signed                           "verification-failed"}]))
 
-(def empty-response {"activities" []})
+(defn html-response-hidden []
+  (generate-test-html-data-hidden [{:actor                       {:displayName "Bob"}
+                               :published                        "2012-12-12T01:24:45.192Z"
+                               (mooncake.jstest.macros/type-key) "Question"
+                               :object                           {:url                              "http://activity-src.co.uk/bob"
+                                                                  :displayName                      "Save more trees?"
+                                                                  (mooncake.jstest.macros/type-key) "Something"}
+                               :signed                           false}
+                              {:actor                            {:displayName "Margaret"}
+                               :published                        "2012-12-12T01:24:45.192Z"
+                               (mooncake.jstest.macros/type-key) "Shut Down"
+                               :object                           {:url                              "http://activity-src.co.uk/margaret"
+                                                                  :displayName                      "Save fewer mines!"
+                                                                  (mooncake.jstest.macros/type-key) "Coal Mine"}
+                               :signed                           "verification-failed"}]))
 
 (defn set-initial-state []
   (tu/set-html! feed-page-template)
   (app/start))
 
 (deftest about-loading-old-activities
-         (testing "load more button converts json into new activity elements"
+         (testing "load more button converts html into new activity elements"
                   (set-initial-state)
                   (is (= 14 (count (sel :.clj--activity-item))))
                   (feed/append-old-activities (constantly nil) (html-response))
@@ -79,28 +75,28 @@
            (testing "activities are prepended in the correct order"
                     (set-initial-state)
                     (is (= 14 (count (sel :.clj--activity-item))))
-                    (feed/newer-activities-handler (constantly nil) empty-response)
+                    (feed/newer-activities-handler (constantly nil) "")
                     (let [activity-items (sel :.clj--activity-item)]
                       (is (= 14 (count activity-items))))
-                    (feed/newer-activities-handler (constantly nil) response)
+                    (feed/newer-activities-handler (constantly nil) (html-response-hidden))
                     (let [activity-items (sel :.clj--activity-item)
                           activity-1 (nth activity-items 0)
                           activity-2 (nth activity-items 1)]
                       (is (= 16 (count activity-items)))
-                      (is (= (dommy/text (sel1 activity-1 :.clj--activity-item__title)) "Bob's Activity"))
-                      (is (= (dommy/text (sel1 activity-2 :.clj--activity-item__title)) "Jessie's Activity"))))
+                      (is (= (dommy/text (sel1 activity-1 :.clj--activity-item__title)) "Save more trees?"))
+                      (is (= (dommy/text (sel1 activity-2 :.clj--activity-item__title)) "Save fewer mines!"))))
            (testing "new activities triggers load new activities link"
                     (set-initial-state)
-                    (feed/newer-activities-handler (constantly nil) empty-response) (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link")
-                    (feed/newer-activities-handler (constantly nil) response)
+                    (feed/newer-activities-handler (constantly nil) "") (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link")
+                    (feed/newer-activities-handler (constantly nil) (html-response-hidden))
                     (tu/test-string-contains (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link"))
            (testing "number of new activities is displayed in new activities link"
                     (set-initial-state)
-                    (feed/newer-activities-handler (constantly nil) response)
+                    (feed/newer-activities-handler (constantly nil) (html-response-hidden))
                     (tu/test-string-contains (dommy/text (sel1 :.func--reveal-new-activities__link)) "2"))
            (testing "new activities are hidden by default and revealed by clicking show activity link"
                     (set-initial-state)
-                    (feed/newer-activities-handler (constantly nil) response)
+                    (feed/newer-activities-handler (constantly nil) (html-response-hidden))
                     (let [activity-items (sel :.clj--activity-item)
                           hidden-item-1 (nth activity-items 0)
                           hidden-item-2 (nth activity-items 1)]
@@ -113,6 +109,6 @@
                       (tu/test-string-does-not-contain (dommy/class hidden-item-2) "hidden-new-activity")))
            (testing "reveal activities link is hidden after it is clicked"
                     (set-initial-state)
-                    (feed/newer-activities-handler (constantly nil) response)
+                    (feed/newer-activities-handler (constantly nil) (html-response-hidden))
                     (tu/click! :.func--reveal-new-activities__link)
                     (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link")))

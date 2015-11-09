@@ -126,7 +126,6 @@
          :stub-web-key-set                            stub-web-key-set
          :stonecutter-sign-in                         (partial stonecutter-sign-in stonecutter-config)
          :stonecutter-callback                        (partial stonecutter-callback stonecutter-config store)
-         :retrieve-activities                         (partial fc/feed-update store)
          :retrieve-activities-html                    (partial fc/retrieve-activities-html store)}
         (m/wrap-handlers-excluding #(m/wrap-signed-in % (routes/absolute-path config-m :sign-in))
                                    #{:sign-in :stonecutter-sign-in :stonecutter-callback
@@ -135,7 +134,7 @@
                                      :show-create-account :create-account})
         (m/wrap-handlers-excluding #(m/wrap-handle-403 % forbidden-error-handler) #{})
         (m/wrap-just-these-handlers #(m/wrap-activity-sources-and-types store activity-sources %)
-                                    #{:feed :show-customise-feed :customise-feed :retrieve-activities
+                                    #{:feed :show-customise-feed :customise-feed
                                       :retrieve-activities-html}))))
 
 (defn wrap-defaults-config [secure?]

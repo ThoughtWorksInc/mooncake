@@ -50,7 +50,7 @@
         older-items-requested? (nil? timestamp-from)
         timestamp (or timestamp-to timestamp-from)
         activities (dba/fetch-activities-by-timestamp store feed-query timestamp older-items-requested?)
-        updated-context (assoc context :activities activities)]
+        updated-context (assoc context :activities activities :hide-activities? (not older-items-requested?))]
     (mh/enlive-response (f/feed-fragment (assoc request :context updated-context)) request)))
 
 (defn feed [store request]

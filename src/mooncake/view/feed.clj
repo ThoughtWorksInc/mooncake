@@ -112,11 +112,19 @@
       (html/at enlive-m [:.clj--older-activities__link] (html/do->
                                                           (html/set-attr :href (feed-path-url-with-page-number inc-page-number)))))))
 
+(defn hide-new-activity-fragments [enlive-m hide-activities?]
+  (if hide-activities?
+    (html/at enlive-m [:.clj--activity-item] (html/do->
+                                               (html/add-class "hidden-new-activity")))
+    enlive-m))
+
 (defn feed-fragment [request]
   (let [activities (get-in request [:context :activities])
-        activity-sources (get-in request [:context :activity-sources])]
+        activity-sources (get-in request [:context :activity-sources])
+        hide-activities? (get-in request [:context :hide-activities?])]
     (-> (vh/load-template "public/feed.html")
-        (generate-activity-stream-items activities activity-sources))))
+        (generate-activity-stream-items activities activity-sources)
+        (hide-new-activity-fragments hide-activities?))))
 
 (defn feed [request]
   (let [activities (get-in request [:context :activities])
