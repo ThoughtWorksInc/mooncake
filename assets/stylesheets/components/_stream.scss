@@ -4,8 +4,7 @@
   margin: 0;
 }
 
-.activity-loading {
-  &--spinner  {
+.activity-loading-spinner  {
     @include svgAndPng('spinner', no-repeat 50% 50%);
     background-size: contain;
     transform-origin: 50% 50%;
@@ -13,5 +12,4 @@
     height: 40px;
     width: 40px;
     margin: 0 auto;
-  }
 }

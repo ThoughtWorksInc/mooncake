@@ -8,7 +8,7 @@ block vars
 block headerScripts
 
 block content
-  p.new-activities__error.clj--new-activities__error(data-l8n="content:feed/new-activities-error") !Error is here
+  p.new-activities__error.clj--new-activities__error(data-l8n="content:feed/new-activities-error") !There was an error retrieving new activities, please refresh the page.
   p.reveal-new-activities__link.func--reveal-new-activities__link.clj--reveal-new-activities__link
   ul.stream.clj--activity-stream.func--activity-stream
     //+streamItemWarning()
@@ -29,4 +29,4 @@ block content
   .activity-nav-links
     a.button.newer-activities-link.clj--newer-activities__link.func--newer-activities__link(href data-l8n="content:feed/newer-link") !newer
     a.button.older-activities-link.clj--older-activities__link.func--older-activities__link(href data-l8n="content:feed/older-link") !older
-  .activity-loading--spinner(hidden)
+  .activity-loading-spinner.clj--activity-loading-spinner(hidden)

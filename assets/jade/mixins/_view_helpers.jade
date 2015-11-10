@@ -11,7 +11,7 @@ mixin streamItem(title, author, activityAction, sourceClass, isUntrustedSource, 
         time.activity-item__time.clj--activity-item__time(datetime="10:32") !2 minutes ago
       h3.activity-item__title.clj--activity-item__title.func--activity-item__title !#{title}
       if isUntrustedSource==true || isUnverifiedSignature==true
-       +streamItemSuspicious(isUntrustedSource)
+        +streamItemSuspicious(isUntrustedSource)
 
 mixin streamItemWarning()
   li.activity-error.clj--STRIP

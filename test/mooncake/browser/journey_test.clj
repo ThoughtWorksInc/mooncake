@@ -88,6 +88,7 @@
            (fact "more activities are loaded when page is scrolled to the bottom"
                  (let [page-length (:height (wd/element-size "body"))]
                    (wd/execute-script (str "scroll(0, " page-length ");"))
+                   (wd/css-finder ".func--newer-activities__link")
                    (wait-and-count (* 2 config/activities-per-page))
                    (count-activity-items)) => (* 2 config/activities-per-page))
            (fact "new activities are loaded when new activities exist and update is triggered"

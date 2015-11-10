@@ -6,6 +6,7 @@
                    [mooncake.js.config :refer [polling-interval-ms]]))
 
 (def reveal-new-activities-link :.clj--reveal-new-activities__link)
+(def activity-loading-spinner :.clj--activity-loading-spinner)
 
 (defn hide-pagination-buttons []
   (dom/remove-if-present! :.clj--newer-activities__link)
@@ -20,25 +21,27 @@
 (defn append-old-activities [load-activities-fn response]
   (let [activity-stream (dm/sel1 :.clj--activity-stream)
         original-list-html (. activity-stream -innerHTML)]
+    (when-let [activity-loading-spinner (dm/sel1 activity-loading-spinner)]
+      (d/set-attr! activity-loading-spinner "hidden"))
     (set! (. activity-stream -innerHTML) (str original-list-html response))
-    (if (empty? response)
-      (do (reset! request-not-in-progress true)
-          (d/unlisten! js/window :scroll load-activities-fn))
-      (do (reset! request-not-in-progress true)
-          (load-activities-fn)))))
+    (do (reset! request-not-in-progress true)
+           (d/unlisten! js/window :scroll load-activities-fn))))
 
 (defn older-activities-handler [load-activities-fn response]
-  (js/setTimeout
-    #(append-old-activities load-activities-fn response)
-    1000))
+  (if (empty? response)
+    (do (reset! request-not-in-progress true)
+        (d/unlisten! js/window :scroll load-activities-fn)
+        (when-let [activity-loading-spinner (dm/sel1 activity-loading-spinner)]
+          (d/set-attr! activity-loading-spinner "hidden")))
+    (js/setTimeout
+      #(append-old-activities load-activities-fn response)
+      1000)))
 
 (defn load-old-activities [load-activities-fn]
-  (let [stream (dm/sel1 :.clj--activity-stream)
-        last-activity (.-lastChild stream)
-        selector (dm/sel1 last-activity :.clj--activity-item__time)
-        timestamp (d/attr selector "datetime")]
+  (let [timestamp (d/attr (last (dm/sel :.clj--activity-item__time)) "datetime")]
     (when @request-not-in-progress
       (do (reset! request-not-in-progress false)
+          (d/remove-attr! (dm/sel1 activity-loading-spinner) "hidden")
           (GET (str "/api/activities-html?timestamp-to=" timestamp)
                {:handler       (partial older-activities-handler load-activities-fn)
                 :error-handler old-activities-error-handler})))))
@@ -59,6 +62,20 @@
 
 (defn new-activities-error-handler [response]
   (d/add-class! (dm/sel1 :.clj--new-activities__error) "show-feed-activities__error"))
+
+(defn newer-activities-handler [polling-fn response]
+  (let [activities (get response "activities")
+        feed-item (dm/sel1 :.clj--activity-item)]
+    (doseq [activity (reverse activities)]
+      (let [new-feed-item (.cloneNode feed-item true)]
+        (create-new-feed-item activity new-feed-item)
+        (d/add-class! new-feed-item "hidden-new-activity")
+        (d/prepend! (dm/sel1 :.clj--activity-stream) new-feed-item)))
+    (if (not (empty? activities))
+      (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)]
+        (update-new-activities-link-text (count activities))
+        (dom/add-if-not-present show-new-items-link "show-new-activities__link"))))
+  (polling-fn))
 
 (defn get-translation [key]
   (get-in dom/translations [:feed key]))
@@ -88,7 +105,7 @@
         selector (dm/sel1 last-activity :.clj--activity-item__time)
         timestamp (d/attr selector "datetime")]
     (GET (str "/api/activities-html?timestamp-from=" timestamp)
-         {:handler  (partial newer-activities-handler polling-fn)
+         {:handler       (partial newer-activities-handler polling-fn)
           :error-handler new-activities-error-handler})))
 
 (defn check-for-new-activities []
