@@ -85,26 +85,3 @@
     (when-not (empty? selected-types)
       {:activity-src     (name (:id preferences-for-an-activity-src))
        (keyword "@type") selected-types})))
-
-(defn activity->translation-keys [activity]
-  (let [action-text-key (a/activity->action-text-key activity)
-        translation (f/activity-action-message-translation action-text-key)]
-    (when translation (clojure.string/split translation #"/"))))
-
-(defn assoc-extra-information [request activity]
-  (let [activity-sources (get-in request [:context :activity-sources])
-        translation-keys (activity->translation-keys activity)
-        page-key (keyword (first translation-keys))
-        action-key (keyword (last translation-keys))
-        locale-key (keyword (t/get-locale-from-request request))
-        action-text (if (empty? translation-keys) (a/activity->default-action-text activity)
-                                                  (get-in request [:tconfig :dictionary locale-key page-key action-key]))]
-    (-> activity
-        (assoc :activity-src-no (f/activity-source-index activity activity-sources))
-        (assoc :formatted-time (mh/humanise-time (a/activity->published activity)))
-        (assoc :action-text action-text)
-        (assoc :limited-title (vh/limit-text-length-if-above f/max-characters-in-title (a/activity->object-display-name activity))))))
-
-(defn activities->json [activities request]
-  (let [updated-activities (map (partial assoc-extra-information request) activities)]
-    (json/generate-string {:activities updated-activities} {:pretty true})))

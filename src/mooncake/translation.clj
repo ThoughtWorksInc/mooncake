@@ -7,15 +7,30 @@
 (defn load-translations-from-string [s]
   (yaml/parse-string s))
 
-(defn translation-map [file-name]
+(defn load-translations-from-file [file-name]
   (-> file-name
       io/resource
       slurp
       load-translations-from-string))
 
+(defmacro load-client-translations []
+  (load-translations-from-file "lang/en-client.yml"))
+
+(defn deep-merge
+  "Recursively merges maps. If keys are not maps, the last value wins."
+  [& vals]
+  (if (every? map? vals)
+    (apply merge-with deep-merge vals)
+    (last vals)))
+
+(defn translation-map [lang]
+  (deep-merge
+    (load-translations-from-file (str "lang/" lang ".yml"))
+    (load-translations-from-file (str "lang/" lang "-client.yml"))))
+
 (defn config-translation []
-  {:dictionary                 {:en (translation-map "en.yml")
-                                :fi (translation-map "fi.yml")}
+  {:dictionary                 {:en (translation-map "en")
+                                :fi (translation-map "fi")}
    :dev-mode?                  false
    :fallback-locale            :en
    :log-missing-translation-fn (fn [{:keys [locales ks ns]}]

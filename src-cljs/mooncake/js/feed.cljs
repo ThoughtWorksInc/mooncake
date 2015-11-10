@@ -60,8 +60,16 @@
 (defn new-activities-error-handler [response]
   (d/add-class! (dm/sel1 :.clj--new-activities__error) "show-feed-activities__error"))
 
+(defn get-translation [key]
+  (get-in dom/translations [:feed key]))
+
 (defn update-new-activities-link-text [length]
-  (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) (str "View " length " new activities")))
+  (let [message-start-key (if (> length 1) :new-activities-message-start :new-activity-message-start)
+        message-end-key (if (> length 1) :new-activities-message-end :new-activity-message-end)
+        message-start-translation (get-translation message-start-key)
+        message-end-translation (get-translation message-end-key)
+        message (str message-start-translation length message-end-translation)]
+    (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) message)))
 
 (defn newer-activities-handler [polling-fn response]
   (let [activity-stream (dm/sel1 :.clj--activity-stream)

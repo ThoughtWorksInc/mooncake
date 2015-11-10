@@ -166,20 +166,6 @@
 
                      (:status response) => nil))))
 
-(defn remove-whitespace-and-new-lines [s]
-  (-> s
-      (clojure.string/replace " " "")
-      (clojure.string/replace "\n" "")))
-
-(fact "activities are transformed into the correct json format"
-      (let [activities [act/activity-KCat
-                        act/activity-JDog]
-            request {:context {:activity-sources {:source-1 {:index 0}
-                                                  :source-2 {:index 1}}}}
-            json (a/activities->json activities request)]
-
-        (remove-whitespace-and-new-lines json) => (remove-whitespace-and-new-lines (str "{\"activities\":[" act/json-for-KCat "," act/json-for-JDog "]}"))))
-
 (defn request-with-timestamp [timestamp-params]
   {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
                                 :activity-src-2 {:activity-types ["No-preference"]}}}

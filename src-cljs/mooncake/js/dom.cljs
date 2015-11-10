@@ -1,6 +1,9 @@
 (ns mooncake.js.dom
   (:require [dommy.core :as d])
-  (:require-macros [dommy.core :as dm]))
+  (:require-macros [dommy.core :as dm]
+                   [mooncake.translation :as t]))
+
+(def translations (t/load-client-translations))
 
 (defn get-scroll-top []
   (let [document-element (.-documentElement js/document)

@@ -3,7 +3,8 @@
             [dommy.core :as dommy]
             [mooncake.jstest.test-utils :as tu]
             [mooncake.js.app :as app]
-            [mooncake.js.feed :as feed])
+            [mooncake.js.feed :as feed]
+            [mooncake.js.dom :as dom])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
                    [mooncake.jstest.macros :refer [load-template generate-test-html-data type-key generate-test-html-data-hidden]]
                    [dommy.core :refer [sel1 sel]]))
@@ -41,6 +42,15 @@
                                                                   :displayName                      "Save fewer mines!"
                                                                   (mooncake.jstest.macros/type-key) "Coal Mine"}
                                :signed                           "verification-failed"}]))
+
+(defn html-single-activity-response-hidden []
+  (generate-test-html-data-hidden [{:actor                       {:displayName "Bob"}
+                                    :published                        "2012-12-12T01:24:45.192Z"
+                                    (mooncake.jstest.macros/type-key) "Question"
+                                    :object                           {:url                              "http://activity-src.co.uk/bob"
+                                                                       :displayName                      "Save more trees?"
+                                                                       (mooncake.jstest.macros/type-key) "Something"}
+                                    :signed                           false}]))
 
 (defn set-initial-state []
   (tu/set-html! feed-page-template)
@@ -91,9 +101,15 @@
                     (feed/newer-activities-handler (constantly nil) (html-response-hidden))
                     (tu/test-string-contains (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link"))
            (testing "number of new activities is displayed in new activities link"
-                    (set-initial-state)
-                    (feed/newer-activities-handler (constantly nil) (html-response-hidden))
-                    (tu/test-string-contains (dommy/text (sel1 :.func--reveal-new-activities__link)) "2"))
+                    (let [new-activity-link-text (str (get-in dom/translations [:feed :new-activities-message-start]) 1
+                                                      (get-in dom/translations [:feed :new-activity-message-end]))
+                          new-activities-link-text (str (get-in dom/translations [:feed :new-activities-message-start]) 2
+                                                        (get-in dom/translations [:feed :new-activities-message-end]))]
+                      (set-initial-state)
+                      (feed/newer-activities-handler (constantly nil) (html-response-hidden))
+                      (is (= (dommy/text (sel1 :.func--reveal-new-activities__link)) new-activities-link-text))
+                      (feed/newer-activities-handler (constantly nil) (html-single-activity-response-hidden))
+                      (is (= (dommy/text (sel1 :.func--reveal-new-activities__link)) new-activity-link-text))))
            (testing "new activities are hidden by default and revealed by clicking show activity link"
                     (set-initial-state)
                     (feed/newer-activities-handler (constantly nil) (html-response-hidden))
