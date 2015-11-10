@@ -16,20 +16,6 @@
             (activity/store-activity! store activity)
             (mongo/find-item store activity/activity-collection {:displayName "KCat"}) => activity))))
 
-(fact "will not store the existing activity"
-      (dbh/with-mongo-do
-        (fn [db]
-          (let [store (mongo/create-mongo-store db)
-                activity1 {:published "2015-08-12T10:20:41.369Z"
-                          :displayName "KCat"}
-                activity2 {:published "2015-08-12T10:20:40.000"
-                           :displayName "JDog"}]
-            (activity/store-activity! store activity1)
-            (activity/fetch-activities store) => [activity1]
-            (fact "does not add activity because timestamp is not after latest timestamp"
-                  (activity/store-activity! store activity2)
-                  (activity/fetch-activities store) => [activity1])))))
-
 (fact "can fetch a collection of activities"
       (dbh/with-mongo-do
         (fn [db]

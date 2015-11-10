@@ -151,11 +151,6 @@
                       (au/sync-activities! store {:an-activity-src      {:url an-activity-src-url}
                                                   :another-activity-src {:url another-activity-src-url}})
                       (count (activity/fetch-activities store)) => 3)
-                (fact "activities are not stored again"
-                      (count (activity/fetch-activities store)) => 3
-                      (au/sync-activities! store {:an-activity-src      {:url an-activity-src-url}
-                                                  :another-activity-src {:url another-activity-src-url}})
-                      (count (activity/fetch-activities store)) => 3)
                 (fact "activity types are stored"
                       (activity/fetch-activity-types store) => {:an-activity-src      ["a-type" "another-type"]
                                                                 :another-activity-src ["yet-another-type"]}))))
@@ -177,8 +172,8 @@
                                       :published    ten-oclock}
                      old-activity {:activity-src activity-source
                                    :published    nine-oclock}]
-                 (activity/store-activity! store recent-activity)
                  (activity/store-activity! store old-activity)
+                 (activity/store-activity! store recent-activity)
                  (au/retrieve-activities-from-source store [activity-source {:url activity-url}])) => anything
 
                (provided
