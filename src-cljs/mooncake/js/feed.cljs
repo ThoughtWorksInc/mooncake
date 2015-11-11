@@ -1,7 +1,8 @@
 (ns mooncake.js.feed
   (:require [ajax.core :refer [GET]]
             [dommy.core :as d]
-            [mooncake.js.dom :as dom])
+            [mooncake.js.dom :as dom]
+            [hickory.core :as hic])
   (:require-macros [dommy.core :as dm]
                    [mooncake.js.config :refer [polling-interval-ms]]))
 
@@ -88,16 +89,22 @@
         message (str message-start-translation length message-end-translation)]
     (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) message)))
 
+(defn valid-response? [response]
+  (let [hickory-response (map hic/as-hickory (hic/parse-fragment response))
+        valid-tag-seq (map #(= (:tag %) :li) hickory-response)]
+    (every? true? valid-tag-seq)))
+
 (defn newer-activities-handler [polling-fn response]
   (let [activity-stream (dm/sel1 :.clj--activity-stream)
         original-list-html (. activity-stream -innerHTML)]
-    (when (not (empty? response))
-      (set! (. activity-stream -innerHTML) (str response original-list-html))
-      (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)
-            new-activities-count (count (re-seq #"<li" response))]
-        (update-new-activities-link-text new-activities-count)
-        (dom/add-if-not-present show-new-items-link "show-new-activities__link")))
-  (polling-fn)))
+    (when (valid-response? response)
+      (when (not (empty? response))
+        (set! (. activity-stream -innerHTML) (str response original-list-html))
+        (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)
+              new-activities-count (count (re-seq #"<li" response))]
+          (update-new-activities-link-text new-activities-count)
+          (dom/add-if-not-present show-new-items-link "show-new-activities__link")))
+      (polling-fn))))
 
 (defn load-new-activities [polling-fn]
   (let [stream (dm/sel1 :.clj--activity-stream)

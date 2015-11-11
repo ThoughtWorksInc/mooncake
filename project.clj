@@ -19,6 +19,7 @@
                  [environ "1.0.1"]
                  [jarohen/chime "0.1.6"]
                  [com.novemberain/monger "2.1.0"]
+                 [hickory "0.5.4"]
                  [ragtime "0.4.2"]
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
                                                     javax.jms/jms
@@ -76,7 +77,8 @@
                                                   :source-paths   ["src" "src-cljs" "test-cljs"]
                                                   :compiler       {:output-to     "target/cljs/testable.js"
                                                                    :optimizations :whitespace
-                                                                   :pretty-print  true}}]                                        :test-commands {"phantom" ["phantomjs" :runner "target/cljs/testable.js"]}}}
+                                                                   :pretty-print  true}}]
+                                        :test-commands {"phantom" ["phantomjs" :runner "target/cljs/testable.js"]}}}
              :stub    {:env {:stub-user "MRS STUBBY"}}
              :uberjar {:hooks       [leiningen.cljsbuild]
                        :env         {:production true}

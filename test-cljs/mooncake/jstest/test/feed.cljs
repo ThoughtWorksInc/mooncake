@@ -78,3 +78,9 @@
                   (feed/load-old-activities (constantly {}))
                   (feed/append-old-activities {} "")
                   (is (not (nil? (d/attr (dm/sel1 :.clj--activity-loading-spinner) "hidden"))))))
+
+(deftest about-validating-the-response
+          (testing "valid-response returns whether all top-level elements in the fragment are li"
+                   (set-initial-state)
+                   (is (feed/valid-response? "<li></li><li><a></a></li>"))
+                   (is (not (feed/valid-response? "<a></a><li></li>")))))
