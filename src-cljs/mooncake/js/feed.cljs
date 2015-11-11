@@ -19,33 +19,35 @@
 (defn older-activities-error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
+(defn valid-response? [response]
+  (let [hickory-response (map hic/as-hickory (hic/parse-fragment response))
+        valid-tag-seq (map #(= (:tag %) :li) hickory-response)]
+    (every? true? valid-tag-seq)))
+
 (defn append-older-activities [load-activities-fn response]
   (let [activity-stream (dm/sel1 :.clj--activity-stream)
         original-list-html (. activity-stream -innerHTML)]
-    (when-let [activity-loading-spinner (dm/sel1 activity-loading-spinner)]
-      (d/set-attr! activity-loading-spinner "hidden"))
+    (d/set-attr! (dm/sel1 activity-loading-spinner) "hidden")
+    (reset! request-not-in-progress true)
     (set! (. activity-stream -innerHTML) (str original-list-html response))
-    (do (reset! request-not-in-progress true)
-           (d/unlisten! js/window :scroll load-activities-fn))))
+    (load-activities-fn)))
 
 (defn older-activities-handler [load-activities-fn response]
-  (if (empty? response)
+  (if (or (empty? response) (not (valid-response? response)))
     (do (reset! request-not-in-progress true)
         (d/unlisten! js/window :scroll load-activities-fn)
-        (when-let [activity-loading-spinner (dm/sel1 activity-loading-spinner)]
-          (d/set-attr! activity-loading-spinner "hidden")))
+        (d/set-attr! (dm/sel1 activity-loading-spinner) "hidden"))
     (js/setTimeout
       #(append-older-activities load-activities-fn response)
       1000)))
 
 (defn load-older-activities [load-activities-fn]
   (let [timestamp (d/attr (last (dm/sel :.clj--activity-item__time)) "datetime")]
-    (when @request-not-in-progress
-      (do (reset! request-not-in-progress false)
-          (d/remove-attr! (dm/sel1 activity-loading-spinner) "hidden")
-          (GET (str "/api/activities-html?timestamp-to=" timestamp)
-               {:handler       (partial older-activities-handler load-activities-fn)
-                :error-handler older-activities-error-handler})))))
+    (reset! request-not-in-progress false)
+    (d/remove-attr! (dm/sel1 activity-loading-spinner) "hidden")
+    (GET (str "/api/activities-html?timestamp-to=" timestamp)
+         {:handler       (partial older-activities-handler load-activities-fn)
+          :error-handler older-activities-error-handler})))
 
 (defn load-more-activities-if-at-end-of-page []
   (let [scroll-top (dom/get-scroll-top)
@@ -74,11 +76,6 @@
         message-end-translation (get-translation message-end-key)
         message (str message-start-translation length message-end-translation)]
     (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) message)))
-
-(defn valid-response? [response]
-  (let [hickory-response (map hic/as-hickory (hic/parse-fragment response))
-        valid-tag-seq (map #(= (:tag %) :li) hickory-response)]
-    (every? true? valid-tag-seq)))
 
 (defn newer-activities-handler [polling-fn response]
   (let [activity-stream (dm/sel1 :.clj--activity-stream)

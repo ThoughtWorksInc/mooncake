@@ -9,39 +9,13 @@
                    [mooncake.jstest.macros :refer [load-template]]
                    [dommy.core :as dm]))
 
-(def activity {"actor"           {"displayName" "Bob"}
-               "limited-title"   "Bob's Activity"
-               "formatted-time"  "2 weeks ago"
-               "published"       "2016-12-11T01:24:45.192Z"
-               "object"          {"url" "http://activity-src.co.uk/bob"}
-               "activity-src-no" "1"
-               "action-text"     "created an activity"})
-
-(defn create-feed-item []
-  (let [feed-item-html
-        "<li class=\"activity-src-0 clj--activity-item\">
-          <a href class=\"clj--activity-item__link\">
-            <span class=\"clj--avatar__initials\"></span>
-            <span class=\"clj--activity-item__action__author\"></span>
-            <span class=\"clj--activity-item__action\" data-l8n=\"content:feed/action-text-question\"></span>
-            <time datetime class=\"clj--activity-item__time\"></time>
-            <h3 class=\"clj--activity-item__title\"></h3>
-          </a>
-        </li>"
-        feed-item (d/create-element "li")]
-    (set! (. feed-item -innerHTML) feed-item-html)
-    feed-item))
-
 (defonce feed-page-template (load-template "public/feed.html"))
+
+(def invalid-html-response "<a></a><li></li>")
+(def valid-html-response "<li></li><li><a></a></li>")
 
 (defn set-initial-state []
   (tu/set-html! feed-page-template))
-
-(deftest removes-event-listener
-         (testing "scroll listener is removed if response contains no activities"
-                  (set-initial-state)
-                  (feed/append-older-activities feed/load-more-activities-if-at-end-of-page "")
-                  (is (empty? (dommy/event-listeners js/window)))))
 
 (deftest about-hiding-pagination-buttons
          (testing "pagination buttons are hidden on page load"
@@ -76,11 +50,47 @@
          (testing "spinner gets removed when activities are appended"
                   (set-initial-state)
                   (feed/load-older-activities (constantly {}))
-                  (feed/append-older-activities {} "")
+                  (feed/append-older-activities (constantly {}) "")
                   (is (not (nil? (d/attr (dm/sel1 :.clj--activity-loading-spinner) "hidden"))))))
 
 (deftest about-validating-the-response
           (testing "valid-response returns whether all top-level elements in the fragment are li"
                    (set-initial-state)
-                   (is (feed/valid-response? "<li></li><li><a></a></li>"))
-                   (is (not (feed/valid-response? "<a></a><li></li>")))))
+                   (is (feed/valid-response? valid-html-response))
+                   (is (not (feed/valid-response? invalid-html-response)))))
+
+(deftest about-concurrent-requests
+         (testing "request not made if another is in progress"
+                  (set-initial-state)
+                  (reset! feed/request-not-in-progress true)
+                  (is (nil? (feed/load-more-activities-if-at-end-of-page))))
+         (testing "request-not-in-progress set to false as request is made"
+                  (set-initial-state)
+                  (is (true? @feed/request-not-in-progress))
+                  (feed/load-older-activities (constantly nil))
+                  (is (false? @feed/request-not-in-progress)))
+         (testing "request-not-in-progress set to true as empty response is handled"
+                  (set-initial-state)
+                  (is (false? @feed/request-not-in-progress))
+                  (feed/older-activities-handler (constantly nil) "")
+                  (is (true? @feed/request-not-in-progress)))
+         (testing "request-not-in-progress set to true after activities appended"
+                  (set-initial-state)
+                  (reset! feed/request-not-in-progress false)
+                  (feed/append-older-activities (constantly nil) valid-html-response)
+                  (is (true? @feed/request-not-in-progress))))
+
+(deftest about-handling-the-response
+         (testing "invalid response removes the scroll listener and hides the spinner"
+                  (set-initial-state)
+                  (feed/older-activities-handler feed/load-more-activities-if-at-end-of-page invalid-html-response)
+                  (is (empty? (dommy/event-listeners js/window)))
+                  (is (not (nil? (d/attr (dm/sel1 :.clj--activity-loading-spinner) "hidden")))))
+         (testing "empty response removes the scroll listener and hides the spinner"
+                  (set-initial-state)
+                  (feed/older-activities-handler feed/load-more-activities-if-at-end-of-page "")
+                  (is (empty? (dommy/event-listeners js/window)))
+                  (is (not (nil? (d/attr (dm/sel1 :.clj--activity-loading-spinner) "hidden")))))
+         (testing "valid response calls the load-activities-fn after appending activities"
+                  (set-initial-state)
+                  (is (true? (feed/append-older-activities (constantly true) valid-html-response)))))

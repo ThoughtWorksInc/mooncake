@@ -52,8 +52,7 @@
                                                                        (mooncake.jstest.macros/type-key) "Something"}
                                     :signed                           false}]))
 
-(def invalid-html-response
-  "<a></a><a></a>")
+(def invalid-html-response "<a></a><a></a>")
 
 (defn set-initial-state []
   (tu/set-html! feed-page-template)
@@ -132,13 +131,14 @@
                     (tu/click! :.func--reveal-new-activities__link)
                     (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link")))
 
-(deftest about-validation-polling-response
-         (testing "invalid response is not prepended"
+(deftest about-validation-on-responses
+         (testing "invalid response is not added to the feed"
                   (set-initial-state)
                   (let [html (dommy/html (sel1 :html))]
                     (feed/newer-activities-handler (constantly nil) invalid-html-response)
-                    (let [html-after-response (dommy/html (sel1 :html))]
-                      (is (= html html-after-response)))))
+                    (is (= html (dommy/html (sel1 :html))))
+                    (feed/older-activities-handler (constantly nil) invalid-html-response)
+                    (is (= html (dommy/html (sel1 :html))))))
          (testing "invalid response stops the polling for new activities"
                   (set-initial-state)
                   (let [handler-result (feed/newer-activities-handler (constantly true) invalid-html-response)]
