@@ -16,10 +16,10 @@
 (def request-not-in-progress
   (atom true))
 
-(defn old-activities-error-handler [response]
+(defn older-activities-error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
-(defn append-old-activities [load-activities-fn response]
+(defn append-older-activities [load-activities-fn response]
   (let [activity-stream (dm/sel1 :.clj--activity-stream)
         original-list-html (. activity-stream -innerHTML)]
     (when-let [activity-loading-spinner (dm/sel1 activity-loading-spinner)]
@@ -35,17 +35,17 @@
         (when-let [activity-loading-spinner (dm/sel1 activity-loading-spinner)]
           (d/set-attr! activity-loading-spinner "hidden")))
     (js/setTimeout
-      #(append-old-activities load-activities-fn response)
+      #(append-older-activities load-activities-fn response)
       1000)))
 
-(defn load-old-activities [load-activities-fn]
+(defn load-older-activities [load-activities-fn]
   (let [timestamp (d/attr (last (dm/sel :.clj--activity-item__time)) "datetime")]
     (when @request-not-in-progress
       (do (reset! request-not-in-progress false)
           (d/remove-attr! (dm/sel1 activity-loading-spinner) "hidden")
           (GET (str "/api/activities-html?timestamp-to=" timestamp)
                {:handler       (partial older-activities-handler load-activities-fn)
-                :error-handler old-activities-error-handler})))))
+                :error-handler older-activities-error-handler})))))
 
 (defn load-more-activities-if-at-end-of-page []
   (let [scroll-top (dom/get-scroll-top)
@@ -53,30 +53,16 @@
         window-height (.-innerHeight js/window)
         scrolled-to-bottom? (>= (+ scroll-top window-height) scroll-height)]
     (when (and scrolled-to-bottom? (dom/body-has-class? "cljs--feed-page"))
-      (load-old-activities load-more-activities-if-at-end-of-page))))
+      (load-older-activities load-more-activities-if-at-end-of-page))))
 
-(defn reveal-new-activities [e]
+(defn reveal-newer-activities [e]
   (let [new-activities (dm/sel :.hidden-new-activity)]
     (doseq [activity new-activities]
       (d/remove-class! activity "hidden-new-activity")))
   (d/remove-class! (.-target e) "show-new-activities__link"))
 
-(defn new-activities-error-handler [response]
+(defn newer-activities-error-handler [response]
   (d/add-class! (dm/sel1 :.clj--new-activities__error) "show-feed-activities__error"))
-
-(defn newer-activities-handler [polling-fn response]
-  (let [activities (get response "activities")
-        feed-item (dm/sel1 :.clj--activity-item)]
-    (doseq [activity (reverse activities)]
-      (let [new-feed-item (.cloneNode feed-item true)]
-        (create-new-feed-item activity new-feed-item)
-        (d/add-class! new-feed-item "hidden-new-activity")
-        (d/prepend! (dm/sel1 :.clj--activity-stream) new-feed-item)))
-    (if (not (empty? activities))
-      (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)]
-        (update-new-activities-link-text (count activities))
-        (dom/add-if-not-present show-new-items-link "show-new-activities__link"))))
-  (polling-fn))
 
 (defn get-translation [key]
   (get-in dom/translations [:feed key]))
@@ -107,13 +93,10 @@
       (polling-fn))))
 
 (defn load-new-activities [polling-fn]
-  (let [stream (dm/sel1 :.clj--activity-stream)
-        last-activity (.-firstChild stream)
-        selector (dm/sel1 last-activity :.clj--activity-item__time)
-        timestamp (d/attr selector "datetime")]
+  (let [timestamp (d/attr (first (dm/sel :.clj--activity-item__time)) "datetime")]
     (GET (str "/api/activities-html?timestamp-from=" timestamp)
          {:handler       (partial newer-activities-handler polling-fn)
-          :error-handler new-activities-error-handler})))
+          :error-handler newer-activities-error-handler})))
 
 (defn check-for-new-activities []
   (js/setTimeout

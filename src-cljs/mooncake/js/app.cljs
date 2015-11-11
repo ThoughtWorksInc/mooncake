@@ -17,7 +17,7 @@
   (f/load-more-activities-if-at-end-of-page)
   (f/check-for-new-activities)
   (d/listen! js/window :scroll f/load-more-activities-if-at-end-of-page)
-  (setup-listener f/reveal-new-activities-link :click f/reveal-new-activities)
+  (setup-listener f/reveal-new-activities-link :click f/reveal-newer-activities)
   (setup-multi-listeners cf/type-checkbox-selector :change cf/type-checkbox-changed)
   (setup-multi-listeners cf/src-checkbox-selector :click cf/src-checkbox-clicked))
 

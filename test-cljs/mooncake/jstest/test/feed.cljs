@@ -40,7 +40,7 @@
 (deftest removes-event-listener
          (testing "scroll listener is removed if response contains no activities"
                   (set-initial-state)
-                  (feed/append-old-activities feed/load-more-activities-if-at-end-of-page "")
+                  (feed/append-older-activities feed/load-more-activities-if-at-end-of-page "")
                   (is (empty? (dommy/event-listeners js/window)))))
 
 (deftest about-hiding-pagination-buttons
@@ -62,21 +62,21 @@
          (testing "error handler displays error message"
                   (set-initial-state)
                   (tu/test-string-does-not-contain (d/class (dm/sel1 :.clj--new-activities__error)) "show-feed-activities__error")
-                  (feed/new-activities-error-handler {})
+                  (feed/newer-activities-error-handler {})
                   (tu/test-string-contains (d/class (dm/sel1 :.clj--new-activities__error)) "show-feed-activities__error")))
 
 (deftest adds-spinner-before-adding-old-activities
          (testing "spinner appears on load-old-activities"
                   (set-initial-state)
                   (is (not (nil? (d/attr (dm/sel1 :.clj--activity-loading-spinner) "hidden"))))
-                  (feed/load-old-activities (constantly {}))
+                  (feed/load-older-activities (constantly {}))
                   (is (= (d/attr (dm/sel1 :.clj--activity-loading-spinner) "hidden") nil))))
 
 (deftest removes-spinner-after-adding-old-activities
          (testing "spinner gets removed when activities are appended"
                   (set-initial-state)
-                  (feed/load-old-activities (constantly {}))
-                  (feed/append-old-activities {} "")
+                  (feed/load-older-activities (constantly {}))
+                  (feed/append-older-activities {} "")
                   (is (not (nil? (d/attr (dm/sel1 :.clj--activity-loading-spinner) "hidden"))))))
 
 (deftest about-validating-the-response
