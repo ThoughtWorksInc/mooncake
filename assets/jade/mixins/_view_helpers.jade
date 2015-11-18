@@ -3,6 +3,7 @@ mixin streamItem(title, author, activityAction, sourceClass, isUntrustedSource, 
     a.activity-item__link.clj--activity-item__link.func--activity-item__link(href="#")
       .activity-item__avatar
         span.avatar__initials.clj--avatar__initials !C
+      .activity-item__id.clj--activity-item__id(hidden="hidden") 0
       h2.activity-item__action
         span.activity-item__action__author.clj--activity-item__action__author.func--activity-item__action__author #{author}
         = " "

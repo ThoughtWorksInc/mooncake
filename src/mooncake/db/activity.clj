@@ -34,10 +34,10 @@
 
 (defn fetch-activities-by-timestamp-and-id [store activity-sources-and-types timestamp id older-items-requested?]
   (let [limit (when older-items-requested? config/activities-per-page)]
-    (mongo/find-items-by-timestamp-and-id store activity-collection activity-sources-and-types {:sort {:published :descending} :limit limit} timestamp id older-items-requested?)))
+    (mongo/find-items-by-timestamp-and-id store activity-collection activity-sources-and-types {:sort {:published :descending :relInsertTime :descending} :limit limit} timestamp id older-items-requested?)))
 
 (defn fetch-activities-by-activity-sources-and-types [store activity-sources-and-types params]
-  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types (merge {:sort {:published :descending} :limit config/activities-per-page} params)))
+  (mongo/find-items-by-alternatives store activity-collection activity-sources-and-types (merge {:sort {:published :descending :relInsertTime :descending} :limit config/activities-per-page} params)))
 
 (defn store-activity! [store activity]
   (let [activity-src (domain/activity->activity-src activity)

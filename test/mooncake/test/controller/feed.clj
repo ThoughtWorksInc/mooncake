@@ -7,14 +7,15 @@
             [mooncake.db.user :as user]
             [mooncake.db.mongo :as mongo]
             [mooncake.db.activity :as adb]
-            [mooncake.config :as config]
-            [mooncake.test.test-helpers.activities :as act]))
+            [mooncake.config :as config])
+  (:import (org.bson.types ObjectId)))
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
 (def twelve-oclock "2015-01-02T12:00:00.000Z")
 (def next-day "2015-01-02T12:00:00.000Z")
 (def previous-day "2014-12-31T12:00:00.000Z")
+(def base-insert-time "564c8f57d4c6d9e63f34c6b")
 
 (fact "feed handler displays activities retrieved from activity sources"
       (let [store (dbh/create-in-memory-store)]
@@ -45,25 +46,25 @@
                                    :published        ten-oclock
                                    :activity-src     "activity-src-1"
                                    (keyword "@type") "Enabled"
-                                   :relInsertTime    1})
+                                   :relInsertTime    (ObjectId. (str base-insert-time 1))})
 (def activity-src-1--previous-day {:actor            {(keyword "@type") "Person"
                                                       :displayName      "Activity source 1: previous day"}
                                    :published        previous-day
                                    :activity-src     "activity-src-1"
                                    (keyword "@type") "Enabled"
-                                   :relInsertTime    2})
+                                   :relInsertTime    (ObjectId. (str base-insert-time 2))})
 (def activity-src-1--disabled-type {:actor            {(keyword "@type") "Person"
                                                        :displayName      "Activity source 1: disabled type"}
                                     :published        eleven-oclock
                                     :activity-src     "activity-src-1"
                                     (keyword "@type") "Disabled"
-                                    :relInsertTime    3})
+                                    :relInsertTime    (ObjectId. (str base-insert-time 3))})
 (def activity-src-2--no-preference-type {:actor            {(keyword "@type") "Person"
                                                             :displayName      "Activity source 2: no preference expressed"}
                                          :published        twelve-oclock
                                          :activity-src     "activity-src-2"
                                          (keyword "@type") "No-preference"
-                                         :relInsertTime    4})
+                                         :relInsertTime    (ObjectId. (str base-insert-time 4))})
 
 (facts "about which activities feed handler displays"
        (let [store (dbh/create-in-memory-store)
@@ -186,8 +187,8 @@
              _ (user/create-user! store ...user-id... ...username...)
              _ (user/update-feed-settings! store ...username... {:activity-src-1 {:types [{:id "Enabled" :selected true}
                                                                                           {:id "Disabled" :selected false}]}})
-             response-for-retrieving (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-to next-day :insert-id 5}))
-             response-for-updating (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-from previous-day :insert-id 2}))]
+             response-for-retrieving (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-to next-day :insert-id (str base-insert-time 5)}))
+             response-for-updating (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-from previous-day :insert-id (str base-insert-time 2)}))]
 
          (facts "retrieving older activities"
 
@@ -216,7 +217,7 @@
 
          (facts "error handling"
                 (let [bad-timestamp "2015-01-0110:00:00.000Z"
-                      bad-timestamp-response (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-to bad-timestamp}))]
+                      bad-timestamp-response (fc/retrieve-activities-html store (request-with-timestamp {:timestamp-to bad-timestamp :insert-id (str base-insert-time 1)}))]
 
                   (fact "valid-timestamp? returns whether a timestamp is in the correct format"
                         (fc/valid-timestamp? next-day) => truthy

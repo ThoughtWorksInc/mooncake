@@ -77,7 +77,6 @@
           dissoc-id)))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
-    (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
     (if (not-empty value-map-vector)
       (let [mongo-query-map (value-map-vector->or-mongo-query-map value-map-vector)
             sort-query-map (options-m->sort-query-map options-m)

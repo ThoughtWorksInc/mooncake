@@ -6,6 +6,9 @@
 (defn activity->published [activity]
   (:published activity))
 
+(defn activity->insert-id [activity]
+  (str (:relInsertTime activity)))
+
 (defn activity->actor-display-name [activity]
   (get-in activity [:actor :displayName]))
 

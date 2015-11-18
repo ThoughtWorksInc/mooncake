@@ -18,7 +18,8 @@
             [mooncake.db.activity :as adb]
             [clj-time.format :as f]
             [clj-time.core :as t]
-            [mooncake.config :as config]))
+            [mooncake.config :as config])
+  (:import (org.bson.types ObjectId)))
 
 (def ten-oclock "2015-01-01T10:00:00.000Z")
 (def eleven-oclock "2015-01-01T11:00:00.000Z")
@@ -74,14 +75,16 @@
               {:actor            {:displayName (str "TestData" counter)}
                :published        (f/unparse (f/formatters :date-time) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
                :activity-src     "test-activity-source-1"
-               (keyword "@type") "Create"}))
+               (keyword "@type") "Create"
+               :relInsertTime    (ObjectId.)}))
        (populate-db-with-stub-activities! store)))
 
 (defn create-dummy-activity [store timestamp]
-  (->> [{:actor     {:displayName (str "Single Activity")}
-         :published timestamp
-                    :activity-src "test-activity-source-1"
-                    (keyword "@type") "Create"}]
+  (->> [{:actor            {:displayName (str "Single Activity")}
+         :published        timestamp
+         :activity-src     "test-activity-source-1"
+         (keyword "@type") "Create"
+         :relInsertTime    (ObjectId.)}]
        (populate-db-with-stub-activities! store)))
 
 (defn clean-app! []

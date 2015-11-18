@@ -5,7 +5,8 @@
             [mooncake.controller.customise-feed :as cfc]
             [mooncake.view.feed :as f]
             [mooncake.db.activity :as dba]
-            [ring.util.response :as r]))
+            [ring.util.response :as r])
+  (:import (org.bson.types ObjectId)))
 
 (defn generate-feed-query [feed-settings activity-sources]
   (remove nil? (map a/activity-src-preferences->feed-query (cfc/generate-activity-source-preferences activity-sources feed-settings))))
@@ -34,7 +35,7 @@
         timestamp-from (get-in request [:params :timestamp-from])
         older-items-requested? (nil? timestamp-from)
         timestamp (or timestamp-to timestamp-from)
-        insert-id (get-in request [:params :insert-id])]
+        insert-id (ObjectId. (get-in request [:params :insert-id]))]
     (if (valid-timestamp? timestamp)
       (retrieve-activities store request timestamp insert-id older-items-requested?)
       (-> (r/status (r/response "") 400)

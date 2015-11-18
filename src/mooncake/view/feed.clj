@@ -56,7 +56,8 @@
                                                                     "verification-failed" (html/do->
                                                                                             (html/substitute activity-stream-item-unverified-signature-snippet)
                                                                                             (html/remove-class "clj--STRIP"))
-                                                                    nil))))))
+                                                                    nil))
+                             [:.clj--activity-item__id] (html/content (domain/activity->insert-id activity))))))
 
 (defn add-activities [enlive-m activities activity-sources]  (let [activity-stream-items (generate-activity-stream-items enlive-m activities activity-sources)]
     (html/at enlive-m [:.clj--activity-stream]

@@ -62,8 +62,6 @@
           (fact "can sort results by a given column and ordering"
                 (mongo/find-items-by-alternatives store collection-name [{}] {:sort {:some-index-key :ascending}}) => (just [item2 item1 item3])
                 (mongo/find-items-by-alternatives store collection-name [{}] {:sort {:some-index-key :descending}}) => (just [item3 item1 item2]))
-          (fact "only supports sorting by one key"
-                (mongo/find-items-by-alternatives store collection-name [{}] {:sort {:some-index-key :ascending :other-index-key :descending}}) => (throws anything))
           (fact "can retrieve results in batches"
                 (mongo/find-items-by-alternatives store collection-name [{}] {:limit 2}) => (two-of anything))
           (fact "can retrieve results by page"

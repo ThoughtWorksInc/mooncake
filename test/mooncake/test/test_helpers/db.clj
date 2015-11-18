@@ -88,7 +88,6 @@
           (dissoc :_id))))
 
   (find-items-by-alternatives [this coll value-map-vector options-m]
-    (when (< 1 (count (keys (:sort options-m)))) (throw (ex-info "Trying to sort by more than one key" (:sort options-m))))
     (let [comp-fn (options-m->compare-fn options-m)
           batch-fn (options-m->batch-fn options-m)
           skip-fn (options-m->skip-fn options-m)]

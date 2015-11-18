@@ -28,8 +28,8 @@
   (let [activity-stream (dm/sel1 :.clj--activity-stream)
         original-list-html (. activity-stream -innerHTML)]
     (d/set-attr! (dm/sel1 activity-loading-spinner) "hidden")
-    (reset! request-not-in-progress true)
     (set! (. activity-stream -innerHTML) (str original-list-html response))
+    (reset! request-not-in-progress true)
     (load-activities-fn)))
 
 (defn older-activities-handler [load-activities-fn response]
@@ -42,12 +42,14 @@
       1000)))
 
 (defn load-older-activities [load-activities-fn]
-  (let [timestamp (d/attr (last (dm/sel :.clj--activity-item__time)) "datetime")]
+  (when @request-not-in-progress
     (reset! request-not-in-progress false)
-    (d/remove-attr! (dm/sel1 activity-loading-spinner) "hidden")
-    (GET (str "/api/activities-html?timestamp-to=" timestamp)
-         {:handler       (partial older-activities-handler load-activities-fn)
-          :error-handler older-activities-error-handler})))
+    (let [timestamp (d/attr (last (dm/sel :.clj--activity-item__time)) "datetime")
+          id (d/text (last (dm/sel :.clj--activity-item__id)))]
+      (d/remove-attr! (dm/sel1 activity-loading-spinner) "hidden")
+      (GET (str "/api/activities-html?timestamp-to=" timestamp "&insert-id=" id)
+           {:handler       (partial older-activities-handler load-activities-fn)
+            :error-handler older-activities-error-handler}))))
 
 (defn load-more-activities-if-at-end-of-page []
   (let [scroll-top (dom/get-scroll-top)
@@ -90,8 +92,9 @@
       (polling-fn))))
 
 (defn load-new-activities [polling-fn]
-  (let [timestamp (d/attr (first (dm/sel :.clj--activity-item__time)) "datetime")]
-    (GET (str "/api/activities-html?timestamp-from=" timestamp)
+  (let [timestamp (d/attr (first (dm/sel :.clj--activity-item__time)) "datetime")
+        id (d/text (first (dm/sel :.clj--activity-item__id)))]
+    (GET (str "/api/activities-html?timestamp-from=" timestamp "&insert-id=" id)
          {:handler       (partial newer-activities-handler polling-fn)
           :error-handler newer-activities-error-handler})))
 
