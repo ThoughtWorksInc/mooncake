@@ -33,9 +33,10 @@
   (let [timestamp-to (get-in request [:params :timestamp-to])
         timestamp-from (get-in request [:params :timestamp-from])
         older-items-requested? (nil? timestamp-from)
-        timestamp (or timestamp-to timestamp-from)]
+        timestamp (or timestamp-to timestamp-from)
+        insert-id (get-in request [:params :insert-id])]
     (if (valid-timestamp? timestamp)
-      (retrieve-activities store request timestamp 0 older-items-requested?)
+      (retrieve-activities store request timestamp insert-id older-items-requested?)
       (-> (r/status (r/response "") 400)
           (r/content-type "text/plain")))))
 
