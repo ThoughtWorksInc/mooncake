@@ -15,11 +15,11 @@
         user (user/find-user store username)]
     (:feed-settings user)))
 
-(defn retrieve-activities [store request timestamp older-items-requested?]
+(defn retrieve-activities [store request timestamp id older-items-requested?]
   (let [context (:context request)
         activity-sources (:activity-sources context)
         feed-query (generate-feed-query (generate-user-feed-settings store request) activity-sources)
-        activities (dba/fetch-activities-by-timestamp store feed-query timestamp older-items-requested?)
+        activities (dba/fetch-activities-by-timestamp-and-id store feed-query timestamp id older-items-requested?)
         updated-context (assoc context :activities activities :hide-activities? (not older-items-requested?))]
     (mh/enlive-response (f/feed-fragment (assoc request :context updated-context)) request)))
 
@@ -35,7 +35,7 @@
         older-items-requested? (nil? timestamp-from)
         timestamp (or timestamp-to timestamp-from)]
     (if (valid-timestamp? timestamp)
-      (retrieve-activities store request timestamp older-items-requested?)
+      (retrieve-activities store request timestamp 0 older-items-requested?)
       (-> (r/status (r/response "") 400)
           (r/content-type "text/plain")))))
 

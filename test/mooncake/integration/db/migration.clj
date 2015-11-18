@@ -63,6 +63,50 @@
              (activity/fetch-activity-types store) => {"source-1" ["Create" "Question"]
                                                        "source-2" ["Create"]}))))
 
+(facts "About migration to add relative insertion id"
+       (dbh/with-mongo-do
+         (fn [db]
+           (let [store (mongo/create-mongo-store db)
+                 id1 1
+                 id2 2
+                 id3 3]
+             (mongo/store-with-id! store activity/activity-collection :id {:id               id1
+                                                                           :displayName      "KCat"
+                                                                           :published        "2015-08-12T10:20:41.000Z"
+                                                                           :activity-src     "source-1"
+                                                                           (keyword "@type") "Create"})
+             (mongo/store-with-id! store activity/activity-collection :id {:id               id2
+                                                                           :displayName      "JDog"
+                                                                           :published        "2015-08-12T10:20:42.000Z"
+                                                                           :activity-src     "source-1"
+                                                                           (keyword "@type") "Question"})
+             (mongo/store-with-id! store activity/activity-collection :id {:id               id3
+                                                                           :displayName      "LFrog"
+                                                                           :published        "2015-08-12T10:20:43.000Z"
+                                                                           :activity-src     "source-2"
+                                                                           (keyword "@type") "Create"})
+             (activity/fetch-activity-types store) => {}
+             (m/make-activities-indexed-by-timestamp-and-id! db)
+             (vec (activity/fetch-activities store)) => [{:displayName      "KCat"
+                                                             :published        "2015-08-12T10:20:41.000Z"
+                                                             :activity-src     "source-1"
+                                                             (keyword "@type") "Create"
+                                                             :id               id1
+                                                             :relInsertTime    id1}
+                                                            {:displayName      "JDog"
+                                                             :published        "2015-08-12T10:20:42.000Z"
+                                                             :activity-src     "source-1"
+                                                             (keyword "@type") "Question"
+                                                             :id               id2
+                                                             :relInsertTime    id2}
+                                                            {:displayName      "LFrog"
+                                                             :published        "2015-08-12T10:20:43.000Z"
+                                                             :activity-src     "source-2"
+                                                             (keyword "@type") "Create"
+                                                             :id               id3
+                                                             :relInsertTime    id3}]
+             (count (monger-c/indexes-on db "activity")) => 2))))
+
 (facts "About adding :signed false status to activities that do not have :signed"
        (dbh/with-mongo-do
          (fn [db]

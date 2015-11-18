@@ -28,12 +28,19 @@
 
 (def neutral-comp-fn (constantly 0))
 
+(defn secondary-key-sort-fn [primary-sort-result value-1 value-2 sort-key]
+  (if (and (= 0 primary-sort-result) sort-key)
+    (compare (get value-1 sort-key) (get value-2 sort-key))
+    primary-sort-result))
+
 (defn options-m->compare-fn [options-m]
-  (if-let [sort-key (first (keys (:sort options-m)))]
-    (let [ordering-key (get-in options-m [:sort sort-key])
-          ordering-multiplier (get {:ascending 1 :descending -1} ordering-key 0)]
+  (if-let [primary-sort-key (first (keys (:sort options-m)))]
+    (let [ordering-key (get-in options-m [:sort primary-sort-key])
+          ordering-multiplier (get {:ascending 1 :descending -1} ordering-key 0)
+          secondary-sort-key (second (keys (:sort options-m)))]
       (fn [value-1 value-2]
-        (-> (compare (get value-1 sort-key) (get value-2 sort-key))
+        (-> (compare (get value-1 primary-sort-key) (get value-2 primary-sort-key))
+            (secondary-key-sort-fn value-1 value-2 secondary-sort-key)
             (* ordering-multiplier))))
     neutral-comp-fn))
 
@@ -55,9 +62,15 @@
       identity)))
 
 (defn timestamp-fn [timestamp older-items-requested?]
-  (let [comparitor (if older-items-requested? > <)]
+  (let [comparitor (if older-items-requested? >= <=)]
     (partial filter
              #(comparitor 0 (compare (:published %) timestamp)))))
+
+(defn id-fn [id timestamp older-items-requested?]
+  (let [comparitor (if older-items-requested? > <)]
+    (partial filter
+             #(or (not (= (:published %) timestamp))
+                  (comparitor 0 (compare (:relInsertTime %) id))))))
 
 (defrecord MemoryStore [data]
   mongo/Store
@@ -116,15 +129,17 @@
       (let [id (UUID/randomUUID)]
         (swap! data assoc-in [coll id] (assoc query :_id id key-param [value])))))
 
-  (find-items-by-timestamp [this coll value-map-vector options-m timestamp older-items-requested?]
+  (find-items-by-timestamp-and-id [this coll value-map-vector options-m timestamp id older-items-requested?]
     (let [comp-fn (options-m->compare-fn options-m)
           batch-fn (options-m->batch-fn options-m)
-          timestamp-fn (timestamp-fn timestamp older-items-requested?)]
+          timestamp-fn (timestamp-fn timestamp older-items-requested?)
+          id-fn (id-fn id timestamp older-items-requested?)]
       (->> value-map-vector
            (map #(find-by-map-query this coll %))
            (apply set/union)
-           (sort comp-fn)
            timestamp-fn
+           id-fn
+           (sort comp-fn)
            batch-fn))))
 
 (defn create-in-memory-store
@@ -151,6 +166,7 @@
               {:actor            {:displayName (str "TestData" counter)}
                :published        (f/unparse (f/formatters :date-hour-minute-second) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
                :activity-src     "test-source"
+               :relInsertTime    counter
                (keyword "@type") "Create"}))
        (map (partial activity/store-activity! store))
        doall))

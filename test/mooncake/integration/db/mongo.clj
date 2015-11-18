@@ -74,31 +74,30 @@
 
 (defn test-find-items-by-timestamps [store]
   (fact {:midje/name (str (type store) " -- test-find-items-by-timestamp queries items that are older than provided timestamp")}
-        (let [latest-time "2015-08-12T00:00:03.000Z"
-              second-latest-time "2015-08-12T00:00:02.000Z"
-              second-oldest-time "2015-08-12T00:00:01.000Z"
+        (let [latest-time "2015-08-12T00:00:02.000Z"
+              middle-time "2015-08-12T00:00:01.000Z"
               oldest-time "2015-08-12T00:00:00.000Z"
-              item1 {:some-index-key "Mal" :published latest-time}
-              item2 {:some-index-key "Zoe" :published second-latest-time}
-              item3 {:some-index-key "Wash" :published second-oldest-time}
-              item4 {:some-index-key "Kayleigh" :published oldest-time}
-              _ (mongo/store-with-id! store collection-name :some-index-key item1)
-              _ (mongo/store-with-id! store collection-name :some-index-key item2)
-              _ (mongo/store-with-id! store collection-name :some-index-key item3)
-              _ (mongo/store-with-id! store collection-name :some-index-key item4)
+              item1 {:some-index-key "Mal" :published latest-time :relInsertTime 4}
+              item3 {:some-index-key "Wash" :published middle-time :relInsertTime 3}
+              item2 {:some-index-key "Zoe" :published middle-time :relInsertTime 2}
+              item4 {:some-index-key "Kayleigh" :published oldest-time :relInsertTime 1}
+              _ (mongo/store! store collection-name item1)
+              _ (mongo/store! store collection-name item2)
+              _ (mongo/store! store collection-name item3)
+              _ (mongo/store! store collection-name item4)
               newer-items-requested false
               older-items-requested true]
 
           (fact "can select activities based on timestamp and whether older or newer items are requested"
-                (mongo/find-items-by-timestamp store collection-name [{}] {} second-oldest-time older-items-requested) => (just [item4])
-                (mongo/find-items-by-timestamp store collection-name [{}] {} second-latest-time newer-items-requested) => (just [item1]))
+                (mongo/find-items-by-timestamp-and-id store collection-name [{}] {} middle-time 3 older-items-requested) => (just [item2 item4])
+                (mongo/find-items-by-timestamp-and-id store collection-name [{}] {} middle-time 2 newer-items-requested) => (just [item1 item3]))
           (fact "can sort results by a given column and ordering"
-                (mongo/find-items-by-timestamp store collection-name [{}] {:sort {:published :descending}} oldest-time newer-items-requested) => (just [item1 item2 item3])
-                (mongo/find-items-by-timestamp store collection-name [{}] {:sort {:published :ascending}} oldest-time newer-items-requested) => (just [item3 item2 item1]))
+                (mongo/find-items-by-timestamp-and-id store collection-name [{}] {:sort {:published :descending :relInsertTime :descending}} oldest-time 1 newer-items-requested) => (just [item1 item3 item2])
+                (mongo/find-items-by-timestamp-and-id store collection-name [{}] {:sort {:published :ascending :relInsertTime :ascending}} oldest-time 1 newer-items-requested) => (just [item2 item3 item1]))
           (fact "limits activity amount for older items"
-                (mongo/find-items-by-timestamp store collection-name [{}] {:limit 2} latest-time older-items-requested ) => (two-of anything))
+                (mongo/find-items-by-timestamp-and-id store collection-name [{}] {:limit 2} latest-time 4 older-items-requested ) => (two-of anything))
           (fact "doesn't limit activity amount for newer items"
-                (mongo/find-items-by-timestamp store collection-name [{}] {:limit nil} oldest-time newer-items-requested) => (three-of anything)))))
+                (mongo/find-items-by-timestamp-and-id store collection-name [{}] {:limit nil} oldest-time 1 newer-items-requested) => (three-of anything)))))
 
 (defn test-fetch-total-count-by-query [store]
   (fact {:midje/name (str (type store) " -- test-fetch-total-count-by-query gets the total number of items which match the query")}

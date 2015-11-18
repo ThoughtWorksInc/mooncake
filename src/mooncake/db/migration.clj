@@ -24,12 +24,25 @@
         (mongo/upsert! store adb/activity-collection {:_id (:_id activity)} :signed false))))
   (log/info "Finished running migration add-signed-false-status-to-activities!"))
 
+(defn make-activities-indexed-by-timestamp-and-id! [db]
+  (log/info "Running make-activities-indexed-by-timestamp-and-id!")
+  (let [store (mongo/create-mongo-store db)
+        activities (mcoll/find-maps db adb/activity-collection)
+        collection-name "activity"]
+    (doseq [activity activities]
+      (when-not (:relInsertTime activity)
+        (mongo/upsert! store adb/activity-collection {:_id (:_id activity)} :relInsertTime (:_id activity))))
+    (mcoll/ensure-index db collection-name (array-map :published 1 :relInsertTime 1)))
+  (log/info "Finished running migration make-activities-indexed-by-timestamp-and-id!"))
+
 ;; IMPORTANT DO *NOT* MODIFY THE EXISTING MIGRATION IDS IN THIS LIST
 (def migrations
   [{:id "add-activity-types-of-existing-activities-to-activity-src-metadata!"
     :up add-activity-types-of-existing-activities-to-activity-src-metadata!}
    {:id "add-signed-false-status-to-activities!"
-    :up add-signed-false-status-to-activities!}])
+    :up add-signed-false-status-to-activities!}
+   {:id "make-activities-indexed-by-timestamp-and-id!"
+    :up make-activities-indexed-by-timestamp-and-id!}])
 
 (defn run-migrations
   ([db]
