@@ -46,10 +46,10 @@
     (reset! request-not-in-progress false)
     (let [timestamp (d/attr (last (dm/sel :.clj--activity-item__time)) "datetime")
           id (d/text (last (dm/sel :.clj--activity-item__id)))]
-      (d/remove-attr! (dm/sel1 activity-loading-spinner) "hidden")
       (GET (str "/api/activities-html?timestamp-to=" timestamp "&insert-id=" id)
            {:handler       (partial older-activities-handler load-activities-fn)
-            :error-handler older-activities-error-handler}))))
+            :error-handler older-activities-error-handler})
+      (d/remove-attr! (dm/sel1 activity-loading-spinner) "hidden"))))
 
 (defn load-more-activities-if-at-end-of-page []
   (let [scroll-top (dom/get-scroll-top)

@@ -62,11 +62,11 @@
 (deftest about-concurrent-requests
          (testing "request not made if another is in progress"
                   (set-initial-state)
-                  (reset! feed/request-not-in-progress true)
-                  (is (nil? (feed/load-more-activities-if-at-end-of-page))))
+                  (reset! feed/request-not-in-progress false)
+                  (is (nil? (feed/load-older-activities (constantly nil)))))
          (testing "request-not-in-progress set to false as request is made"
                   (set-initial-state)
-                  (is (true? @feed/request-not-in-progress))
+                  (reset! feed/request-not-in-progress true)
                   (feed/load-older-activities (constantly nil))
                   (is (false? @feed/request-not-in-progress)))
          (testing "request-not-in-progress set to true as empty response is handled"
