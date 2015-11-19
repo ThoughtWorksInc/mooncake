@@ -16,6 +16,9 @@
 (def request-not-in-progress
   (atom true))
 
+(def number-of-hidden-activities
+  (atom 0))
+
 (defn older-activities-error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
@@ -63,7 +66,8 @@
   (let [new-activities (dm/sel :.hidden-new-activity)]
     (doseq [activity new-activities]
       (d/remove-class! activity "hidden-new-activity")))
-  (d/remove-class! (.-target e) "show-new-activities__link"))
+  (d/remove-class! (.-target e) "show-new-activities__link")
+  (reset! number-of-hidden-activities 0))
 
 (defn newer-activities-error-handler [response]
   (d/add-class! (dm/sel1 :.clj--new-activities__error) "show-feed-activities__error"))
@@ -86,7 +90,8 @@
       (when (not (empty? response))
         (set! (. activity-stream -innerHTML) (str response original-list-html))
         (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)
-              new-activities-count (count (re-seq #"<li" response))]
+              new-activities-count (+ @number-of-hidden-activities (count (re-seq #"<li" response)))]
+          (reset! number-of-hidden-activities new-activities-count)
           (update-new-activities-link-text new-activities-count)
           (dom/add-if-not-present show-new-items-link "show-new-activities__link")))
       (polling-fn))))

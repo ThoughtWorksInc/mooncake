@@ -55,6 +55,7 @@
 (def invalid-html-response "<a></a><a></a>")
 
 (defn set-initial-state []
+  (reset! feed/number-of-hidden-activities 0)
   (tu/set-html! feed-page-template)
   (app/start))
 
@@ -105,13 +106,13 @@
            (testing "number of new activities is displayed in new activities link"
                     (let [new-activity-link-text (str (get-in dom/translations [:feed :new-activities-message-start]) 1
                                                       (get-in dom/translations [:feed :new-activity-message-end]))
-                          new-activities-link-text (str (get-in dom/translations [:feed :new-activities-message-start]) 2
+                          new-activities-link-text (str (get-in dom/translations [:feed :new-activities-message-start]) 3
                                                         (get-in dom/translations [:feed :new-activities-message-end]))]
                       (set-initial-state)
-                      (feed/newer-activities-handler (constantly nil) (html-response-hidden))
-                      (is (= (dommy/text (sel1 :.func--reveal-new-activities__link)) new-activities-link-text))
                       (feed/newer-activities-handler (constantly nil) (html-single-activity-response-hidden))
-                      (is (= (dommy/text (sel1 :.func--reveal-new-activities__link)) new-activity-link-text))))
+                      (is (= (dommy/text (sel1 :.func--reveal-new-activities__link)) new-activity-link-text))
+                      (feed/newer-activities-handler (constantly nil) (html-response-hidden))
+                      (is (= (dommy/text (sel1 :.func--reveal-new-activities__link)) new-activities-link-text))))
            (testing "new activities are hidden by default and revealed by clicking show activity link"
                     (set-initial-state)
                     (feed/newer-activities-handler (constantly nil) (html-response-hidden))
@@ -124,7 +125,9 @@
                       (tu/click! :.func--reveal-new-activities__link)
 
                       (tu/test-string-does-not-contain (dommy/class hidden-item-1) "hidden-new-activity")
-                      (tu/test-string-does-not-contain (dommy/class hidden-item-2) "hidden-new-activity")))
+                      (tu/test-string-does-not-contain (dommy/class hidden-item-2) "hidden-new-activity")
+
+                      (is (= 0 @feed/number-of-hidden-activities))))
            (testing "reveal activities link is hidden after it is clicked"
                     (set-initial-state)
                     (feed/newer-activities-handler (constantly nil) (html-response-hidden))
