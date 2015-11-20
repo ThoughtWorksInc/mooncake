@@ -1,9 +1,9 @@
 (ns mooncake.jstest.test.feed
   (:require [cemerick.cljs.test]
-            [mooncake.js.feed :as feed]
             [dommy.core :as d]
-            [mooncake.jstest.test-utils :as tu]
             [mooncake.js.feed :as feed]
+            [mooncake.js.client-translation :as ct]
+            [mooncake.jstest.test-utils :as tu]
             [dommy.core :as dommy])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
                    [mooncake.jstest.macros :refer [load-template]]
@@ -15,7 +15,7 @@
 (def valid-html-response "<li></li><li><a></a></li>")
 
 (defn set-initial-state []
-  (tu/set-html! feed-page-template))
+      (tu/set-html! feed-page-template))
 
 (deftest about-hiding-pagination-buttons
          (testing "pagination buttons are hidden on page load"
@@ -30,7 +30,7 @@
          (testing "activity link text is set to correct string"
                   (set-initial-state)
                   (let [new-activity-link (feed/update-new-activities-link-text 5)]
-                    (tu/test-string-contains (d/text new-activity-link) "5"))))
+                       (tu/test-string-contains (d/text new-activity-link) "5"))))
 
 (deftest about-displaying-new-activities-error
          (testing "error handler displays error message"
@@ -54,10 +54,10 @@
                   (is (not (nil? (d/attr (dm/sel1 :.clj--activity-loading-spinner) "hidden"))))))
 
 (deftest about-validating-the-response
-          (testing "valid-response returns whether all top-level elements in the fragment are li"
-                   (set-initial-state)
-                   (is (feed/valid-response? valid-html-response))
-                   (is (not (feed/valid-response? invalid-html-response)))))
+         (testing "valid-response returns whether all top-level elements in the fragment are li"
+                  (set-initial-state)
+                  (is (feed/valid-response? valid-html-response))
+                  (is (not (feed/valid-response? invalid-html-response)))))
 
 (deftest about-concurrent-requests
          (testing "request not made if another is in progress"
@@ -94,3 +94,7 @@
          (testing "valid response calls the load-activities-fn after appending activities"
                   (set-initial-state)
                   (is (true? (feed/append-older-activities (constantly true) valid-html-response)))))
+
+(deftest about-handling-client-side-translations
+         (testing "can load translations on the client side"
+                  (is (= (ct/t :en :test/foo) "english-translation"))))
