@@ -57,6 +57,7 @@
 (defn set-initial-state []
   (reset! feed/number-of-hidden-activities 0)
   (tu/set-html! feed-page-template)
+  (reset! feed/lang :en)
   (app/start))
 
 (deftest about-loading-old-activities

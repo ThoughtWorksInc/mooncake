@@ -2,9 +2,11 @@
   (:require [ajax.core :refer [GET]]
             [dommy.core :as d]
             [mooncake.js.dom :as dom]
-            [hickory.core :as hic])
+            [hickory.core :as hic]
+            [taoensso.tower :as tower])
   (:require-macros [dommy.core :as dm]
-                   [mooncake.js.config :refer [polling-interval-ms]]))
+                   [mooncake.js.config :refer [polling-interval-ms]]
+                   [taoensso.tower :as tower-macros]))
 
 (def reveal-new-activities-link :.clj--reveal-new-activities__link)
 (def activity-loading-spinner :.clj--activity-loading-spinner)
@@ -16,8 +18,17 @@
 (def request-not-in-progress
   (atom true))
 
+(def lang
+  (atom :en))
+
 (def number-of-hidden-activities
   (atom 0))
+
+(def ^:private tconfig
+  {:fallback-locale :en
+   :compiled-dictionary (tower-macros/dict-compile "lang/client-translations.clj")})
+
+(def t (tower/make-t tconfig))
 
 (defn older-activities-error-handler [response]
   (.log js/console (str "something bad happened: " response)))
@@ -75,13 +86,15 @@
 (defn get-translation [key]
   (get-in dom/translations [:feed key]))
 
-(defn update-new-activities-link-text [length]
+(defn new-activities-link-text [length]
   (let [message-start-key (if (> length 1) :new-activities-message-start :new-activity-message-start)
         message-end-key (if (> length 1) :new-activities-message-end :new-activity-message-end)
-        message-start-translation (get-translation message-start-key)
-        message-end-translation (get-translation message-end-key)
-        message (str message-start-translation length message-end-translation)]
-    (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) message)))
+        message-start-translation (t @lang message-start-key)
+        message-end-translation (t @lang message-end-key)]
+    (str message-start-translation length message-end-translation)))
+
+(defn update-new-activities-link-text [length]
+  (d/set-text! (dm/sel1 :.func--reveal-new-activities__link) (new-activities-link-text length)))
 
 (defn newer-activities-handler [polling-fn response]
   (let [activity-stream (dm/sel1 :.clj--activity-stream)

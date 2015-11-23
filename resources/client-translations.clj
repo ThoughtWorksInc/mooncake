@@ -1,1 +1,0 @@
-{:en {:test {:foo "english-translation"}}}

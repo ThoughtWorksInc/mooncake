@@ -2,7 +2,6 @@
   (:require [cemerick.cljs.test]
             [dommy.core :as d]
             [mooncake.js.feed :as feed]
-            [mooncake.js.client-translation :as ct]
             [mooncake.jstest.test-utils :as tu]
             [dommy.core :as dommy])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
@@ -96,5 +95,10 @@
                   (is (true? (feed/append-older-activities (constantly true) valid-html-response)))))
 
 (deftest about-handling-client-side-translations
-         (testing "can load translations on the client side"
-                  (is (= (ct/t :en :test/foo) "english-translation"))))
+         (testing "if given an unsupported language then falls back to english"
+                  (reset! feed/lang :ru)
+                  (is (= (feed/new-activities-link-text 2) "View 2 new activities")))
+         (testing "if lang atom is updated then returns a translated message"
+                  (is (not (contains? (feed/new-activities-link-text 1) "Finnish")))
+                  (reset! feed/lang :fi)
+                  (is (= (feed/new-activities-link-text 1) "View in Finnish 1 new activity in Finnish"))))
