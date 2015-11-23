@@ -22,6 +22,9 @@
 
 (def template-cache (atom {}))
 
+(defn update-language [enlive-m lang]
+   (html/at enlive-m [:html] (html/set-attr :lang lang)))
+
 (defn html-resource-with-log [path]
   (log/debug (format "Loading template %s from file" path))
   (html/html-resource path {:parser jsoup/parser}))

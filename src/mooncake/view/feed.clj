@@ -3,7 +3,8 @@
             [mooncake.routes :as routes]
             [mooncake.helper :as mh]
             [mooncake.view.view-helpers :as vh]
-            [mooncake.domain.activity :as domain]))
+            [mooncake.domain.activity :as domain]
+            [mooncake.translation :as translation]))
 
 (def max-characters-in-title 140)
 
@@ -138,4 +139,5 @@
         (render-older-activities-link (get-in request [:context :is-last-page])
                                       (get-in request [:params :page-number]))
         (render-newer-activities-link (get-in request [:params :page-number]))
+        (vh/update-language (translation/get-locale-from-request request))
         (vh/add-script "js/main.js"))))

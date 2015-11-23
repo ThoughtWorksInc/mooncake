@@ -1,7 +1,8 @@
 (ns mooncake.view.create-account
   (:require [net.cgrand.enlive-html :as html]
             [mooncake.routes :as r]
-            [mooncake.view.view-helpers :as vh]))
+            [mooncake.view.view-helpers :as vh]
+            [mooncake.translation :as translation]))
 
 (defn username-validation-message-translation [error-key]
   (case error-key
@@ -31,4 +32,5 @@
   (-> (vh/load-template "public/create-account.html")
       (username-validation (get-in request [:context :error-m]))
       (repopulate-fields (get-in request [:context :params]))
+      (vh/update-language (translation/get-locale-from-request request))
       set-form-action))

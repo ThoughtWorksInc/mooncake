@@ -1,6 +1,7 @@
 (ns mooncake.view.error
   (:require [net.cgrand.enlive-html :as html]
-            [mooncake.view.view-helpers :as vh]))
+            [mooncake.view.view-helpers :as vh]
+            [mooncake.translation :as translation]))
 
 (defn modify-error-translation-keys [enlive-map error-page-key]
   (html/at enlive-map
@@ -10,10 +11,13 @@
            [:.clj--error-page-intro] (html/set-attr :data-l8n (str "content:" error-page-key "/page-intro"))))
 
 (defn internal-server-error [request]
-  (vh/load-template "public/error-500.html"))
+  (-> (vh/load-template "public/error-500.html")
+      (vh/update-language (translation/get-locale-from-request request))))
 
 (defn not-found-error [request]
-  (-> (internal-server-error request) (modify-error-translation-keys "error-404")))
+  (-> (internal-server-error request)
+      (modify-error-translation-keys "error-404")))
 
 (defn forbidden-error [request]
-  (-> (internal-server-error request) (modify-error-translation-keys "error-forbidden")))
+  (-> (internal-server-error request)
+      (modify-error-translation-keys "error-forbidden")))

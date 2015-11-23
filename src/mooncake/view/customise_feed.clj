@@ -2,7 +2,8 @@
   (:require [net.cgrand.enlive-html :as html]
             [mooncake.routes :as r]
             [mooncake.helper :as mh]
-            [mooncake.view.view-helpers :as vh]))
+            [mooncake.view.view-helpers :as vh]
+            [mooncake.translation :as translation]))
 
 (defn set-form-action [enlive-m]
   (html/at enlive-m [:.clj--customise-feed__form] (html/set-attr :action (r/path :customise-feed))))
@@ -81,5 +82,6 @@
     (render-customise-feed-link (mh/signed-in? request))
     (add-feed-items (get-in request [:context :activity-source-preferences]))
     set-form-action
+    (vh/update-language (translation/get-locale-from-request request))
     (vh/add-script "js/main.js")))
 
