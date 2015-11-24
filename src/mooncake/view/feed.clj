@@ -131,7 +131,7 @@
 (defn feed [request]
   (let [activities (get-in request [:context :activities])
         activity-sources (get-in request [:context :activity-sources])]
-    (-> (vh/load-template "public/feed.html")
+    (-> (vh/load-template-with-lang "public/feed.html" (translation/get-locale-from-request request))
         (render-username (get-in request [:session :username]))
         (render-customise-feed-link (mh/signed-in? request))
         (render-sign-out-link (mh/signed-in? request))
@@ -139,5 +139,4 @@
         (render-older-activities-link (get-in request [:context :is-last-page])
                                       (get-in request [:params :page-number]))
         (render-newer-activities-link (get-in request [:params :page-number]))
-        (vh/update-language (translation/get-locale-from-request request))
         (vh/add-script "js/main.js"))))

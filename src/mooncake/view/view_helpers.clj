@@ -40,6 +40,9 @@
         html))
     (html-resource-with-log path)))
 
+(defn load-template-with-lang [path lang]
+  (update-language (load-template path) lang))
+
 (defn enlive-to-str [nodes]
   (->> nodes
        html/emit*

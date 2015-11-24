@@ -11,8 +11,7 @@
            [:.clj--error-page-intro] (html/set-attr :data-l8n (str "content:" error-page-key "/page-intro"))))
 
 (defn internal-server-error [request]
-  (-> (vh/load-template "public/error-500.html")
-      (vh/update-language (translation/get-locale-from-request request))))
+  (vh/load-template-with-lang "public/error-500.html" (translation/get-locale-from-request request)))
 
 (defn not-found-error [request]
   (-> (internal-server-error request)

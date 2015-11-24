@@ -14,7 +14,6 @@
     enlive-m))
 
 (defn sign-in [request]
-  (-> (vh/load-template "public/sign-in.html")
+  (-> (vh/load-template-with-lang "public/sign-in.html" (translation/get-locale-from-request request))
       (set-sign-in-link (routes/path :stonecutter-sign-in))
-      (vh/update-language (translation/get-locale-from-request request))
       (set-flash-message request)))

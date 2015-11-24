@@ -29,8 +29,7 @@
     enlive-m))
 
 (defn create-account [request]
-  (-> (vh/load-template "public/create-account.html")
+  (-> (vh/load-template-with-lang "public/create-account.html" (translation/get-locale-from-request request))
       (username-validation (get-in request [:context :error-m]))
       (repopulate-fields (get-in request [:context :params]))
-      (vh/update-language (translation/get-locale-from-request request))
       set-form-action))

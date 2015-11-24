@@ -76,12 +76,11 @@
 
 (defn customise-feed [request]
   (->
-    (vh/load-template "public/customise-feed.html")
+    (vh/load-template-with-lang "public/customise-feed.html" (translation/get-locale-from-request request))
     (render-username (get-in request [:session :username]))
     (render-sign-out-link (mh/signed-in? request))
     (render-customise-feed-link (mh/signed-in? request))
     (add-feed-items (get-in request [:context :activity-source-preferences]))
     set-form-action
-    (vh/update-language (translation/get-locale-from-request request))
     (vh/add-script "js/main.js")))
 
