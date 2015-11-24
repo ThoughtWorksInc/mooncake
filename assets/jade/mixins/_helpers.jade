@@ -3,7 +3,8 @@ mixin javascriptIncludeTag(path, type)
   script(src="#{javascriptsBase}/#{path}.js", type="#{type}")
 
 mixin stylesheetLinkTag(path, media)
-  link(href="#{stylesheetsBase}/#{path}.css", media="#{media}", rel="stylesheet", type="text/css")
+  - ver = Date.now()
+  link(href="#{stylesheetsBase}/#{path}.css?v=#{ver}", media="#{media}", rel="stylesheet", type="text/css")
 
 mixin imageIncludeTag(path, cssClasses, attrs)
   - cssClasses = cssClasses || ''
