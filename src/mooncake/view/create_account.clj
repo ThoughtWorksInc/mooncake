@@ -18,7 +18,7 @@
 (defn username-validation [enlive-m error-m]
   (if-let [error-key (:username error-m)]
     (html/at enlive-m
-             [:.clj--username] (html/add-class "form-row--validation-error")
+             [:.clj--username-field] (html/add-class "form-row--validation-error")
              [:.clj--username__validation] (html/set-attr :data-l8n (username-validation-message-translation error-key)))
     (vh/remove-element enlive-m [:.clj--username__validation])))
 

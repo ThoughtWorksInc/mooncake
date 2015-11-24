@@ -30,7 +30,7 @@
               context {:params params :error-m error-m}
               page (ca/create-account {:context context})]
           (fact "the class for styling errors is added"
-                (html/select page [[:.clj--username :.form-row--validation-error]]) =not=> empty?)
+                (html/select page [[:.clj--username-field :.form-row--validation-error]]) =not=> empty?)
           (fact "username validation element is present"
                 (html/select page [:.clj--username__validation]) =not=> empty?)
           (fact "input is retained"

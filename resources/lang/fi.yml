@@ -22,7 +22,7 @@ feed:
 
   suspicious-suspicious-activity-unverified-signature: Some details we use to verify this activity's validity are missing in Finnish
 
-  new-activities-error: There was an error retrieving new activities in Finnish, please.
+  new-activities-error: There was an error retrieving new activities, please refresh the page in Finnish.
 
 empty-feed:
   page-title: There are no activities to show in Finnish
