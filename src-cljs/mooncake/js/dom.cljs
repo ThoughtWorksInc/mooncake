@@ -3,8 +3,6 @@
   (:require-macros [dommy.core :as dm]
                    [mooncake.translation :as t]))
 
-(def translations (t/load-client-translations))
-
 (defn get-scroll-top []
   (let [document-element (.-documentElement js/document)
         document-body (.-body js/document)]

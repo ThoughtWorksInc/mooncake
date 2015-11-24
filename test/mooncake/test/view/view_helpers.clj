@@ -70,3 +70,7 @@
   feed/feed
   si/sign-in
   )
+(fact "if given an unsupported locale code then will use :en"
+      (let [session-m  {:locale :xx}
+            context {:params {} :error-m {} :session session-m}]
+        (first (html/select (feed/feed context) [:html])) => (contains {:attrs (contains {:lang "en"})})))

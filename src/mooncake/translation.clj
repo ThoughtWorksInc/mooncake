@@ -13,9 +13,6 @@
       slurp
       load-translations-from-string))
 
-(defmacro load-client-translations []
-  (load-translations-from-file "lang/en-client.yml"))
-
 (defn deep-merge
   "Recursively merges maps. If keys are not maps, the last value wins."
   [& vals]
@@ -41,6 +38,9 @@
   (if-let [session-locale (get-in request [:session :locale])]
     session-locale
     (get request :locale :en)))
+
+(defn has-locale [locale]
+  ((keyword locale) (:dictionary (config-translation))))
 
 (defn context-translate [enlive-m request]
   (let [locale (get-locale-from-request request)]

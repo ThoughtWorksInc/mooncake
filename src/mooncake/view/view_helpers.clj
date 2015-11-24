@@ -3,7 +3,8 @@
             [net.cgrand.enlive-html :as html]
             [net.cgrand.jsoup :as jsoup]
             [clojure.tools.logging :as log]
-            [mooncake.routes :as routes]))
+            [mooncake.routes :as routes]
+            [mooncake.translation :as translation]))
 
 (defn remove-element [enlive-m selector]
   (html/at enlive-m selector nil))
@@ -23,7 +24,8 @@
 (def template-cache (atom {}))
 
 (defn update-language [enlive-m lang]
-   (html/at enlive-m [:html] (html/set-attr :lang (name lang))))
+  (let [language-key (or (when (translation/has-locale lang) lang) :en)]
+    (html/at enlive-m [:html] (html/set-attr :lang (name language-key)))))
 
 (defn html-resource-with-log [path]
   (log/debug (format "Loading template %s from file" path))

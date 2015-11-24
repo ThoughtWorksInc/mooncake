@@ -114,10 +114,10 @@
                   (feed/newer-activities-handler (constantly nil) (html-response-hidden))
                   (tu/test-string-contains (dommy/text (sel1 :.func--reveal-new-activities__link)) "Finnish"))
          (testing "number of new activities is displayed in new activities link"
-                  (let [new-activity-link-text (str (get-in dom/translations [:feed :new-activities-message-start]) 1
-                                                    (get-in dom/translations [:feed :new-activity-message-end]))
-                        new-activities-link-text (str (get-in dom/translations [:feed :new-activities-message-start]) 3
-                                                      (get-in dom/translations [:feed :new-activities-message-end]))]
+                  (let [new-activity-link-text (str (feed/t :en :new-activity-message-start) 1
+                                                    (feed/t :en :new-activity-message-end))
+                        new-activities-link-text (str (feed/t :en :new-activities-message-start) 3
+                                                      (feed/t :en :new-activities-message-end))]
                     (set-initial-state)
                     (feed/newer-activities-handler (constantly nil) (html-single-activity-response-hidden))
                     (is (= (dommy/text (sel1 :.func--reveal-new-activities__link)) new-activity-link-text))

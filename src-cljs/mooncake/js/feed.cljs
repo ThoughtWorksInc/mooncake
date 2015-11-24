@@ -80,9 +80,6 @@
 (defn newer-activities-error-handler [response]
   (d/add-class! (dm/sel1 :.clj--new-activities__error) "show-feed-activities__error"))
 
-(defn get-translation [key]
-  (get-in dom/translations [:feed key]))
-
 (defn new-activities-link-text [length]
   (let [message-start-key (if (> length 1) :new-activities-message-start :new-activity-message-start)
         message-end-key (if (> length 1) :new-activities-message-end :new-activity-message-end)
