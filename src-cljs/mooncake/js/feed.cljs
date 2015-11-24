@@ -18,9 +18,6 @@
 (def request-not-in-progress
   (atom true))
 
-(def lang
-  (atom :en))
-
 (def number-of-hidden-activities
   (atom 0))
 
@@ -89,8 +86,8 @@
 (defn new-activities-link-text [length]
   (let [message-start-key (if (> length 1) :new-activities-message-start :new-activity-message-start)
         message-end-key (if (> length 1) :new-activities-message-end :new-activity-message-end)
-        message-start-translation (t @lang message-start-key)
-        message-end-translation (t @lang message-end-key)]
+        message-start-translation (t (dom/get-lang) message-start-key)
+        message-end-translation (t (dom/get-lang) message-end-key)]
     (str message-start-translation length message-end-translation)))
 
 (defn update-new-activities-link-text [length]

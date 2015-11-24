@@ -23,6 +23,9 @@
   (when (not (d/has-class? selector class))
     (d/add-class! selector class)))
 
+(defn get-lang []
+  (keyword (.getAttribute (dm/sel1 :html) "lang")))
+
 (defn string-contains [str s]
   (not= -1 (.indexOf str s)))
 

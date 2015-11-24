@@ -13,6 +13,9 @@
 (defn print-html []
   (print (dommy/html (sel1 :html))))
 
+(defn print-lang []
+  (print (.getAttribute (sel1 :html) "lang")))
+
 ;; Assertions
 
 (defn test-field-class-existance [has-class? selector css-class]
@@ -52,6 +55,9 @@
 
 (defn remove-class! [selector class]
   (dommy/remove-class! (sel1 selector) class))
+
+(defn set-lang! [lang]
+  (dommy/set-attr! (sel1 :html) :lang lang))
 
 
 ;; Events

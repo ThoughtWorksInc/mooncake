@@ -62,7 +62,7 @@
   (fact "about setting the language attribute based on the request language"
         (let [session-m  {:locale :fi}
               context {:params {} :error-m {} :session session-m}]
-          (first (html/select (?page context) [:html])) => (contains {:attrs (contains {:lang :fi})})))
+          (first (html/select (?page context) [:html])) => (contains {:attrs (contains {:lang "fi"})})))
   ?page
   ca/create-account
   cf/customise-feed
