@@ -17,12 +17,15 @@
 
 (defn activity-action-message-translation [activity-action-key]
   (case activity-action-key
-    :objective "feed/action-text-objective"
-    :question "feed/action-text-question"
+    :objective "content:feed/action-text-objective"
+    :question "content:feed/action-text-question"
     nil))
 
-(defn activity-action-message-map [text]
-  (when text (str "content:" text)))
+(defn activity-action-connector-translation [activity-action-key]
+  (case activity-action-key
+    :transaction "content:feed/action-text-connector-to"
+    :question "content:feed/action-text-connector-about"
+    nil))
 
 (defn generate-activity-stream-items [enlive-m activities activity-sources]
   (let [activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])
@@ -49,7 +52,7 @@
                              [:.clj--activity-item__action] (let [action-text-key (domain/activity->action-text-key activity)]
                                                               (if (= :default action-text-key)
                                                                 (html/content (domain/activity->default-action-text activity))
-                                                                (html/set-attr :data-l8n (activity-action-message-map (activity-action-message-translation action-text-key)))))
+                                                                (html/set-attr :data-l8n (activity-action-message-translation action-text-key))))
                              [:.clj--activity-item__suspicious] (let [action-signed (domain/activity->signed activity)]
                                                                   (case action-signed
                                                                     (or false nil) (html/do->
@@ -62,7 +65,10 @@
                              [:.clj--activity-item__id] (html/content (domain/activity->insert-id activity))
                              [:.clj--activity-item__target] (html/do->
                                                               (html/set-attr :href (domain/activity->target-url activity))
-                                                              (html/content (domain/activity->target activity)))))))
+                                                              (html/content (domain/activity->target activity)))
+                             [:.activity-item__action__target__connector] (let [action-text-key (domain/activity->action-text-key activity)]
+                                                                            (when (not (nil? (domain/activity->target activity)))
+                                                                              (html/set-attr :data-l8n (activity-action-connector-translation action-text-key))))))))
 
 (defn add-activities [enlive-m activities activity-sources]
   (let [activity-stream-items (generate-activity-stream-items enlive-m activities activity-sources)]

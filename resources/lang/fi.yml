@@ -9,8 +9,10 @@ default:
 feed:
   title: Mooncake Activity Stream in Finnish
   action-text-objective: created an objective in Finnish
-  action-text-question: asked a question about in Finnish
-  action-text-transaction: made a transaction to in Finnish
+  action-text-question: asked a question in Finnish
+  action-text-transaction: made a transaction in Finnish
+  action-text-connector-about: about in Finnish
+  action-text-connector-to: to in Finnish
   error-title-1: We have hidden in Finnish
   error-title-1: updates in Finnish
 

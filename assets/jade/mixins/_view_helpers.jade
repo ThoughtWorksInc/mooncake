@@ -9,8 +9,10 @@ mixin streamItem(title, author, activityAction, sourceClass, isUntrustedSource, 
         = " "
         span.activity-item__action__text.clj--activity-item__action.func--activity-item__action #{activityAction}
         = " "
-        a.activity-item__target__text.clj--activity-item__target(href)
-        = " "
+        span.activity-item__action__target
+          span.activity-item__action__target__connector.clj--activity-item__connector
+          = " "
+          a.activity-item__action__target__text.clj--activity-item__target(href)
         time.activity-item__time.clj--activity-item__time(datetime="10:32") !2 minutes ago
       h3.activity-item__title.clj--activity-item__title.func--activity-item__title
         a.activity-item__link.clj--activity-item__link.func--activity-item__link(href="#") !#{title}

@@ -117,23 +117,13 @@
         third-activity-item => (eh/has-attr? [:.clj--activity-item__id] :hidden "hidden")
         third-activity-item => (eh/text-is? [:.clj--activity-item__id] "3")))
 
-(fact "activity target text varies depending on existence of target"
+(fact "activity action text varies depending on existence of target"
       (let [page (fv/feed {:context {:activities
-                                     [{:activity-src        "another-objective8-activity-src"
-                                       (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                       (keyword "@type")    "Question"
-                                       :published           "2015-08-04T14:49:38.407Z"
-                                       :actor               {(keyword "@type") "Person"
-                                                             :displayName      "Lala"}
+                                     [{(keyword "@type")    "Question"
                                        :object              {(keyword "@type") "Objective Question"
                                                              :displayName      "QUESTION 6 TITLE"
                                                              :url              "http://objective8.dcentproject.eu/objectives/6/questions/23"}}
-                                      {:activity-src        "another-objective8-activity-src"
-                                       (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                       (keyword "@type")    "Question"
-                                       :published           "2015-08-04T14:49:39.407Z"
-                                       :actor               {(keyword "@type") "Person"
-                                                             :displayName      "Lala"}
+                                      {(keyword "@type")    "Question"
                                        :object              {(keyword "@type") "Objective Question"
                                                              :displayName      "QUESTION 7 TITLE"
                                                              :url              "http://objective8.dcentproject.eu/objectives/7/questions/23"}
@@ -143,9 +133,11 @@
             [activity-without-target activity-with-target] (html/select page [:.clj--activity-item])]
         activity-with-target => (eh/text-is? [:.clj--activity-item__target] "OBJECTIVE 7 TITLE")
         activity-with-target => (eh/has-attr? [:.clj--activity-item__target] :href "http://objective8.dcentproject.eu/objectives/7")
+        activity-with-target => (eh/has-attr? [:.clj--activity-item__connector] :data-l8n "content:feed/action-text-connector-about")
 
         activity-without-target => (eh/text-is? [:.clj--activity-item__target] "")
-        activity-without-target => (eh/has-attr? [:.clj--activity-item__target] :href nil)))
+        activity-without-target => (eh/has-attr? [:.clj--activity-item__target] :href nil)
+        activity-without-target => (eh/has-attr? [:.clj--activity-item__connector] :data-l8n nil)))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (fv/feed {:context {:activities
