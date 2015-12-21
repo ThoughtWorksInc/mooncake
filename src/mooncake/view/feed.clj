@@ -37,7 +37,9 @@
                                                       (html/add-class (activity-source-class activity activity-sources)))
                              [:.clj--avatar__initials] (html/content (-> (domain/activity->actor-display-name activity)
                                                                          first str clojure.string/upper-case))
-                             [:.clj--activity-item__link] (html/set-attr :href (domain/activity->object-url activity))
+                             [:.clj--activity-item__link] (html/do->
+                                                            (html/set-attr :href (domain/activity->object-url activity))
+                                                            (html/content (vh/limit-text-length-if-above max-characters-in-title (domain/activity->object-display-name activity))))
                              [:.clj--activity-item__time] (let [activity-time (domain/activity->published activity)]
                                                             (html/do->
                                                               (html/set-attr :datetime activity-time)
@@ -48,7 +50,6 @@
                                                               (if (= :default action-text-key)
                                                                 (html/content (domain/activity->default-action-text activity))
                                                                 (html/set-attr :data-l8n (activity-action-message-map (activity-action-message-translation action-text-key)))))
-                             [:.clj--activity-item__title] (html/content (vh/limit-text-length-if-above max-characters-in-title (domain/activity->object-display-name activity)))
                              [:.clj--activity-item__suspicious] (let [action-signed (domain/activity->signed activity)]
                                                                   (case action-signed
                                                                     (or false nil) (html/do->
@@ -58,9 +59,13 @@
                                                                                             (html/substitute activity-stream-item-unverified-signature-snippet)
                                                                                             (html/remove-class "clj--STRIP"))
                                                                     nil))
-                             [:.clj--activity-item__id] (html/content (domain/activity->insert-id activity))))))
+                             [:.clj--activity-item__id] (html/content (domain/activity->insert-id activity))
+                             [:.clj--activity-item__target] (html/do->
+                                                              (html/set-attr :href (domain/activity->target-url activity))
+                                                              (html/content (domain/activity->target activity)))))))
 
-(defn add-activities [enlive-m activities activity-sources]  (let [activity-stream-items (generate-activity-stream-items enlive-m activities activity-sources)]
+(defn add-activities [enlive-m activities activity-sources]
+  (let [activity-stream-items (generate-activity-stream-items enlive-m activities activity-sources)]
     (html/at enlive-m [:.clj--activity-stream]
              (html/content activity-stream-items))))
 

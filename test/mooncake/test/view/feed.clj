@@ -63,7 +63,7 @@
                                                     :displayName      "OBJECTIVE 7 TITLE"
                                                     :content          "We want to establish Activity Types for Objective8"
                                                     :url              "http://objective8.dcentproject.eu/objectives/7"}
-                              :relInsertTime           "6"}
+                              :relInsertTime       "6"}
                              {:activity-src        "a-helsinki-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
                               (keyword "@type")    "Add"
@@ -76,7 +76,7 @@
                                                     (keyword "@type") "Content"
                                                     :url              "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
                                                     :content          "some Finnish HTML"}
-                              :relInsertTime           "9"}
+                              :relInsertTime       "9"}
                              {:activity-src        "another-objective8-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
                               (keyword "@type")    "Question"
@@ -87,7 +87,7 @@
                                                     :displayName      "QUESTION 6 TITLE"
                                                     :description      "Yes."
                                                     :url              "http://objective8.dcentproject.eu/objectives/6/questions/23"}
-                              :relInsertTime           "3"}]}})
+                              :relInsertTime       "3"}]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
         (count (html/select page [:.clj--activity-item])) => 3
@@ -116,6 +116,36 @@
         third-activity-item => (eh/text-is? [:.clj--activity-item__title] "QUESTION 6 TITLE")
         third-activity-item => (eh/has-attr? [:.clj--activity-item__id] :hidden "hidden")
         third-activity-item => (eh/text-is? [:.clj--activity-item__id] "3")))
+
+(fact "activity target text varies depending on existence of target"
+      (let [page (fv/feed {:context {:activities
+                                     [{:activity-src        "another-objective8-activity-src"
+                                       (keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                       (keyword "@type")    "Question"
+                                       :published           "2015-08-04T14:49:38.407Z"
+                                       :actor               {(keyword "@type") "Person"
+                                                             :displayName      "Lala"}
+                                       :object              {(keyword "@type") "Objective Question"
+                                                             :displayName      "QUESTION 6 TITLE"
+                                                             :url              "http://objective8.dcentproject.eu/objectives/6/questions/23"}}
+                                      {:activity-src        "another-objective8-activity-src"
+                                       (keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                       (keyword "@type")    "Question"
+                                       :published           "2015-08-04T14:49:39.407Z"
+                                       :actor               {(keyword "@type") "Person"
+                                                             :displayName      "Lala"}
+                                       :object              {(keyword "@type") "Objective Question"
+                                                             :displayName      "QUESTION 7 TITLE"
+                                                             :url              "http://objective8.dcentproject.eu/objectives/7/questions/23"}
+                                       :target              {(keyword "@type") "Objective"
+                                                             :displayName      "OBJECTIVE 7 TITLE"
+                                                             :url              "http://objective8.dcentproject.eu/objectives/7"}}]}})
+            [activity-without-target activity-with-target] (html/select page [:.clj--activity-item])]
+        activity-with-target => (eh/text-is? [:.clj--activity-item__target] "OBJECTIVE 7 TITLE")
+        activity-with-target => (eh/has-attr? [:.clj--activity-item__target] :href "http://objective8.dcentproject.eu/objectives/7")
+
+        activity-without-target => (eh/text-is? [:.clj--activity-item__target] "")
+        activity-without-target => (eh/has-attr? [:.clj--activity-item__target] :href nil)))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (fv/feed {:context {:activities

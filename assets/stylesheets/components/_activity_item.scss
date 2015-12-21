@@ -7,6 +7,18 @@
   border-bottom: 1px solid $grey_light;
   max-height: 300px;
   transition: max-height .8s linear;
+  padding: 30px 30px 30px 80px;
+  min-height: 100px;
+  &__content {
+    flex: 12;
+    & a {
+      text-decoration: none;
+      color: inherit;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
   &__suspicious {
     position: relative;
     flex: 1;
@@ -75,18 +87,6 @@
   }
 }
 
-.activity-item__link {
-  flex: 12;
-  padding: 30px 30px 30px 80px;
-  color: inherit;
-  text-decoration: none;
-  min-height: 100px;
-  &:focus {
-    background-color: $grey_super_light;
-    outline: 1px solid currentColor;
-  }
-}
-
 .activity-item__action {
   margin: 0 0 0.2rem 0;
   padding: 0;
@@ -98,7 +98,7 @@
 .activity-item__action__author {
   font-weight: bold;
 }
-.activity-item__action__text {
+.activity-item__target__text {
   padding-right: 0.15rem;
 }
 .activity-item__title {

@@ -38,3 +38,9 @@
 
 (defn activity->signed [activity]
   (:signed activity))
+
+(defn activity->target [activity]
+  (get-in activity [:target :displayName]))
+
+(defn activity->target-url [activity]
+  (get-in activity [:target :url]))

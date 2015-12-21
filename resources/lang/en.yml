@@ -12,7 +12,8 @@ flash:
 feed:
   title: Mooncake Activity Stream
   action-text-objective: created an objective
-  action-text-question: asked a question
+  action-text-question: asked a question about
+  action-text-transaction: made a transaction to
   error-title-1: We have hidden
   error-title-1: updates
 
