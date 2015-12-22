@@ -7,6 +7,7 @@
             [mooncake.translation :as translation]))
 
 (def max-characters-in-title 140)
+(def max-characters-in-target 40)
 
 (defn activity-source-index [activity activity-sources]
   (let [activity-src (keyword (domain/activity->activity-src activity))]
@@ -71,7 +72,7 @@
                              [:.clj--activity-item__id] (html/content (domain/activity->insert-id activity))
                              [:.clj--activity-item__target] (html/do->
                                                               (html/set-attr :href (domain/activity->target-url activity))
-                                                              (html/content (domain/activity->target activity)))
+                                                              (html/content (vh/limit-text-length-if-above max-characters-in-target (domain/activity->target activity))))
                              [:.clj--activity-item__connector] (when (not (nil? (domain/activity->target activity)))
                                                                  (let [action-text-key (domain/activity->action-text-key activity)]
                                                                    (set-content-or-translation action-text-key

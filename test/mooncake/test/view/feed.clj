@@ -131,10 +131,10 @@
                                                              :displayName      "QUESTION 7 TITLE"
                                                              :url              "http://objective8.dcentproject.eu/objectives/7/questions/23"}
                                        :target              {(keyword "@type") "Objective"
-                                                             :displayName      "OBJECTIVE 7 TITLE"
+                                                             :displayName      "OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE"
                                                              :url              "http://objective8.dcentproject.eu/objectives/7"}}]}})
             [activity-without-target activity-with-target] (html/select page [:.clj--activity-item])]
-        activity-with-target => (eh/text-is? [:.clj--activity-item__target] "OBJECTIVE 7 TITLE")
+        activity-with-target => (eh/text-is? [:.clj--activity-item__target] "OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE…")
         activity-with-target => (eh/has-attr? [:.clj--activity-item__target] :href "http://objective8.dcentproject.eu/objectives/7")
         activity-with-target => (eh/has-attr? [:.clj--activity-item__connector] :data-l8n "content:feed/action-text-connector-about")
 
