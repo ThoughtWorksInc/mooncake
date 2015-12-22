@@ -27,8 +27,42 @@ Commands and aliases can be found in the project.clj file.
 - ```BASE_URL``` is the url (including scheme) for the deployment --- this defaults to ```http://localhost:3000``` when
 running locally.  Note that the ```BASE_URL```, ```HOST``` and ```PORT``` may in general need to be set independently,
 depending on how the application is deployed.
-- ```CLIENT_ID```, ```CLIENT_SECRET``` and ```AUTH_URL``` configure interaction with a running Stonecutter SSO instance,
-for signing into the application.
+- ```CLIENT_ID```, ```CLIENT_SECRET``` and ```AUTH_URL``` configure interaction with a running [Stonecutter](https://github.com/d-cent/stonecutter) 
+SSO instance, for signing into the application.
+- ```ACTIVITY_SOURCE_FILE``` is the YAML file containing the data pertaining to your activity streams --- if this 
+variable is not provided, activities are loaded from the sources in the ```resources/activity-sources.yml``` file.
+
+### Activity sources
+
+Activities are expected in the following format:
+
+    {
+      @context:       "http://www.w3.org/ns/activitystreams",
+      published:      "2015-12-18T14:25:40.240Z",
+      @type:          "Add",  --- used to customise the feed
+      
+      object: {
+        url:          "http://objective8.dcentproject.eu/objectives/41/questions/28",  (optional)
+        displayName:  "Why?",
+        @type:        "Question"  --- used to set the action text
+      },
+        
+      actor: {
+        displayName:  "Jane Doe"
+      },
+      
+      target:  (optional) {
+        url:          "http://objective8.dcentproject.eu/objectives/41",  (optional)
+        displayName:  "This Objective"
+      }
+    }
+    
+The timestamp uses the format YYYY-MM-DDThh:mm:ss.sZ as specified in the international standard ISO 8601.
+
+The activity source must support the ```to``` and ```from``` query parameters, returning activities with a 
+published time less than or greater than the provided timestamp respectively. For example, 
+```https://objective8.dcentproject.eu/as2/activities?from=2015-12-22T14:00:00.000Z``` should return all activities that 
+occurred after 4pm on the 22nd December 2015.
 
 ## Running the static frontend
 
