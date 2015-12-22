@@ -76,6 +76,8 @@
                                                     (keyword "@type") "Content"
                                                     :url              "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
                                                     :content          "some Finnish HTML"}
+                              :target              {:displayName      "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
+                                                    :content          "some Finnish HTML"}
                               :relInsertTime       "9"}
                              {:activity-src        "another-objective8-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
@@ -105,6 +107,7 @@
         second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-09-06T11:05:53+03:00")
         second-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "Kaupunginjohtaja/J")
         second-activity-item => (eh/text-is? [:.clj--activity-item__action] "- Content - Add")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__connector] " -")
         second-activity-item => (eh/text-is? [:.clj--activity-item__title] "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020")
         second-activity-item => (eh/has-attr? [:.clj--activity-item__id] :hidden "hidden")
         second-activity-item => (eh/text-is? [:.clj--activity-item__id] "9")
@@ -137,7 +140,7 @@
 
         activity-without-target => (eh/text-is? [:.clj--activity-item__target] "")
         activity-without-target => (eh/has-attr? [:.clj--activity-item__target] :href nil)
-        activity-without-target => (eh/has-attr? [:.clj--activity-item__connector] :data-l8n nil)))
+        activity-without-target => (eh/does-not-exist? [:.clj--activity-item__connector])))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (fv/feed {:context {:activities

@@ -28,10 +28,11 @@
   (let [activity-object-type (activity->object-type activity)
         activity-type (activity->type activity)]
     (if (= activity-type "Question")
-      :question
-      (if (= activity-object-type "Objective")
-        :objective
-        :default))))
+        :question
+        (case activity-object-type
+          "Objective"   :objective
+          "Transaction" :transaction
+          :default))))
 
 (defn activity->default-action-text [activity]
   (str "- " (activity->object-type activity) " - " (activity->type activity)))

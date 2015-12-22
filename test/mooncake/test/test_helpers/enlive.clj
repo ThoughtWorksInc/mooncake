@@ -43,11 +43,14 @@
                               :body)]
                  page => no-untranslated-strings))))
 
+(defn enlive-m->elem [enlive-m selector]
+  (-> enlive-m (html/select selector)))
+
 (defn enlive-m->attr [enlive-m selector attr]
-  (-> enlive-m (html/select selector) first :attrs attr))
+  (-> (enlive-m->elem enlive-m selector) first :attrs attr))
 
 (defn enlive-m->text [enlive-m selector]
-  (-> enlive-m (html/select selector) first html/text))
+  (-> (enlive-m->elem enlive-m selector) first html/text))
 
 (defn text-is? [selector text]
   (midje/chatty-checker [enlive-m]
@@ -56,6 +59,10 @@
 (defn has-attr? [selector attr attr-val]
   (midje/chatty-checker [enlive-m]
                         (= attr-val (enlive-m->attr enlive-m selector attr))))
+
+(defn does-not-exist? [selector]
+  (midje/chatty-checker [enlive-m]
+                        (empty? (enlive-m->elem enlive-m selector))))
 
 (defn has-form-action?
   ([path]
