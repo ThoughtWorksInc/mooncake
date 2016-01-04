@@ -71,8 +71,10 @@
                                                                     nil))
                              [:.clj--activity-item__id] (html/content (domain/activity->insert-id activity))
                              [:.clj--activity-item__target] (html/do->
-                                                              (html/set-attr :href (domain/activity->target-url activity))
-                                                              (html/content (vh/limit-text-length-if-above max-characters-in-target (domain/activity->target activity))))
+                                                              (html/content (vh/limit-text-length-if-above max-characters-in-target (domain/activity->target activity)))
+                                                              (if-let [target-url (domain/activity->target-url activity)]
+                                                                (html/wrap :a {:href target-url})
+                                                                identity))
                              [:.clj--activity-item__connector] (when (not (nil? (domain/activity->target activity)))
                                                                  (let [action-text-key (domain/activity->action-text-key activity)]
                                                                    (set-content-or-translation action-text-key

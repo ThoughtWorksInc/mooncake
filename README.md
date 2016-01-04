@@ -62,7 +62,7 @@ The timestamp uses the format YYYY-MM-DDThh:mm:ss.sZ as specified in the interna
 The activity source must support the ```to``` and ```from``` query parameters, returning activities with a 
 published time less than or greater than the provided timestamp respectively. For example, 
 ```https://objective8.dcentproject.eu/as2/activities?from=2015-12-22T14:00:00.000Z``` should return all activities that 
-occurred after 4pm on the 22nd December 2015.
+occurred after 2pm on the 22nd December 2015.
 
 ## Running the static frontend
 

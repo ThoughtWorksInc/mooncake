@@ -135,11 +135,11 @@
                                                              :url              "http://objective8.dcentproject.eu/objectives/7"}}]}})
             [activity-without-target activity-with-target] (html/select page [:.clj--activity-item])]
         activity-with-target => (eh/text-is? [:.clj--activity-item__target] "OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE…")
-        activity-with-target => (eh/has-attr? [:.clj--activity-item__target] :href "http://objective8.dcentproject.eu/objectives/7")
+        activity-with-target => (eh/has-attr? [:.activity-item__action__target html/last-child] :href "http://objective8.dcentproject.eu/objectives/7")
         activity-with-target => (eh/has-attr? [:.clj--activity-item__connector] :data-l8n "content:feed/action-text-connector-about")
 
         activity-without-target => (eh/text-is? [:.clj--activity-item__target] "")
-        activity-without-target => (eh/has-attr? [:.clj--activity-item__target] :href nil)
+        activity-without-target => (eh/does-not-exist? [:.activity-item__action__target [html/last-child (html/attr? :href)]])
         activity-without-target => (eh/does-not-exist? [:.clj--activity-item__connector])))
 
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
