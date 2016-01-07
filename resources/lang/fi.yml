@@ -24,6 +24,7 @@ feed:
   older-link: Older in Finnish
 
   suspicious-suspicious-activity-unverified-signature: Some details we use to verify this activity's validity are missing in Finnish
+  suspicious-activity-untrusted-source: This activity's source could not be verified in Finnish
 
   new-activities-error: There was an error retrieving new activities, please refresh the page in Finnish.
 
@@ -37,6 +38,7 @@ customise-feed:
   page-intro: "Choose the information you'd like to receive updates on: in Finnish"
   feed-digitally-signed-false: Unconfirmed source in Finnish
   feed-digitally-signed-true: Confirmed trusted source in Finnish
+  save: Save in Finnish
 
 sign-in:
   title: Sign In in Finnish

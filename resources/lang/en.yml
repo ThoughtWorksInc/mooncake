@@ -41,6 +41,7 @@ customise-feed:
   page-intro: "Choose the information you'd like to receive updates on:"
   feed-digitally-signed-false: Unconfirmed source
   feed-digitally-signed-true: Confirmed trusted source
+  save: Save
 
 sign-in:
   title: Sign In
