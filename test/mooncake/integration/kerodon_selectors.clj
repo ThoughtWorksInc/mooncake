@@ -20,7 +20,7 @@
 (def create-account-page-submit-button :.func--create-account__button)
 (def customise-feed-page-body :.func--customise-feed-page)
 (def customise-feed-page-submit-button :.func--customise-feed__submit)
-(def customise-feed-page-feed-item-child-list-item-label :.func--feed-item-child__label)
+(def customise-feed-page-feed-item-child-list-item-name :.func--feed-item-child__name)
 (def customise-feed-page-feed-item-child-checkbox :.func--feed-item-child__checkbox)
 (def newer-activities-link :.func--newer-activities__link)
 (def older-activities-link :.func--older-activities__link)

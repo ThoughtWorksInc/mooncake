@@ -39,6 +39,8 @@ customise-feed:
   feed-digitally-signed-false: Unconfirmed source in Finnish
   feed-digitally-signed-true: Confirmed trusted source in Finnish
   save: Save in Finnish
+  Create: Created content in Finnish
+  Question: Questions in Finnish
 
 sign-in:
   title: Sign In in Finnish

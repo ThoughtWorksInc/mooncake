@@ -1,3 +1,5 @@
+[![Build Status](https://snap-ci.com/d-cent/mooncake/branch/master/build_image)](https://snap-ci.com/d-cent/mooncake/branch/master)
+
  A D-CENT project: Secure notifications combined with w3 activity streams
 
 ["Mooncake"](https://en.wikipedia.org/wiki/Mooncake#Ming_revolution)

@@ -44,17 +44,17 @@
                   (eh/has-form-action? (r/path :customise-feed)))))
 
 (facts "available feed sources are displayed with the user's preferences"
-       (let [activity-source-preferences [{:id             "activity-src"
+       (let [activity-source-preferences [{:id             "objective8"
                                            :name           "Activity Source"
                                            :url            "some url"
-                                           :activity-types [{:id       "activity-src-activity-type-1"
+                                           :activity-types [{:id       "Create"
                                                              :selected false}
-                                                            {:id       "activity-src-activity-type-2"
+                                                            {:id       "Question"
                                                              :selected true}]}
-                                          {:id             "another-activity-src"
+                                          {:id             "Helsinki"
                                            :name           "Another Source"
                                            :url            "other url"
-                                           :activity-types [{:id       "another-activity-src-activity-type-1"
+                                           :activity-types [{:id       "Type"
                                                              :selected false}]}]
              context {:activity-source-preferences activity-source-preferences}
              page (cf/customise-feed {:context context})]
@@ -73,16 +73,17 @@
          (fact "names of provided activity types of activity sources are displayed"
                (let [[first-activity-type-label-name second-activity-type-label-name third-activity-type-label-name]
                      (html/select page [:.clj--feed-item-child__name])]
-                 (html/text first-activity-type-label-name) => "activity-src-activity-type-1"
-                 (html/text second-activity-type-label-name) => "activity-src-activity-type-2"
-                 (html/text third-activity-type-label-name) => "another-activity-src-activity-type-1"))
+                 (:attrs first-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/Create"})
+                 (:attrs second-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/Question"})
+                 (:attrs third-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/Type"})
+                 (html/text third-activity-type-label-name) => "Type"))
 
          (fact "name attributes for provided activity types of activity sources selection checkboxes are set correctly"
                (let [[first-activity-type-checkbox second-activity-type-checkbox third-activity-type-checkbox]
                      (html/select page [:.clj--feed-item-child__checkbox])]
-                 (:attrs first-activity-type-checkbox) => (contains {:name "activity-src_-_activity-src-activity-type-1"})
-                 (:attrs second-activity-type-checkbox) => (contains {:name "activity-src_-_activity-src-activity-type-2"})
-                 (:attrs third-activity-type-checkbox) => (contains {:name "another-activity-src_-_another-activity-src-activity-type-1"})))
+                 (:attrs first-activity-type-checkbox) => (contains {:name "objective8_-_Create"})
+                 (:attrs second-activity-type-checkbox) => (contains {:name "objective8_-_Question"})
+                 (:attrs third-activity-type-checkbox) => (contains {:name "Helsinki_-_Type"})))
 
          (fact "'for' attributes of activity types labels match 'id' attributes of activity types inputs"
                (let [[first-activity-type-label second-activity-type-label third-activity-type-label] (html/select page [:.clj--feed-item-child__label])

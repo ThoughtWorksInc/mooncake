@@ -11,13 +11,18 @@
 (defn- create-activity-type-id [activity-source-id activity-type-name]
   (str activity-source-id "_-_" activity-type-name))
 
+(defn activity-type-description [activity-type]
+  (str "content:customise-feed/" activity-type))
+
 (defn generate-feed-item-children [enlive-m activity-source]
   (let [feed-item-child-snippet (first (html/select enlive-m [:.clj--feed-item-child]))]
     (html/at feed-item-child-snippet [html/root]
              (html/clone-for [activity-type (:activity-types activity-source)
                               :let [activity-type-id (create-activity-type-id (:id activity-source) (:id activity-type))]]
                              [:.clj--feed-item-child__label] (html/set-attr :for activity-type-id)
-                             [:.clj--feed-item-child__name] (html/content (:id activity-type))
+                             [:.clj--feed-item-child__name] (html/do->
+                                                              (html/content (:id activity-type))
+                                                              (html/set-attr :data-l8n (activity-type-description (:id activity-type))))
                              [:.clj--feed-item-child__checkbox] (html/do->
                                                                   (html/set-attr :name activity-type-id)
                                                                   (html/set-attr :id activity-type-id)

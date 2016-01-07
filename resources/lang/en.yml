@@ -42,6 +42,8 @@ customise-feed:
   feed-digitally-signed-false: Unconfirmed source
   feed-digitally-signed-true: Confirmed trusted source
   save: Save
+  Create: Created content
+  Question: Questions
 
 sign-in:
   title: Sign In
