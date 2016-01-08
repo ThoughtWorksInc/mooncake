@@ -98,7 +98,7 @@
         first-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
         first-activity-item => (eh/text-is? [:.clj--activity-item__time] "10 minutes ago")
         first-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "JDog")
-        first-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:feed/action-text-objective")
+        first-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:activity-type/action-text-objective")
         first-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
         first-activity-item => (eh/has-attr? [:.clj--activity-item__id] :hidden "hidden")
         first-activity-item => (eh/text-is? [:.clj--activity-item__id] "6")
@@ -115,7 +115,7 @@
         third-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6/questions/23")
         third-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
         third-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "Lala")
-        third-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:feed/action-text-question")
+        third-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:activity-type/action-text-objective-question")
         third-activity-item => (eh/text-is? [:.clj--activity-item__title] "QUESTION 6 TITLE")
         third-activity-item => (eh/has-attr? [:.clj--activity-item__id] :hidden "hidden")
         third-activity-item => (eh/text-is? [:.clj--activity-item__id] "3")))
@@ -196,7 +196,7 @@
                 (fact "message indicating no retrieved activities is not shown"
                       (-> page (html/select [:.clj--empty-activity-item]) first) => nil?))))
 
-(fact "activities are rendered on the page"
+(fact "activity warning messages are rendered on the page"
       (let [page (fv/feed {:context {:activities
                                                                   [{:activity-src        "an-objective8-activity-src"
                                                                     (keyword "@context") "http://www.w3.org/ns/activitystreams"

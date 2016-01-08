@@ -8,13 +8,10 @@ default:
 
 feed:
   title: Mooncake Activity Stream in Finnish
-  action-text-objective: created an objective in Finnish
-  action-text-question: asked a question in Finnish
-  action-text-transaction: made a transaction in Finnish
   action-text-connector-about: about in Finnish
   action-text-connector-to: to in Finnish
   error-title-1: We have hidden in Finnish
-  error-title-1: updates in Finnish
+  error-title-2: updates in Finnish
 
   error-description-1: These are missing details we use to verify their safety. in Finnish
   error-description-2: "If you are happy to continue you can show hidden items: in Finnish"
@@ -28,6 +25,13 @@ feed:
 
   new-activities-error: There was an error retrieving new activities, please refresh the page in Finnish.
 
+activity-type:
+  action-text-objective: created an objective in Finnish
+  action-text-objective-question: asked a question in Finnish
+  action-text-transaction: made a transaction in Finnish
+  customise-feed-create: Created content in Finnish
+  customise-feed-question: Questions in Finnish
+
 empty-feed:
   page-title: There are no activities to show in Finnish
   intro: Customise your feed here in Finnish
@@ -39,8 +43,6 @@ customise-feed:
   feed-digitally-signed-false: Unconfirmed source in Finnish
   feed-digitally-signed-true: Confirmed trusted source in Finnish
   save: Save in Finnish
-  Create: Created content in Finnish
-  Question: Questions in Finnish
 
 sign-in:
   title: Sign In in Finnish

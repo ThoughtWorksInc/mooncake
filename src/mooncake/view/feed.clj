@@ -16,23 +16,16 @@
 (defn activity-source-class [activity activity-sources]
   (format "activity-src-%s" (activity-source-index activity activity-sources)))
 
-(defn activity-action-message-translation [activity-action-key]
-  (case activity-action-key
-    :objective "content:feed/action-text-objective"
-    :question "content:feed/action-text-question"
-    :transaction "content:feed/action-text-transaction"
+(defn activity-action-message-translation [activity]
+  (if-let [activity-object-type (domain/activity->object-type activity)]
+    (str "content:activity-type/action-text-" (vh/format-translation-str activity-object-type))
     ""))
 
-(defn activity-action-connector-translation [activity-action-key]
-  (case activity-action-key
-    :transaction "content:feed/action-text-connector-to"
-    :question "content:feed/action-text-connector-about"
+(defn activity-action-connector-translation [activity]
+  (case (domain/activity->object-type activity)
+    "Transaction" "content:feed/action-text-connector-to"
+    "Objective Question" "content:feed/action-text-connector-about"
     ""))
-
-(defn set-content-or-translation [key content translation]
-  (if (= :default key)
-    (html/content content)
-    (html/set-attr :data-l8n translation)))
 
 (defn generate-activity-stream-items [enlive-m activities activity-sources]
   (let [activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])
@@ -56,10 +49,9 @@
                                                               (html/content (when activity-time
                                                                               (mh/humanise-time activity-time)))))
                              [:.clj--activity-item__action__author] (html/content (domain/activity->actor-display-name activity))
-                             [:.clj--activity-item__action] (let [action-text-key (domain/activity->action-text-key activity)]
-                                                              (set-content-or-translation action-text-key
-                                                                                          (domain/activity->default-action-text activity)
-                                                                                          (activity-action-message-translation action-text-key)))
+                             [:.clj--activity-item__action] (html/do->
+                                                              (html/set-attr :data-l8n (activity-action-message-translation activity))
+                                                              (html/content (domain/activity->default-action-text activity)))
                              [:.clj--activity-item__suspicious] (let [action-signed (domain/activity->signed activity)]
                                                                   (case action-signed
                                                                     (or false nil) (html/do->
@@ -76,10 +68,9 @@
                                                                 (html/wrap :a {:href target-url})
                                                                 identity))
                              [:.clj--activity-item__connector] (when (not (nil? (domain/activity->target activity)))
-                                                                 (let [action-text-key (domain/activity->action-text-key activity)]
-                                                                   (set-content-or-translation action-text-key
-                                                                                               " -"
-                                                                                               (activity-action-connector-translation action-text-key))))))))
+                                                                 (html/do->
+                                                                   (html/content " -")
+                                                                   (html/set-attr :data-l8n (activity-action-connector-translation activity))))))))
 
 (defn add-activities [enlive-m activities activity-sources]
   (let [activity-stream-items (generate-activity-stream-items enlive-m activities activity-sources)]

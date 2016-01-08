@@ -12,7 +12,7 @@
   (str activity-source-id "_-_" activity-type-name))
 
 (defn activity-type-description [activity-type]
-  (str "content:customise-feed/" activity-type))
+  (str "content:activity-type/customise-feed-" (vh/format-translation-str activity-type)))
 
 (defn generate-feed-item-children [enlive-m activity-source]
   (let [feed-item-child-snippet (first (html/select enlive-m [:.clj--feed-item-child]))]

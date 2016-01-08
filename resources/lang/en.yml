@@ -11,13 +11,10 @@ flash:
 
 feed:
   title: Mooncake Activity Stream
-  action-text-objective: created an objective
-  action-text-question: asked a question
-  action-text-transaction: made a transaction
   action-text-connector-about: about
   action-text-connector-to: to
   error-title-1: We have hidden
-  error-title-1: updates
+  error-title-2: updates
 
   error-description-1: These are missing details we use to verify their safety.
   error-description-2: "If you are happy to continue you can show hidden items:"
@@ -31,6 +28,13 @@ feed:
 
   new-activities-error: There was an error retrieving new activities, please refresh the page.
 
+activity-type:
+  action-text-objective: created an objective
+  action-text-objective-question: asked a question
+  action-text-transaction: made a transaction
+  customise-feed-create: Created content
+  customise-feed-question: Questions
+
 empty-feed:
   page-title: There are no activities to show
   intro: Customise your feed here
@@ -42,8 +46,6 @@ customise-feed:
   feed-digitally-signed-false: Unconfirmed source
   feed-digitally-signed-true: Confirmed trusted source
   save: Save
-  Create: Created content
-  Question: Questions
 
 sign-in:
   title: Sign In

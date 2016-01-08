@@ -4,7 +4,8 @@
             [net.cgrand.jsoup :as jsoup]
             [clojure.tools.logging :as log]
             [mooncake.routes :as routes]
-            [mooncake.translation :as translation]))
+            [mooncake.translation :as translation]
+            [clojure.string :as string]))
 
 (defn remove-element [enlive-m selector]
   (html/at enlive-m selector nil))
@@ -78,3 +79,8 @@
 (defn add-script [enlive-m script-path]
   (let [script-tag (html/as-nodes {:tag :script :attrs {:src script-path}})]
     (html/at enlive-m [:body] (html/append script-tag))))
+
+(defn format-translation-str [s]
+  (-> s
+      (string/replace #" " "-")
+      string/lower-case))

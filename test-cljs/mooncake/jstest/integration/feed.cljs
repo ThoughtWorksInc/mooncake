@@ -74,7 +74,7 @@
                     (is (= (dommy/attr (sel1 activity-15 :.clj--activity-item__link) "href") "http://activity-src.co.uk/bob"))
                     (is (not (empty? (dommy/text (sel1 activity-15 :.clj--activity-item__time)))))
                     (is (= (dommy/text (sel1 activity-15 :.clj--activity-item__action__author)) "Bob"))
-                    (is (= (dommy/attr (sel1 activity-15 :.clj--activity-item__action) "data-l8n") "content:feed/action-text-question"))
+                    (is (= (dommy/attr (sel1 activity-15 :.clj--activity-item__action) "data-l8n") "content:activity-type/action-text-something"))
                     (is (= (dommy/text (sel1 activity-15 :.clj--activity-item__title)) "Save more trees?"))
                     (is (not (nil? (sel1 activity-15 :.clj--activity-item__suspicious--untrusted-source))))
 

@@ -73,9 +73,9 @@
          (fact "names of provided activity types of activity sources are displayed"
                (let [[first-activity-type-label-name second-activity-type-label-name third-activity-type-label-name]
                      (html/select page [:.clj--feed-item-child__name])]
-                 (:attrs first-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/Create"})
-                 (:attrs second-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/Question"})
-                 (:attrs third-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/Type"})
+                 (:attrs first-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/create"})
+                 (:attrs second-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/question"})
+                 (:attrs third-activity-type-label-name) => (contains {:data-l8n "content:customise-feed/type"})
                  (html/text third-activity-type-label-name) => "Type"))
 
          (fact "name attributes for provided activity types of activity sources selection checkboxes are set correctly"
