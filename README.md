@@ -66,6 +66,21 @@ published time less than or greater than the provided timestamp respectively. Fo
 ```https://objective8.dcentproject.eu/as2/activities?from=2015-12-22T14:00:00.000Z``` should return all activities that 
 occurred after 2pm on the 22nd December 2015.
 
+#### Adding translations
+
+The translation files can be found at ```resources/lang/{language}.yml```. You should add any unsupported activity or 
+object types to the ```activity-type``` section in the following format:
+
+    action-text-{object type}: action text here
+    customise-feed-{activity type}: text here for customise feed view
+
+For example, 
+
+    activity-type:
+      action-text-objective: created an objective
+      customise-feed-create: Created content
+
+
 ## Running the static frontend
 
 ### Getting started
