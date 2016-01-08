@@ -225,9 +225,9 @@
            sign-in!
            (k/visit (routes/path :show-customise-feed))
            (kh/check-page-is "/customise-feed" ks/customise-feed-page-body)
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-list-item-name] :data-l8n "content:customise-feed/testactivitytype-1-1")
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-list-item-name] :data-l8n "content:customise-feed/testactivitytype-1-2" second)
-           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-list-item-name] :data-l8n "content:customise-feed/testactivitytype-2-1" #(nth % 2))
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-list-item-name] :data-l8n "content:activity-type/customise-feed-testactivitytype-1-1")
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-list-item-name] :data-l8n "content:activity-type/customise-feed-testactivitytype-1-2" second)
+           (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-list-item-name] :data-l8n "content:activity-type/customise-feed-testactivitytype-2-1" #(nth % 2))
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
                                                     (html/attr= :id "test-activity-source-1_-_TestActivityType-1-1")] :checked "checked")
            (kh/selector-has-attribute-with-content [ks/customise-feed-page-feed-item-child-checkbox
