@@ -64,7 +64,7 @@
                                         "test-cljs"       ["do" "clean," "gulp," "cljs-test"]
                                         "auto-cljs"       ["do" "test-cljs," "cljsbuild" "auto" "test"]
                                         "browser"         ["do" "clean," "gulp," "cljs-build," "midje" "mooncake.browser.*"]
-                                        "gulp"            ["shell" "gulp" "build"]
+                                        "gulp"            ["shell" "npm" "run" "gulp" "--" "build"]
                                         "stub"            ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]
                                         "auto-no-browser" ["test" ":autotest" "src/" "test/mooncake/test/" "test/mooncake/integration/"]}
                        :cljsbuild      {:builds [{:id           "prod"
