@@ -47,7 +47,7 @@
                                                             (html/do->
                                                               (html/set-attr :datetime activity-time)
                                                               (html/content (when activity-time
-                                                                              (mh/humanise-time activity-time)))))
+                                                                              activity-time))))
                              [:.clj--activity-item__action__author] (html/content (domain/activity->actor-display-name activity))
                              [:.clj--activity-item__action] (html/do->
                                                               (html/set-attr :data-l8n (activity-action-message-translation activity))

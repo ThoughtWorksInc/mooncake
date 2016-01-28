@@ -7,10 +7,10 @@
     "node": "0.12.4"
   },
   "dependencies": {
+    "del": "^1.2.0",
     "font-awesome": "latest",
     "gulp": "^3.8.10",
     "gulp-autoprefixer": "^1.0.1",
-    "del": "^1.2.0",
     "gulp-concat": "^2.4.1",
     "gulp-if": "^1.2.5",
     "gulp-imagemin": "^1.2.1",

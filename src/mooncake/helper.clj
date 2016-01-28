@@ -1,6 +1,5 @@
 (ns mooncake.helper
   (:require [ring.util.response :as r]
-            [clojure.contrib.humanize :as h]
             [clj-time.core :as c]
             [clj-time.format :as f]
             [mooncake.routes :as routes]
@@ -25,10 +24,6 @@
 
 (defn datetime-str->datetime [datetime-str]
   (f/parse (f/formatters :date-time-parser) datetime-str))
-
-(defn humanise-time [datetime-str]
-  (-> (datetime-str->datetime datetime-str)
-      h/datetime))
 
 (def after? c/after?)
 

@@ -13,7 +13,6 @@
                  [traduki "0.1.3-SNAPSHOT"]
                  [clj-yaml "0.4.0"]
                  [cheshire "5.5.0"]
-                 [bilus/clojure-humanize "0.1.0"]
                  [clj-http "2.0.0"]
                  [org.clojars.d-cent/stonecutter-oauth "0.2.0-SNAPSHOT"]
                  [environ "1.0.1"]

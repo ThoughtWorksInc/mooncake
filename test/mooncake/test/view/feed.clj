@@ -96,7 +96,7 @@
 
         first-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/7")
         first-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
-        first-activity-item => (eh/text-is? [:.clj--activity-item__time] "10 minutes ago")
+        first-activity-item => (eh/text-is? [:.clj--activity-item__time] ten-minutes-ago-str)
         first-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "JDog")
         first-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:activity-type/action-text-objective")
         first-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
