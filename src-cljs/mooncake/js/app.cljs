@@ -16,6 +16,7 @@
   (f/hide-pagination-buttons)
   (f/load-more-activities-if-at-end-of-page)
   (f/check-for-new-activities)
+  (f/give-all-activities-human-readable-time)
   (d/listen! js/window :scroll f/load-more-activities-if-at-end-of-page)
   (setup-listener f/reveal-new-activities-link :click f/reveal-newer-activities)
   (setup-multi-listeners cf/type-checkbox-selector :change cf/type-checkbox-changed)

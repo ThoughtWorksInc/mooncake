@@ -3,6 +3,7 @@
             [dommy.core :as d]
             [mooncake.js.dom :as dom]
             [hickory.core :as hic]
+            [cljsjs.moment]
             [taoensso.tower :as tower])
   (:require-macros [dommy.core :as dm]
                    [mooncake.js.config :refer [polling-interval-ms]]
@@ -27,6 +28,14 @@
 
 (def t (tower/make-t tconfig))
 
+(defn dom-node->humanised-time [element]
+  (let [humanised-time (.fromNow (js/moment (d/attr element :datetime)))]
+    (d/set-text! element humanised-time)))
+
+(defn give-all-activities-human-readable-time []
+  (let [elems (dm/sel :.clj--activity-item__time)]
+    (doseq [elem elems] (dom-node->humanised-time elem))))
+
 (defn older-activities-error-handler [response]
   (.log js/console (str "something bad happened: " response)))
 
@@ -40,6 +49,7 @@
         original-list-html (. activity-stream -innerHTML)]
     (d/set-attr! (dm/sel1 activity-loading-spinner) "hidden")
     (set! (. activity-stream -innerHTML) (str original-list-html response))
+    (give-all-activities-human-readable-time)
     (reset! request-not-in-progress true)
     (load-activities-fn)))
 
@@ -96,6 +106,7 @@
     (when (valid-response? response)
       (when (not (empty? response))
         (set! (. activity-stream -innerHTML) (str response original-list-html))
+        (give-all-activities-human-readable-time)
         (let [show-new-items-link (dm/sel1 :.func--reveal-new-activities__link)
               new-activities-count (+ @number-of-hidden-activities (count (re-seq #"<li" response)))]
           (reset! number-of-hidden-activities new-activities-count)

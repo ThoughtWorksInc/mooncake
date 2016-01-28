@@ -104,3 +104,9 @@
                     (is (not (contains? (feed/new-activities-link-text 1) "Finnish"))))
                   (with-redefs [dom/get-lang (constantly :fi)]
                                (is (= (feed/new-activities-link-text 1) "View in Finnish 1 new activity in Finnish")))))
+
+(deftest about-converting-the-activity-time-to-readable-format
+         (testing "when the page is loaded"
+                  (set-initial-state)
+                  (feed/give-all-activities-human-readable-time)
+                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "5 months ago"))))

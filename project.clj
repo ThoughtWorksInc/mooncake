@@ -12,6 +12,7 @@
                  [com.taoensso/tower "3.0.2"]
                  [traduki "0.1.3-SNAPSHOT"]
                  [clj-yaml "0.4.0"]
+                 [cljsjs/moment "2.10.6-1"]
                  [cheshire "5.5.0"]
                  [clj-http "2.0.0"]
                  [org.clojars.d-cent/stonecutter-oauth "0.2.0-SNAPSHOT"]

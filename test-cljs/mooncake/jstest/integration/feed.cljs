@@ -72,7 +72,7 @@
                     (is (= 16 (count activity-items)))
                     (is (= (dommy/text (sel1 activity-15 :.clj--avatar__initials)) "B"))
                     (is (= (dommy/attr (sel1 activity-15 :.clj--activity-item__link) "href") "http://activity-src.co.uk/bob"))
-                    (is (not (empty? (dommy/text (sel1 activity-15 :.clj--activity-item__time)))))
+                    (is (= (dommy/text (sel1 activity-15 :.clj--activity-item__time)) "3 years ago"))
                     (is (= (dommy/text (sel1 activity-15 :.clj--activity-item__action__author)) "Bob"))
                     (is (= (dommy/attr (sel1 activity-15 :.clj--activity-item__action) "data-l8n") "content:activity-type/action-text-something"))
                     (is (= (dommy/text (sel1 activity-15 :.clj--activity-item__title)) "Save more trees?"))
@@ -80,7 +80,7 @@
 
                     (is (= (dommy/text (sel1 activity-16 :.clj--avatar__initials)) "M"))
                     (is (= (dommy/attr (sel1 activity-16 :.clj--activity-item__link) "href") "http://activity-src.co.uk/margaret"))
-                    (is (not (empty? (dommy/text (sel1 activity-16 :.clj--activity-item__time)))))
+                    (is (= (dommy/text (sel1 activity-16 :.clj--activity-item__time)) "3 years ago"))
                     (is (= (dommy/text (sel1 activity-16 :.clj--activity-item__action__author)) "Margaret"))
                     (is (= (dommy/text (sel1 activity-16 :.clj--activity-item__action)) "- Coal Mine - Shut Down"))
                     (is (= (dommy/text (sel1 activity-16 :.clj--activity-item__title)) "Save fewer mines!"))
@@ -142,7 +142,11 @@
                   (set-initial-state)
                   (feed/newer-activities-handler (constantly nil) (html-response-hidden))
                   (tu/click! :.func--reveal-new-activities__link)
-                  (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link")))
+                  (tu/test-string-does-not-contain (dommy/class (sel1 :.func--reveal-new-activities__link)) "show-new-activities__link"))
+         (testing "Date is converted to human readable time"
+                  (set-initial-state)
+                  (feed/newer-activities-handler (constantly nil) (html-response-hidden))
+                  (is (= (dommy/text (sel1 :.clj--activity-item__time)) "3 years ago"))))
 
 (deftest about-validation-on-responses
          (testing "invalid response is not added to the feed"
