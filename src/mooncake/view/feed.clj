@@ -4,10 +4,13 @@
             [mooncake.helper :as mh]
             [mooncake.view.view-helpers :as vh]
             [mooncake.domain.activity :as domain]
-            [mooncake.translation :as translation]))
+            [mooncake.translation :as translation]
+            [clj-time.format :as f]))
 
 (def max-characters-in-title 140)
 (def max-characters-in-target 40)
+
+(def time-formatter (f/formatter "E, dd MMM yyyy HH:mm:ss"))
 
 (defn activity-source-index [activity activity-sources]
   (let [activity-src (keyword (domain/activity->activity-src activity))]
@@ -26,6 +29,11 @@
     "Transaction" "content:feed/action-text-connector-to"
     "Objective Question" "content:feed/action-text-connector-about"
     ""))
+
+(defn iso-format->custom-format [time]
+  (when time
+    (let [parsed-time (f/parse (f/formatters :date-time) time)]
+      (f/unparse time-formatter parsed-time))))
 
 (defn generate-activity-stream-items [enlive-m activities activity-sources]
   (let [activity-stream-item (html/select enlive-m [[:.clj--activity-item html/first-of-type]])
@@ -46,8 +54,7 @@
                              [:.clj--activity-item__time] (let [activity-time (domain/activity->published activity)]
                                                             (html/do->
                                                               (html/set-attr :datetime activity-time)
-                                                              (html/content (when activity-time
-                                                                              activity-time))))
+                                                              (html/content (iso-format->custom-format activity-time))))
                              [:.clj--activity-item__action__author] (html/content (domain/activity->actor-display-name activity))
                              [:.clj--activity-item__action] (html/do->
                                                               (html/set-attr :data-l8n (activity-action-message-translation activity))

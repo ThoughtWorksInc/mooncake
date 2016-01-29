@@ -50,13 +50,14 @@
 
 (fact "activities are rendered on the page"
       (let [ten-minutes-ago (-> -10 c/minutes c/from-now)
-            ten-minutes-ago-str (f/unparse (f/formatters :date-time) ten-minutes-ago)
+            ten-minutes-ago-iso (f/unparse (f/formatters :date-time) ten-minutes-ago)
+            ten-minutes-ago-custom (f/unparse fv/time-formatter ten-minutes-ago)
             page (fv/feed {:context
                            {:activities
                             [{:activity-src        "an-objective8-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
                               (keyword "@type")    "Create"
-                              :published           ten-minutes-ago-str
+                              :published           ten-minutes-ago-iso
                               :actor               {(keyword "@type") "Person"
                                                     :displayName      "JDog"}
                               :object              {(keyword "@type") "Objective"
@@ -67,7 +68,7 @@
                              {:activity-src        "a-helsinki-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
                               (keyword "@type")    "Add"
-                              :published           "2015-09-06T11:05:53+03:00"
+                              :published           "2015-09-06T11:05:53.002Z"
                               :actor               {(keyword "@type") "Group"
                                                     :displayName      "Kaupunginjohtaja/J"
                                                     (keyword "@id")   "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
@@ -95,8 +96,8 @@
         (count (html/select page [:.clj--activity-item])) => 3
 
         first-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/7")
-        first-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-str)
-        first-activity-item => (eh/text-is? [:.clj--activity-item__time] ten-minutes-ago-str)
+        first-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime ten-minutes-ago-iso)
+        first-activity-item => (eh/text-is? [:.clj--activity-item__time] ten-minutes-ago-custom)
         first-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "JDog")
         first-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:activity-type/action-text-objective")
         first-activity-item => (eh/text-is? [:.clj--activity-item__title] "OBJECTIVE 7 TITLE")
@@ -104,7 +105,8 @@
         first-activity-item => (eh/text-is? [:.clj--activity-item__id] "6")
 
         second-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/")
-        second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-09-06T11:05:53+03:00")
+        second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-09-06T11:05:53.002Z")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__time] "Sun, 06 Sep 2015 11:05:53")
         second-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "Kaupunginjohtaja/J")
         second-activity-item => (eh/text-is? [:.clj--activity-item__action] "- Content - Add")
         second-activity-item => (eh/text-is? [:.clj--activity-item__connector] " -")
@@ -114,6 +116,7 @@
 
         third-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6/questions/23")
         third-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
+        third-activity-item => (eh/text-is? [:.clj--activity-item__time] "Tue, 04 Aug 2015 14:49:38")
         third-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "Lala")
         third-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:activity-type/action-text-objective-question")
         third-activity-item => (eh/text-is? [:.clj--activity-item__title] "QUESTION 6 TITLE")
