@@ -3,7 +3,6 @@
             [dommy.core :as d]
             [mooncake.js.dom :as dom]
             [hickory.core :as hic]
-            [cljsjs.moment]
             [taoensso.tower :as tower])
   (:require-macros [dommy.core :as dm]
                    [mooncake.js.config :refer [polling-interval-ms]]
@@ -28,13 +27,9 @@
 
 (def t (tower/make-t tconfig))
 
-(defn dom-node->humanised-time [element]
-  (let [humanised-time (.fromNow (js/moment (d/attr element :datetime)))]
-    (d/set-text! element humanised-time)))
-
 (defn give-all-activities-human-readable-time []
   (let [elems (dm/sel :.clj--activity-item__time)]
-    (doseq [elem elems] (dom-node->humanised-time elem))))
+    (doseq [elem elems] (d/set-text! elem (dom/node->humanised-time elem)))))
 
 (defn older-activities-error-handler [response]
   (.log js/console (str "something bad happened: " response)))
@@ -93,8 +88,8 @@
 (defn new-activities-link-text [length]
   (let [message-start-key (if (> length 1) :new-activities-message-start :new-activity-message-start)
         message-end-key (if (> length 1) :new-activities-message-end :new-activity-message-end)
-        message-start-translation (t (dom/get-lang) message-start-key)
-        message-end-translation (t (dom/get-lang) message-end-key)]
+        message-start-translation (t (keyword (dom/get-lang)) message-start-key)
+        message-end-translation (t (keyword (dom/get-lang)) message-end-key)]
     (str message-start-translation length message-end-translation)))
 
 (defn update-new-activities-link-text [length]

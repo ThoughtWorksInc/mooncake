@@ -1,7 +1,9 @@
 (ns mooncake.js.dom
-  (:require [dommy.core :as d])
-  (:require-macros [dommy.core :as dm]
-                   [mooncake.translation :as t]))
+  (:require [dommy.core :as d]
+            [cljsjs.moment]
+            [cljsjs.moment.locale.fi]
+            [cljsjs.moment.locale.en-gb])
+  (:require-macros [dommy.core :as dm]))
 
 (defn get-scroll-top []
   (let [document-element (.-documentElement js/document)
@@ -22,7 +24,7 @@
     (d/add-class! selector class)))
 
 (defn get-lang []
-  (keyword (.getAttribute (dm/sel1 :html) "lang")))
+  (d/attr (dm/sel1 :html) "lang"))
 
 (defn string-contains [str s]
   (not= -1 (.indexOf str s)))
@@ -30,4 +32,5 @@
 (defn body-has-class? [class-str]
   (string-contains (d/class (dm/sel1 :body)) class-str))
 
-
+(defn node->humanised-time [element]
+  (.fromNow (.locale (js/moment (d/attr element :datetime)) (get-lang))))

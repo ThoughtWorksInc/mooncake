@@ -97,16 +97,21 @@
 
 (deftest about-handling-client-side-translations
          (testing "if given an unsupported language then falls back to english"
-                  (with-redefs [dom/get-lang (constantly :en)]
+                  (with-redefs [dom/get-lang (constantly "en")]
                                (is (= (feed/new-activities-link-text 2) "View 2 new activities"))))
          (testing "if lang atom is updated then returns a translated message"
-                  (with-redefs [dom/get-lang (constantly :en)]
+                  (with-redefs [dom/get-lang (constantly "en")]
                     (is (not (contains? (feed/new-activities-link-text 1) "Finnish"))))
-                  (with-redefs [dom/get-lang (constantly :fi)]
+                  (with-redefs [dom/get-lang (constantly "fi")]
                                (is (= (feed/new-activities-link-text 1) "View in Finnish 1 new activity in Finnish")))))
 
 (deftest about-converting-the-activity-time-to-readable-format
-         (testing "when the page is loaded"
+         (testing "the time is converted to English by default"
                   (set-initial-state)
                   (feed/give-all-activities-human-readable-time)
-                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "5 months ago"))))
+                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "5 months ago")))
+         (testing "the time is in the same language as the browser"
+                  (set-initial-state)
+                  (tu/set-lang! "fi")
+                  (feed/give-all-activities-human-readable-time)
+                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "viisi kuukautta sitten"))))
