@@ -23,7 +23,7 @@
 
 (def ^:private tconfig
   {:fallback-locale :en
-   :compiled-dictionary (tower-macros/dict-compile "lang/client-translations.clj")})
+   :compiled-dictionary (tower-macros/dict-compile "lang/client_translations.clj")})
 
 (def t (tower/make-t tconfig))
 

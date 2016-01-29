@@ -1,8 +1,7 @@
 (ns mooncake.js.dom
   (:require [dommy.core :as d]
             [cljsjs.moment]
-            [cljsjs.moment.locale.fi]
-            [cljsjs.moment.locale.en-gb])
+            [lang.time-translations])
   (:require-macros [dommy.core :as dm]))
 
 (defn get-scroll-top []
