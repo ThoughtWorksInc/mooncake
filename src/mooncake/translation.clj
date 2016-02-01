@@ -21,9 +21,7 @@
     (last vals)))
 
 (defn translation-map [lang]
-  (deep-merge
-    (load-translations-from-file (str "lang/" lang ".yml"))
-    (load-translations-from-file (str "lang/" lang "-client.yml"))))
+  (load-translations-from-file (str "lang/" lang ".yml")))
 
 (defn config-translation []
   {:dictionary                 {:en (translation-map "en")

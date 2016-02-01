@@ -1,7 +1,0 @@
----
-
-feed:
-    new-activity-message-start: "View "
-    new-activity-message-end: " new activity"
-    new-activities-message-start: "View "
-    new-activities-message-end: " new activities"
