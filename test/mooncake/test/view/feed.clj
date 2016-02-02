@@ -106,7 +106,7 @@
 
         second-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/")
         second-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-09-06T11:05:53.002Z")
-        second-activity-item => (eh/text-is? [:.clj--activity-item__time] "Sun, 06 Sep 2015 11:05:53")
+        second-activity-item => (eh/text-is? [:.clj--activity-item__time] "2015-09-06 11:05:53")
         second-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "Kaupunginjohtaja/J")
         second-activity-item => (eh/text-is? [:.clj--activity-item__action] "- Content - Add")
         second-activity-item => (eh/text-is? [:.clj--activity-item__connector] " -")
@@ -116,7 +116,7 @@
 
         third-activity-item => (eh/links-to? [:.clj--activity-item__link] "http://objective8.dcentproject.eu/objectives/6/questions/23")
         third-activity-item => (eh/has-attr? [:.clj--activity-item__time] :datetime "2015-08-04T14:49:38.407Z")
-        third-activity-item => (eh/text-is? [:.clj--activity-item__time] "Tue, 04 Aug 2015 14:49:38")
+        third-activity-item => (eh/text-is? [:.clj--activity-item__time] "2015-08-04 14:49:38")
         third-activity-item => (eh/text-is? [:.clj--activity-item__action__author] "Lala")
         third-activity-item => (eh/has-attr? [:.clj--activity-item__action] :data-l8n "content:activity-type/action-text-objective-question")
         third-activity-item => (eh/text-is? [:.clj--activity-item__title] "QUESTION 6 TITLE")

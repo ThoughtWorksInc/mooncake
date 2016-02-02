@@ -10,7 +10,7 @@
 (def max-characters-in-title 140)
 (def max-characters-in-target 40)
 
-(def time-formatter (f/formatter "E, dd MMM yyyy HH:mm:ss"))
+(def time-formatter (f/formatter "yyyy-MM-dd HH:mm:ss"))
 
 (defn activity-source-index [activity activity-sources]
   (let [activity-src (keyword (domain/activity->activity-src activity))]
