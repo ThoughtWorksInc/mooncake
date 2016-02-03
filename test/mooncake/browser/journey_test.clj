@@ -7,7 +7,9 @@
             [mooncake.handler :as h]
             [mooncake.integration.kerodon :as kero]
             [mooncake.activity :as a]
-            [mooncake.config :as config]))
+            [mooncake.config :as config]
+            [clojure.tools.logging :as log]
+            [clojure.java.io :as io]))
 
 (def localhost "localhost:5439")
 
@@ -66,9 +68,24 @@
        (catch Exception e
          (throw e))))
 
+(def screenshot-directory "test/mooncake/browser/screenshots")
+(def screenshot-number (atom 0))
+(defn screenshot [filename]
+  (log/info (str "Screenshot: " filename))
+  (wd/take-screenshot :file (str screenshot-directory "/"
+                                 (format "%02d" (swap! screenshot-number + 1))
+                                 "_" filename ".png")))
+
+(defn clear-screenshots []
+  (doall (->> (io/file screenshot-directory)
+              file-seq
+              (filter #(re-matches #".*\.png$" (.getName %)))
+              (map io/delete-file))))
+
 (against-background
   [(before :contents (do (reset! server (start-server))
                          (kero/create-dummy-activities @test-store (* 2 config/activities-per-page))
+                         (clear-screenshots)
                          (start-browser)))
    (after :contents (do
                       (stop-browser)
@@ -79,6 +96,7 @@
            (wd/to (str localhost "/d-cent-sign-in"))
            (wd/current-url) => (contains (str localhost "/"))
            (wait-for-selector mooncake-feed-body)
+           (screenshot "feed_page")
            (count-activity-items) => config/activities-per-page
 
            (fact "pagination buttons are removed when javascript is enabled"
@@ -88,8 +106,9 @@
            (fact "more activities are loaded when page is scrolled to the bottom"
                  (let [page-length (:height (wd/element-size "body"))]
                    (wd/execute-script (str "scroll(0, " page-length ");"))
+                   (screenshot "loading_more_activites_spinner")
                    (wait-and-count (* 2 config/activities-per-page))
-                   (count-activity-items)) => (* 2 config/activities-per-page))
+                   (count-activity-items) => (* 2 config/activities-per-page)))
            (fact "new activities are loaded when new activities exist and update is triggered"
                  (wd/exists? ".show-new-activities__link") => false
                  (kero/create-dummy-activity @test-store "2015-10-10T10:20:30.000Z")

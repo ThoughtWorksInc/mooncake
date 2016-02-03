@@ -60,13 +60,14 @@
                                         :polling-interval "1000"}
                        :aliases        {"cljs-build"      ["cljsbuild" "once" "prod"]
                                         "cljs-test"       ["cljsbuild" "test"]
-                                        "test"            ["do" "clean," "gulp," "cljs-test," "cljs-build," "midje" ]
+                                        "test"            ["do" "test-cljs," "test-clj" ]
+                                        "test-clj"        ["shell" "test/mooncake/run_all_tests.sh"]
+                                        "browser"         ["shell" "test/mooncake/run_browser_tests.sh"]
+                                        "auto-no-browser" ["test" ":autotest" "src/" "test/mooncake/test/" "test/mooncake/integration/"]
                                         "test-cljs"       ["do" "clean," "gulp," "cljs-test"]
                                         "auto-cljs"       ["do" "test-cljs," "cljsbuild" "auto" "test"]
-                                        "browser"         ["do" "clean," "gulp," "cljs-build," "midje" "mooncake.browser.*"]
                                         "gulp"            ["shell" "npm" "run" "gulp" "--" "build"]
-                                        "stub"            ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]
-                                        "auto-no-browser" ["test" ":autotest" "src/" "test/mooncake/test/" "test/mooncake/integration/"]}
+                                        "stub"            ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]}
                        :cljsbuild      {:builds [{:id           "prod"
                                                   :source-paths ["src-cljs"]
                                                   :compiler     {:output-to     "resources/public/js/main.js"
