@@ -4,35 +4,55 @@
 
 ["Mooncake"](https://en.wikipedia.org/wiki/Mooncake#Ming_revolution)
 
-## Running locally
-Before starting the server, build the views by running:
+## Development VM
 
-    lein gulp
+You can develop and run the application in a VM to ensure that the correct versions of Mooncake's dependencies
+are installed. You will need [VirtualBox][], [Vagrant][] and [Ansible][] installed.
 
-To start the web server, run:
+First, clone the repository.
 
-    lein run
+Navigate to the ops/ directory of the project and run:
+
+    vagrant up development
+
+The first time this is run, it will provision and configure a new VM.
+
+When the VM has started, access the virtual machine by running:
+
+    vagrant ssh
+
+The source folder will be located at `/var/mooncake`.
+
+After initial setup, navigate to the source directory with:
+
+    cd /var/mooncake
+
+[Vagrant]: https://www.vagrantup.com
+[Ansible]: http://docs.ansible.com/ansible/intro_installation.html
+[VirtualBox]: https://www.virtualbox.org/
+
+### Running
+
+To start the app, run:
+
+    ./start_app_vm.sh
     
 ### Running test suite
     
-#### To run all tests, run this command
+To run all tests, use this command:
 
     lein test
+    
+### Running the prototype
+
+Simply type:
+
+```
+gulp server
+```
 
 
 Commands and aliases can be found in the project.clj file. 
-
-## Environment variables for deployment
-
-- ```HOST``` and ```PORT``` are used to configure the Jetty webserver --- these default to ```localhost``` and
-```3000``` when running locally
-- ```BASE_URL``` is the url (including scheme) for the deployment --- this defaults to ```http://localhost:3000``` when
-running locally.  Note that the ```BASE_URL```, ```HOST``` and ```PORT``` may in general need to be set independently,
-depending on how the application is deployed.
-- ```CLIENT_ID```, ```CLIENT_SECRET``` and ```AUTH_URL``` configure interaction with a running [stonecutter](https://github.com/d-cent/stonecutter) 
-SSO instance, for signing into the application.
-- ```ACTIVITY_SOURCE_FILE``` is the YAML file containing the data pertaining to your activity streams --- if this 
-variable is not provided, activities are loaded from the sources in the ```resources/activity-sources.yml``` file.
 
 ### Activity sources
 
@@ -66,45 +86,6 @@ published time less than or greater than the provided timestamp respectively. Fo
 ```https://objective8.dcentproject.eu/as2/activities?from=2015-12-22T14:00:00.000Z``` should return all activities that 
 occurred after 2pm on the 22nd December 2015.
 
-## Running the static frontend
-
-### Getting started
-
-First install [brew](http://brew.sh/)
-
-```
-brew install node
-npm install
-```
-
-You also require gulp to be installed globally.
-
-```
-npm install -g gulp
-```
-
-Depending on system privileges you may need to install it globally with sudo:
-
-```
-sudo npm install -g gulp
-```
-
-
-### Running the prototype
-
-####Simply type
-```
-gulp server
-```
-
-### Preview on Github Pages
-```
-gulp deploy
-```
-
-####Visit:
-
-[thoughtworksinc.github.io/mooncake](http://thoughtworksinc.github.io/mooncake)
 
 ## Adding translations
 
@@ -123,50 +104,9 @@ For example,
       customise-feed-create: Created content
 
 
-#Build and Deploy
-
-##Development Deployment
-Run the develop code in a VM. May require some manual steps
-
-##Production Like Deployments
-These deployments are trying to be as production like as possible. All use the same Ansible playbook with different 
-inventories per environment.
-
-###Local 
-This is used to run the production like deployment locally. It can be started up by using the following Vagrant command
-from within the ops folder.
-
-```
-vagrant up default
-```
-
-Once this has run the VM is ready to go and the mooncake repo is mapped into /var/mooncake on the VM. At this
-point you need to do so some manual steps:
-
-- Compile the uberjar
-
-```
-lein uberjar
-```
-
-- Start the docker container. Within the VM run the following:
-
-```
-sudo docker run \
-         -v /var/mooncake/target:/var/mooncake \
-         -p 5000:3000 \
-         -e "CLIENT_ID=FOO" \
-         -e "CLIENT_SECRET=SHHHH" \
-         -e "AUTH_URL=https://some.auth.provider.com" \
-         -e "BASE_URL=https://192.168.50.70" \
-         -e "HOST=0.0.0.0" \
-         --name mooncake java:8 bash -c 'java -jar /var/mooncake/mooncake-0.1.0-SNAPSHOT-standalone.jar'
-```
-###Remote
-Provisioning is handled by the build pipeline. It runs ```./ops/scripts/provision_dob_staging.sh``` to provision the Digital 
-Ocean droplet. Then once that is complete it runs: ```./ops/scripts/deploy_to_dob.sh``` to start the mooncake container.
+## Deployment
  
-## Deploying the application using docker
+## Deploying the application using Docker
   
 You can deploy the application using Docker. To do so, you will need three containers:
 Mongo, Nginx and Mooncake.
@@ -191,7 +131,7 @@ To use Nginx for this you need
 * a dhparam.pem file
 * an nginx.conf file
 
-You can acquire an SSL certificate and key online inexpensively. You should receive a pair of files, for instance stonecutter.crt and stonecutter.key. Store them in their own directory somewhere safe.
+You can acquire an SSL certificate and key online inexpensively. You should receive a pair of files, for instance mooncake.crt and mooncake.key. Store them in their own directory somewhere safe.
 
 You can generate a dhparam.pem file by running: 
     
@@ -220,7 +160,7 @@ You can create an nginx.conf file by copying the following into a new file and r
     	  ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
     
     	  location / {
-    	    proxy_pass http://<docker ip>:5000;
+    	    proxy_pass http://<docker ip>:3000;
     	    proxy_set_header Host $host;
     	    proxy_set_header X-Real-IP $remote_addr;
     	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -242,7 +182,7 @@ To run Mooncake you need
  
 * a mooncake.env file
 
-To get a mooncake.env, copy the template that is found in the config folder and replace the values with new ones for your application. The client ID and secret are for integration with stonecutter, the auth_url should be your domain address and the base URL should be your docker IP address.
+To get a mooncake.env file, replace the values in the template found in the config folder with new ones for your application. The auth config is for integration with [stonecutter](https://github.com/d-cent/stonecutter), and the base URL should be your domain address.
   
 Then run this command, replacing <env file path> with the path to wherever your environment variable file is stored.  
 
