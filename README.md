@@ -243,11 +243,7 @@ To run Mooncake you need
 * a mooncake.env file
 
 To get a mooncake.env, copy the template that is found in the config folder and replace the values with new ones for your application. The client ID and secret are for integration with stonecutter, the auth_url should be your domain address and the base URL should be your docker IP address.
- 
-Then run the following command
-    
-    docker build -t mooncake <path to mooncake project files>/mooncake
- 
-Finally, run this command, replacing <env file path> with the path to wherever your environment variable file is stored.  
+  
+Then run this command, replacing <env file path> with the path to wherever your environment variable file is stored.  
 
-    docker run --env-file=<path to env file>mooncake.env -p 5000:3000 --link mooncake-mongo:mongo -d --name mooncake mooncake
+    docker run --env-file=<path to env file>/mooncake.env -p 3000:3000 --link mooncake-mongo:mongo -d --name mooncake d-cent/mooncake
