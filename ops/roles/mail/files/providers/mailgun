@@ -6,7 +6,7 @@ do
   [[ -z "${!r}" ]] && echo "$r not defined" && exit 1
 done
 
-[[ -n "$APP_NAME" ]] && from_name=$APP_NAME || from_name='Stonecutter'
+[[ -n "$APP_NAME" ]] && from_name=$APP_NAME || from_name='Mooncake'
 DEFAULT_FROM="$from_name <no-reply@$EMAIL_DOMAIN_NAME>"
 provider_endpoint="https://api.mailgun.net/v3/$EMAIL_DOMAIN_NAME/messages"
 

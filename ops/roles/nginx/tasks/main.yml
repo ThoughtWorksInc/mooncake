@@ -9,10 +9,10 @@
    file: path="/etc/nginx/ssl" state=directory
 
  - name: copy SSL cert
-   copy: src={{ cert_location }} dest="/etc/nginx/ssl/stonecutter.crt"
+   copy: src={{ cert_location }} dest="/etc/nginx/ssl/mooncake.crt"
 
  - name: copy SSL key
-   copy: src={{ cert_key_location }} dest="/etc/nginx/ssl/stonecutter.key"
+   copy: src={{ cert_key_location }} dest="/etc/nginx/ssl/mooncake.key"
 
  - name: Create directory for DH parameter file
    file: path=/etc/nginx/cert state=directory mode=0755
@@ -22,11 +22,11 @@
    args:
      creates: /etc/nginx/cert/dhparam.pem
 
- - name: copy over stonecutter nginx config
-   template: src="stonecutter.j2" dest="/etc/nginx/sites-available/stonecutter" mode=0644
+ - name: copy over mooncake nginx config
+   template: src="mooncake.j2" dest="/etc/nginx/sites-available/mooncake" mode=0644
 
  - name: create symbolic link to nginx helsinki config
-   file: src="/etc/nginx/sites-available/stonecutter" dest="/etc/nginx/sites-enabled/stonecutter" state=link
+   file: src="/etc/nginx/sites-available/mooncake" dest="/etc/nginx/sites-enabled/mooncake" state=link
 
  - name: remove default nginx symbolic link from sites-enabled
    file: path="/etc/nginx/sites-enabled/default" state=absent

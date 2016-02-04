@@ -1,2 +1,2 @@
 ---
-  email_service_dir: /var/stonecutter/email_service
+  email_service_dir: /var/mooncake/email_service
