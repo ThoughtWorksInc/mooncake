@@ -43,6 +43,8 @@ To run all tests, use this command:
 
     lein test
     
+Commands and aliases can be found in the project.clj file. 
+    
 ### Running the prototype
 
 Simply type:
@@ -50,9 +52,6 @@ Simply type:
 ```
 gulp server
 ```
-
-
-Commands and aliases can be found in the project.clj file. 
 
 ### Activity sources
 
@@ -119,7 +118,7 @@ To start a mongo container, run
     
 #### Starting an Nginx container
 
-To access the application you must run a reverse proxy, for example Nginx, that redirects to it, adding the following to the headers
+To access the application, you must run a reverse proxy that redirects to it and adds the following headers:
     
     "X-Real-IP: <proxy ip>" 
     "X-Forwarded-For: <proxy ip>"
@@ -186,4 +185,4 @@ To get a mooncake.env file, replace the values in the template found in the conf
   
 Then run this command, replacing <env file path> with the path to wherever your environment variable file is stored.  
 
-    docker run --env-file=<path to env file>/mooncake.env -p 3000:3000 --link mooncake-mongo:mongo -d --name mooncake d-cent/mooncake
+    docker run --env-file=<path to env file>/mooncake.env -p 3000:3000 --link mooncake-mongo:mongo -d --name mooncake dcent/mooncake
