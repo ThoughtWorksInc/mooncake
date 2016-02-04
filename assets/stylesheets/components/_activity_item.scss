@@ -7,9 +7,9 @@
   border-bottom: 1px solid $grey_light;
   max-height: 300px;
   transition: max-height .8s linear;
-  padding: 30px 30px 30px 80px;
-  min-height: 100px;
   &__content {
+    padding: 30px 30px 30px 80px;
+    min-height: 100px;
     flex: 12;
     & a {
       text-decoration: none;
