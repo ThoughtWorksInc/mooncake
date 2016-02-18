@@ -48,6 +48,7 @@
                        :plugins        [[lein-environ "1.0.0"]
                                         [lein-midje "3.1.3"]
                                         [lein-ancient "0.6.7"]
+                                        [lein-auto "0.1.2"]
                                         [lein-cljsbuild "1.0.6"]
                                         [lein-shell "0.4.1"]
                                         [com.cemerick/clojurescript.test "0.3.3"]]
@@ -65,9 +66,10 @@
                                         "browser"         ["shell" "test/mooncake/run_browser_tests.sh"]
                                         "auto-no-browser" ["test" ":autotest" "src/" "test/mooncake/test/" "test/mooncake/integration/"]
                                         "test-cljs"       ["do" "clean," "gulp," "cljs-test"]
-                                        "auto-cljs"       ["do" "test-cljs," "cljsbuild" "auto" "test"]
+                                        "auto-cljs"       ["auto" "cljsbuild" "test"]
                                         "gulp"            ["shell" "npm" "run" "gulp" "--" "build"]
                                         "stub"            ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]}
+                       :auto           {"cljsbuild" {:paths ["src-cljs" "test-cljs"]}}
                        :cljsbuild      {:builds [{:id           "prod"
                                                   :source-paths ["src-cljs"]
                                                   :compiler     {:output-to     "resources/public/js/main.js"
