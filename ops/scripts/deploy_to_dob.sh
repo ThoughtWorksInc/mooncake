@@ -11,5 +11,5 @@ ssh $REMOTE_USER@$SERVER_IP <<EOF
                   -p 127.0.0.1:5000:3000 \
                   --link mongo:mongo \
                   --name mooncake \
-                  dcent/mooncake \
+                  dcent/mooncake
 EOF
