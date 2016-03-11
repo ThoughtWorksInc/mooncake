@@ -106,12 +106,13 @@
                                (is (= (feed/new-activities-link-text 1) "View in Finnish 1 new activity in Finnish")))))
 
 (deftest about-converting-the-activity-time-to-readable-format
+         ;TODO fix test so that it doesn't break every month *grumble grumble grumble*
          (testing "the time is converted to English by default"
                   (set-initial-state)
                   (feed/give-all-activities-human-readable-time)
-                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "5 months ago")))
+                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "6 months ago")))
          (testing "the time is in the same language as the browser"
                   (set-initial-state)
                   (tu/set-lang! "fi")
                   (feed/give-all-activities-human-readable-time)
-                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "viisi kuukautta sitten"))))
+                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "kuusi kuukautta sitten"))))
