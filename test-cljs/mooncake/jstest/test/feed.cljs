@@ -4,7 +4,8 @@
             [mooncake.js.feed :as feed]
             [mooncake.jstest.test-utils :as tu]
             [dommy.core :as dommy]
-            [mooncake.js.dom :as dom])
+            [mooncake.js.dom :as dom]
+            [cljsjs.moment])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
                    [mooncake.jstest.macros :refer [load-template]]
                    [dommy.core :as dm]))
@@ -101,18 +102,22 @@
                                (is (= (feed/new-activities-link-text 2) "View 2 new activities"))))
          (testing "if lang atom is updated then returns a translated message"
                   (with-redefs [dom/get-lang (constantly "en")]
-                    (is (not (contains? (feed/new-activities-link-text 1) "Finnish"))))
+                               (is (not (contains? (feed/new-activities-link-text 1) "Finnish"))))
                   (with-redefs [dom/get-lang (constantly "fi")]
                                (is (= (feed/new-activities-link-text 1) "View in Finnish 1 new activity in Finnish")))))
 
 (deftest about-converting-the-activity-time-to-readable-format
-         ;TODO fix test so that it doesn't break every month *grumble grumble grumble*
-         (testing "the time is converted to English by default"
-                  (set-initial-state)
-                  (feed/give-all-activities-human-readable-time)
-                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "6 months ago")))
-         (testing "the time is in the same language as the browser"
-                  (set-initial-state)
-                  (tu/set-lang! "fi")
-                  (feed/give-all-activities-human-readable-time)
-                  (is (= (d/text (dm/sel1 :.clj--activity-item__time)) "kuusi kuukautta sitten"))))
+         (let [activity-time-selector :.clj--activity-item__time
+               now (js/moment)
+               five-months-before-now (.format (.subtract now 5 "months"))]
+           (testing "the time is converted to English by default"
+                    (set-initial-state)
+                    (tu/set-datetime! activity-time-selector five-months-before-now)
+                    (feed/give-all-activities-human-readable-time)
+                    (is (= (d/text (dm/sel1 activity-time-selector)) "5 months ago")))
+           (testing "the time is in the same language as the browser"
+                    (set-initial-state)
+                    (tu/set-lang! "fi")
+                    (tu/set-datetime! activity-time-selector five-months-before-now)
+                    (feed/give-all-activities-human-readable-time)
+                    (is (= (d/text (dm/sel1 activity-time-selector)) "viisi kuukautta sitten")))))

@@ -59,6 +59,9 @@
 (defn set-lang! [lang]
   (dommy/set-attr! (sel1 :html) :lang lang))
 
+(defn set-datetime! [selector datetime]
+  (dommy/set-attr! (sel1 selector) :datetime datetime))
+
 
 ;; Events
 
