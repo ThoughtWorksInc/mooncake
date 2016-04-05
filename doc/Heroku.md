@@ -33,6 +33,7 @@
   - CLIENT_SECRET = [Stonecutter client secret]
   - MONGO_URI = [MongoDB URI from mLab]
   - HOST = 0.0.0.0
+  - ACTIVITY_SOURCE_FILE = resources/activity-sources.yml
 - Update, add and commit the resources/activity-sources.yml file
 
 - Push to Heroku
