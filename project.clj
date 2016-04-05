@@ -31,6 +31,7 @@
                  [ring/ring-json "0.4.0"]
                  [org.bitbucket.b_c/jose4j "0.4.4"]
                  [org.slf4j/slf4j-simple "1.7.12"]]
+  :uberjar-name "mooncake-0.1.0-SNAPSHOT-standalone.jar"
   :main mooncake.handler
   :profiles {:dev     {:dependencies   [[ring-mock "0.1.5"]
                                         [midje "1.7.0"]

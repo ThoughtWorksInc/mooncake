@@ -1,1 +1,1 @@
-web: lein with-profile production trampoline run
+web: java -cp target/mooncake-0.1.0-SNAPSHOT-standalone.jar clojure.main -m mooncake.handler
