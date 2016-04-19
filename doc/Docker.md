@@ -21,7 +21,7 @@ To get a mooncake.env file, replace the values in the template found in the conf
   
 Then run this command, replacing <env file path> with the path to wherever your environment variable file is stored.  
 
-    docker run --env-file=<path to env file>/mooncake.env -p 3000:3000 --link mooncake-mongo:mongo -d --name mooncake dcent/mooncake
+    docker run --env-file=<path to env file>/mooncake.env -p 3000:3000 --link mooncake-mongo:mongo -d --name mooncake --restart=on-failure dcent/mooncake
 
 
 ### Starting an Nginx container
