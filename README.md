@@ -36,6 +36,8 @@ After initial setup, navigate to the source directory with:
 To start the app, run:
 
     ./start_app_vm.sh
+
+Go to localhost:3000 to test in development
     
 ### Running test suite
     
