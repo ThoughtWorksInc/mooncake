@@ -29,13 +29,6 @@
     "gulp-gh-pages": "^0.5.0",
     "gulp-nodemon": "^1.0.4"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/d-cent/mooncake"
-  },
-  "bugs": {
-    "url": "https://github.com/d-cent/mooncake/issues"
-  },
   "author": "Chris Cheshire",
   "license": "MIT",
   "scripts": {
