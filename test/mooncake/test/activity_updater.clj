@@ -23,11 +23,11 @@
                    :published        twelve-oclock
                    (keyword "@type") "Add"
                    :signed           false}
-                  {:activity-src     :another-activity-src
-                   :actor            {:displayName "LSheep"}
-                   :published        eleven-oclock
-                   (keyword "@type") "Create"
-                   :signed           false}
+                  {:activity-src :another-activity-src
+                   :actor        {:displayName "LSheep"}
+                   :published    eleven-oclock
+                   :type         "Create"
+                   :signed       false}
                   {:activity-src     :an-activity-src
                    :actor            {:displayName "JDog"}
                    :published        ten-oclock
@@ -42,9 +42,9 @@
                                                                            :published        twelve-oclock
                                                                            (keyword "@type") "Add"}]}
                 (http/get another-activity-src-url {:accept :json
-                                                    :as     :json}) => {:body [{:actor            {:displayName "LSheep"}
-                                                                                :published        eleven-oclock
-                                                                                (keyword "@type") "Create"}]})))
+                                                    :as     :json}) => {:body [{:actor     {:displayName "LSheep"}
+                                                                                :published eleven-oclock
+                                                                                :type      "Create"}]})))
 
       (fact "poll-activity-sources does not retrieve activities that have invalid format"
             (let [an-activity-src-url "https://an-activity.src"

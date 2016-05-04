@@ -40,7 +40,8 @@
 
 (defn validate-activity [activity]
   (->>
-    {:published        (or (is-empty? (:published activity))
-                           (is-published-format-invalid? (:published activity)))
-     (keyword "@type") (is-empty? ((keyword "@type") activity))}
+    {:published (or (is-empty? (:published activity))
+                    (is-published-format-invalid? (:published activity)))
+     :type      (and (is-empty? ((keyword "@type") activity))
+                     (is-empty? (:type activity)))}
     return-errors-or-nil))

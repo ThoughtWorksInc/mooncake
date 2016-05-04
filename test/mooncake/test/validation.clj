@@ -28,15 +28,15 @@
   {:published "2015-08-03T14:49:38.407Z"
    (keyword "@type") "Add"}                             nil
   {}                                                    {:published :blank
-                                                         (keyword "@type") :blank}
+                                                         :type :blank}
   {:published "invalid-timestamp"}                      {:published :invalid
-                                                         (keyword "@type") :blank}
+                                                         :type :blank}
   {:published        "    "
    (keyword "@type") "    "}                            {:published :blank
-                                                         (keyword "@type") :blank}
+                                                         :type :blank}
   {:published "\t\t\t\t\t\t\t\t"
    (keyword "@type") "\t\t\t\t\t"}                      {:published :blank
-                                                         (keyword "@type") :blank}
+                                                         :type :blank}
 
   {:published "invalid-timestamp"
-   (keyword "@type") "Add"}                             {:published :invalid})
+   :type "Add"}                                         {:published :invalid})
