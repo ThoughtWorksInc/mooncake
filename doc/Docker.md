@@ -17,7 +17,7 @@ To run Mooncake you need
  
 * a mooncake.env file
 
-To get a mooncake.env file, replace the values in the template found in the config folder with new ones for your application. The auth config is for integration with [stonecutter](https://github.com/d-cent/stonecutter), and the base URL should be your domain address.
+To get a mooncake.env, copy the template config/mooncake.env and fill in your configuration. More information about the configuration variables can be found [here](./config.md).
   
 Then run this command, replacing <env file path> with the path to wherever your environment variable file is stored.  
 
