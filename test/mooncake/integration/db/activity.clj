@@ -147,6 +147,7 @@
 
 (let [latest-time "2016-08-12T00:00:02.000Z"
       second-latest-time "2016-08-12T00:00:01.000Z"
+      second-oldest-time "2014-08-13T00:00:00.000Z"
       oldest-time "2014-08-12T00:00:00.000Z"]
   (dbh/with-mongo-do
     (fn [db]
@@ -162,20 +163,30 @@
             activity3 {:displayName      "HFish"
                        :published        latest-time
                        :activity-src     "test-source"
-                       (keyword "@type") "Create"}
+                       :type "Create"}
+            activity4 {:name "GBird"
+                       :published second-oldest-time
+                       :activity-src "test-source-2"
+                       :type "Question"}
             id1 (:relInsertTime (activity/store-activity! store activity1))
             id2 (:relInsertTime (activity/store-activity! store activity2))
             id3 (:relInsertTime (activity/store-activity! store activity3))
+            id4 (:relInsertTime (activity/store-activity! store activity4))
             _ (dbh/create-dummy-activities store config/activities-per-page)]
 
         (tabular
           (fact "fetching activities with timestamp"
-                (count (activity/fetch-activities-by-timestamp-and-id store [{:activity-src :test-source (keyword "@type") ["Create"]}] ?timestamp ?insert-time-id ?older-items-requested)) => ?result)
+                (count (activity/fetch-activities-by-timestamp-and-id store
+                                                                      [{:activity-src :test-source (keyword "@type") ["Create"]}
+                                                                       {:activity-src :test-source :type ["Create"]}
+                                                                       {:activity-src :test-source-2 :type ["Question"]}]
+                                                                      ?timestamp ?insert-time-id ?older-items-requested)) => ?result)
           ?older-items-requested ?timestamp         ?result                          ?insert-time-id
           true                   oldest-time        0                                id1
+          true                   oldest-time        1                                id4
           true                   second-latest-time config/activities-per-page       id2
           true                   latest-time        config/activities-per-page       id3
-          false                  oldest-time        (+ 2 config/activities-per-page) id1
+          false                  oldest-time        (+ 3 config/activities-per-page) id1
           false                  second-latest-time 1                                id2
           false                  latest-time        0                                id3))))
 

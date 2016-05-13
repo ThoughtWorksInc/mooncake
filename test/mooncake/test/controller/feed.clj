@@ -112,8 +112,12 @@
 
          (fc/generate-feed-query feed-settings activity-sources) => (just [{:activity-src     "activity-src-1"
                                                                             (keyword "@type") ["Enabled" "No-preference"]}
+                                                                           {:activity-src     "activity-src-1"
+                                                                            :type ["Enabled" "No-preference"]}
                                                                            {:activity-src     "activity-src-3"
-                                                                            (keyword "@type") ["No-preference"]}] :in-any-order)))
+                                                                            (keyword "@type") ["No-preference"]}
+                                                                           {:activity-src     "activity-src-3"
+                                                                            :type ["No-preference"]}] :in-any-order)))
 
 (facts "about pagination"
        (let [store (dbh/create-in-memory-store)

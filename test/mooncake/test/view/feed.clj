@@ -82,14 +82,17 @@
                               :relInsertTime       "9"}
                              {:activity-src        "another-objective8-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                              (keyword "@type")    "Question"
+                              :type    "Question"
                               :published           "2015-08-04T14:49:38.407Z"
-                              :actor               {(keyword "@type") "Person"
-                                                    :displayName      "Lala"}
-                              :object              {(keyword "@type") "Objective Question"
-                                                    :displayName      "QUESTION 6 TITLE"
+                              :actor               {:type "Person"
+                                                    :name      "Lala"}
+                              :object              {:type "Objective Question"
+                                                    :name      "QUESTION 6 TITLE"
                                                     :description      "Yes."
                                                     :url              "http://objective8.dcentproject.eu/objectives/6/questions/23"}
+                              :target              {:name "OBJECTIVE 6 TITLE"
+                                                    :type "Objective"
+                                                    :url "http://objective8.dcentproject.eu/objectives/6"}
                               :relInsertTime       "3"}]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 

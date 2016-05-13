@@ -83,5 +83,7 @@
 (defn activity-src-preferences->feed-query [preferences-for-an-activity-src]
   (let [selected-types (map :id (filter :selected (:activity-types preferences-for-an-activity-src)))]
     (when-not (empty? selected-types)
-      {:activity-src     (name (:id preferences-for-an-activity-src))
-       (keyword "@type") selected-types})))
+      [{:activity-src     (name (:id preferences-for-an-activity-src))
+        (keyword "@type") selected-types}
+       {:activity-src     (name (:id preferences-for-an-activity-src))
+        :type selected-types}])))

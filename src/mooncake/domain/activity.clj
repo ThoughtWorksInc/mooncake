@@ -10,19 +10,23 @@
   (str (:relInsertTime activity)))
 
 (defn activity->actor-display-name [activity]
-  (get-in activity [:actor :displayName]))
+  (or (get-in activity [:actor :displayName])
+      (get-in activity [:actor :name])))
 
 (defn activity->object-url [activity]
   (get-in activity [:object :url]))
 
 (defn activity->object-type [activity]
-  (get-in activity [:object (keyword "@type")]))
+  (or (get-in activity [:object (keyword "@type")])
+      (get-in activity [:object :type])))
 
 (defn activity->object-display-name [activity]
-  (get-in activity [:object :displayName]))
+  (or (get-in activity [:object :displayName])
+      (get-in activity [:object :name])))
 
 (defn activity->type [activity]
-  ((keyword "@type") activity))
+  (or ((keyword "@type") activity)
+      (:type activity)))
 
 (defn activity->default-action-text [activity]
   (str "- " (activity->object-type activity) " - " (activity->type activity)))
@@ -31,7 +35,8 @@
   (:signed activity))
 
 (defn activity->target [activity]
-  (get-in activity [:target :displayName]))
+  (or (get-in activity [:target :displayName])
+      (get-in activity [:target :name])))
 
 (defn activity->target-url [activity]
   (get-in activity [:target :url]))

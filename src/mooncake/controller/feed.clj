@@ -9,7 +9,9 @@
   (:import (org.bson.types ObjectId)))
 
 (defn generate-feed-query [feed-settings activity-sources]
-  (remove nil? (map a/activity-src-preferences->feed-query (cfc/generate-activity-source-preferences activity-sources feed-settings))))
+  (let [feed-query (map a/activity-src-preferences->feed-query (cfc/generate-activity-source-preferences activity-sources feed-settings))
+        flattened-feed-query (vec (flatten feed-query))]
+    (remove nil? flattened-feed-query)))
 
 (defn generate-user-feed-settings [store request]
   (let [username (get-in request [:session :username])
