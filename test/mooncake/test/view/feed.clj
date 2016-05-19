@@ -58,27 +58,27 @@
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
                               :type                "Create"
                               :published           ten-minutes-ago-iso
-                              :actor               {:type        "Person"
+                              :actor               {:type "Person"
                                                     :name "JDog"}
-                              :object              {:type        "Objective"
-                                                    :name "OBJECTIVE 7 TITLE"
-                                                    :content     "We want to establish Activity Types for Objective8"
-                                                    :url         "http://objective8.dcentproject.eu/objectives/7"}
+                              :object              {:type    "Objective"
+                                                    :name    "OBJECTIVE 7 TITLE"
+                                                    :content "We want to establish Activity Types for Objective8"
+                                                    :url     "http://objective8.dcentproject.eu/objectives/7"}
                               :relInsertTime       "6"}
                              {:activity-src        "a-helsinki-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
                               :type                "Add"
                               :published           "2015-09-06T11:05:53.002Z"
-                              :actor               {:type           "Group"
-                                                    :name    "Kaupunginjohtaja/J"
-                                                    (keyword "@id") "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
-                              :object              {(keyword "@id") "http://dev.hel.fi/paatokset/v1/agenda_item/52359/"
+                              :actor               {:type "Group"
+                                                    :name "Kaupunginjohtaja/J"
+                                                    :id   "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
+                              :object              {:id      "http://dev.hel.fi/paatokset/v1/agenda_item/52359/"
                                                     :name    "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
-                                                    :type           "Content"
-                                                    :url            "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
-                                                    :content        "some Finnish HTML"}
-                              :target              {:name "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
-                                                    :content     "some Finnish HTML"}
+                                                    :type    "Content"
+                                                    :url     "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
+                                                    :content "some Finnish HTML"}
+                              :target              {:name    "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
+                                                    :content "some Finnish HTML"}
                               :relInsertTime       "9"}
                              {:activity-src        "another-objective8-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
@@ -129,16 +129,16 @@
 (fact "activity action text varies depending on existence of target"
       (let [page (fv/feed {:context {:activities
                                      [{:type   "Question"
-                                       :object {:type        "Objective Question"
+                                       :object {:type "Objective Question"
                                                 :name "QUESTION 6 TITLE"
-                                                :url         "http://objective8.dcentproject.eu/objectives/6/questions/23"}}
+                                                :url  "http://objective8.dcentproject.eu/objectives/6/questions/23"}}
                                       {:type   "Question"
-                                       :object {:type        "Objective Question"
+                                       :object {:type "Objective Question"
                                                 :name "QUESTION 7 TITLE"
-                                                :url         "http://objective8.dcentproject.eu/objectives/7/questions/23"}
-                                       :target {:type        "Objective"
+                                                :url  "http://objective8.dcentproject.eu/objectives/7/questions/23"}
+                                       :target {:type "Objective"
                                                 :name "OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE"
-                                                :url         "http://objective8.dcentproject.eu/objectives/7"}}]}})
+                                                :url  "http://objective8.dcentproject.eu/objectives/7"}}]}})
             [activity-without-target activity-with-target] (html/select page [:.clj--activity-item])]
         activity-with-target => (eh/text-is? [:.clj--activity-item__target] "OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE…")
         activity-with-target => (eh/has-attr? [:.activity-item__action__target html/last-child] :href "http://objective8.dcentproject.eu/objectives/7")
@@ -151,13 +151,13 @@
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (fv/feed {:context {:activities
                                      [{:activity-src "an-activity-src"
-                                       :actor        {:type        "Person"
+                                       :actor        {:type "Person"
                                                       :name "abby"}}
                                       {:activity-src "an-activity-src"
-                                       :actor        {:type        "Person"
+                                       :actor        {:type "Person"
                                                       :name "Bobby"}}
                                       {:activity-src "an-activity-src"
-                                       :actor        {:type        "Person"
+                                       :actor        {:type "Person"
                                                       :name "2k12carlos"}}]}})
             initials-elements (-> (html/select page [:.clj--avatar__initials]))]
         (html/text (first initials-elements)) => "A"
