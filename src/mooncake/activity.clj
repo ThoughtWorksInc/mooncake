@@ -2,14 +2,8 @@
   (:require [clj-yaml.core :as yaml]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
-            [cheshire.core :as json]
             [mooncake.db.activity :as adb]
-            [mooncake.helper :as mh]
-            [mooncake.domain.activity :as a]
-            [mooncake.config :as config]
-            [mooncake.view.view-helpers :as vh]
-            [mooncake.translation :as t]
-            [mooncake.view.feed :as f]))
+            [mooncake.config :as config]))
 
 (defn add-index [i [k v]]
   [k (assoc v :index i)])
@@ -83,7 +77,5 @@
 (defn activity-src-preferences->feed-query [preferences-for-an-activity-src]
   (let [selected-types (map :id (filter :selected (:activity-types preferences-for-an-activity-src)))]
     (when-not (empty? selected-types)
-      [{:activity-src     (name (:id preferences-for-an-activity-src))
-        (keyword "@type") selected-types}
-       {:activity-src     (name (:id preferences-for-an-activity-src))
-        :type selected-types}])))
+      {:activity-src (name (:id preferences-for-an-activity-src))
+       :type         selected-types})))

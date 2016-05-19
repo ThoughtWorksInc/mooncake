@@ -17,16 +17,14 @@
   (get-in activity [:object :url]))
 
 (defn activity->object-type [activity]
-  (or (get-in activity [:object (keyword "@type")])
-      (get-in activity [:object :type])))
+  (get-in activity [:object :type]))
 
 (defn activity->object-display-name [activity]
   (or (get-in activity [:object :displayName])
       (get-in activity [:object :name])))
 
 (defn activity->type [activity]
-  (or ((keyword "@type") activity)
-      (:type activity)))
+  (:type activity))
 
 (defn activity->default-action-text [activity]
   (str "- " (activity->object-type activity) " - " (activity->type activity)))

@@ -3,62 +3,61 @@
             [dommy.core :as dommy]
             [mooncake.jstest.test-utils :as tu]
             [mooncake.js.app :as app]
-            [mooncake.js.feed :as feed]
-            [mooncake.js.dom :as dom])
+            [mooncake.js.feed :as feed])
   (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
-                   [mooncake.jstest.macros :refer [load-template generate-test-html-data type-key generate-test-html-data-hidden]]
+                   [mooncake.jstest.macros :refer [load-template generate-test-html-data generate-test-html-data-hidden]]
                    [dommy.core :refer [sel1 sel]]
                    [mooncake.view.view-helpers :refer [update-language]]))
 
 (defonce feed-page-template (load-template "public/feed.html"))
 
 (defn html-response []
-  (generate-test-html-data [{:actor                            {:displayName "Bob"}
-                             :published                        "2012-12-12T01:24:45.192Z"
-                             (mooncake.jstest.macros/type-key) "Question"
-                             :object                           {:url                              "http://activity-src.co.uk/bob"
-                                                                :displayName                      "Save more trees?"
-                                                                (mooncake.jstest.macros/type-key) "Something"}
-                             :signed                           false}
-                            {:actor                            {:displayName "Margaret"}
-                             :published                        "2012-12-12T01:24:45.192Z"
-                             (mooncake.jstest.macros/type-key) "Shut Down"
-                             :object                           {:url                              "http://activity-src.co.uk/margaret"
-                                                                :displayName                      "Save fewer mines!"
-                                                                (mooncake.jstest.macros/type-key) "Coal Mine"}
-                             :signed                           "verification-failed"}]))
+  (generate-test-html-data [{:actor     {:displayName "Bob"}
+                             :published "2012-12-12T01:24:45.192Z"
+                             :type      "Question"
+                             :object    {:url         "http://activity-src.co.uk/bob"
+                                         :displayName "Save more trees?"
+                                         :type        "Something"}
+                             :signed    false}
+                            {:actor     {:displayName "Margaret"}
+                             :published "2012-12-12T01:24:45.192Z"
+                             :type      "Shut Down"
+                             :object    {:url         "http://activity-src.co.uk/margaret"
+                                         :displayName "Save fewer mines!"
+                                         :type        "Coal Mine"}
+                             :signed    "verification-failed"}]))
 
 (defn html-response-hidden []
-  (generate-test-html-data-hidden [{:actor                            {:displayName "Bob"}
-                                    :published                        "2012-12-12T01:24:45.192Z"
-                                    (mooncake.jstest.macros/type-key) "Question"
-                                    :object                           {:url                              "http://activity-src.co.uk/bob"
-                                                                       :displayName                      "Save more trees?"
-                                                                       (mooncake.jstest.macros/type-key) "Something"}
-                                    :signed                           false}
-                                   {:actor                            {:displayName "Margaret"}
-                                    :published                        "2012-12-12T01:24:45.192Z"
-                                    (mooncake.jstest.macros/type-key) "Shut Down"
-                                    :object                           {:url                              "http://activity-src.co.uk/margaret"
-                                                                       :displayName                      "Save fewer mines!"
-                                                                       (mooncake.jstest.macros/type-key) "Coal Mine"}
-                                    :signed                           "verification-failed"}]))
+  (generate-test-html-data-hidden [{:actor     {:displayName "Bob"}
+                                    :published "2012-12-12T01:24:45.192Z"
+                                    :type      "Question"
+                                    :object    {:url         "http://activity-src.co.uk/bob"
+                                                :displayName "Save more trees?"
+                                                :type        "Something"}
+                                    :signed    false}
+                                   {:actor     {:displayName "Margaret"}
+                                    :published "2012-12-12T01:24:45.192Z"
+                                    :type      "Shut Down"
+                                    :object    {:url         "http://activity-src.co.uk/margaret"
+                                                :displayName "Save fewer mines!"
+                                                :type        "Coal Mine"}
+                                    :signed    "verification-failed"}]))
 
 (defn html-single-activity-response-hidden []
-  (generate-test-html-data-hidden [{:actor                            {:displayName "Bob"}
-                                    :published                        "2012-12-12T01:24:45.192Z"
-                                    (mooncake.jstest.macros/type-key) "Question"
-                                    :object                           {:url                              "http://activity-src.co.uk/bob"
-                                                                       :displayName                      "Save more trees?"
-                                                                       (mooncake.jstest.macros/type-key) "Something"}
-                                    :signed                           false}]))
+  (generate-test-html-data-hidden [{:actor     {:displayName "Bob"}
+                                    :published "2012-12-12T01:24:45.192Z"
+                                    :type      "Question"
+                                    :object    {:url         "http://activity-src.co.uk/bob"
+                                                :displayName "Save more trees?"
+                                                :type        "Something"}
+                                    :signed    false}]))
 
 (def invalid-html-response "<a></a><a></a>")
 
 (defn set-initial-state []
   (reset! feed/number-of-hidden-activities 0)
   (tu/set-html! feed-page-template)
-  (tu/set-lang! "en" )
+  (tu/set-lang! "en")
   (app/start))
 
 (deftest about-loading-old-activities

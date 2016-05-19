@@ -42,6 +42,5 @@
   (->>
     {:published (or (is-empty? (:published activity))
                     (is-published-format-invalid? (:published activity)))
-     :type      (and (is-empty? ((keyword "@type") activity))
-                     (is-empty? (:type activity)))}
+     :type      (is-empty? (:type activity))}
     return-errors-or-nil))

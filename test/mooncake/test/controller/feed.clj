@@ -19,16 +19,16 @@
 
 (fact "feed handler displays activities retrieved from activity sources"
       (let [store (dbh/create-in-memory-store)]
-        (mongo/store! store adb/activity-collection {:actor            {(keyword "@type") "Person"
-                                                                      :displayName      "JDog"}
-                                                   :published        ten-oclock
-                                                   :activity-src     "OpenAhjo"
-                                                   (keyword "@type") "Activity"})
-        (mongo/store! store adb/activity-collection {:actor            {(keyword "@type") "Person"
-                                                                      :displayName      "KCat"}
-                                                   :published        twelve-oclock
-                                                   :activity-src     "objective8"
-                                                   (keyword "@type") "Activity"})
+        (mongo/store! store adb/activity-collection {:actor        {:type         "Person"
+                                                                    :displayName  "JDog"}
+                                                     :published    ten-oclock
+                                                     :activity-src "OpenAhjo"
+                                                     :type         "Activity"})
+        (mongo/store! store adb/activity-collection {:actor        {:type         "Person"
+                                                                    :displayName  "KCat"}
+                                                     :published    twelve-oclock
+                                                     :activity-src "objective8"
+                                                     :type         "Activity"})
         (fc/feed store {:context
                            {:activity-sources {:OpenAhjo   {:activity-types ["Activity"]}
                                                :objective8 {:activity-types ["Activity"]}}}
@@ -41,30 +41,30 @@
       (fc/feed (dbh/create-in-memory-store) {:t       (constantly "")
                                              :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
-(def activity-src-1--enabled-type {:actor            {(keyword "@type") "Person"
-                                                      :displayName      "Activity source 1: enabled type"}
-                                   :published        ten-oclock
-                                   :activity-src     "activity-src-1"
-                                   (keyword "@type") "Enabled"
-                                   :relInsertTime    (ObjectId. (str base-insert-time 1))})
-(def activity-src-1--previous-day {:actor            {(keyword "@type") "Person"
-                                                      :displayName      "Activity source 1: previous day"}
-                                   :published        previous-day
-                                   :activity-src     "activity-src-1"
-                                   (keyword "@type") "Enabled"
-                                   :relInsertTime    (ObjectId. (str base-insert-time 2))})
-(def activity-src-1--disabled-type {:actor            {(keyword "@type") "Person"
-                                                       :displayName      "Activity source 1: disabled type"}
-                                    :published        eleven-oclock
-                                    :activity-src     "activity-src-1"
-                                    (keyword "@type") "Disabled"
-                                    :relInsertTime    (ObjectId. (str base-insert-time 3))})
-(def activity-src-2--no-preference-type {:actor            {(keyword "@type") "Person"
-                                                            :displayName      "Activity source 2: no preference expressed"}
-                                         :published        twelve-oclock
-                                         :activity-src     "activity-src-2"
-                                         (keyword "@type") "No-preference"
-                                         :relInsertTime    (ObjectId. (str base-insert-time 4))})
+(def activity-src-1--enabled-type {:actor         {:type        "Person"
+                                                   :displayName "Activity source 1: enabled type"}
+                                   :published     ten-oclock
+                                   :activity-src  "activity-src-1"
+                                   :type          "Enabled"
+                                   :relInsertTime (ObjectId. (str base-insert-time 1))})
+(def activity-src-1--previous-day {:actor         {:type        "Person"
+                                                   :displayName "Activity source 1: previous day"}
+                                   :published     previous-day
+                                   :activity-src  "activity-src-1"
+                                   :type          "Enabled"
+                                   :relInsertTime (ObjectId. (str base-insert-time 2))})
+(def activity-src-1--disabled-type {:actor         {:type        "Person"
+                                                    :displayName "Activity source 1: disabled type"}
+                                    :published     eleven-oclock
+                                    :activity-src  "activity-src-1"
+                                    :type          "Disabled"
+                                    :relInsertTime (ObjectId. (str base-insert-time 3))})
+(def activity-src-2--no-preference-type {:actor         {:type        "Person"
+                                                         :displayName "Activity source 2: no preference expressed"}
+                                         :published     twelve-oclock
+                                         :activity-src  "activity-src-2"
+                                         :type          "No-preference"
+                                         :relInsertTime (ObjectId. (str base-insert-time 4))})
 
 (facts "about which activities feed handler displays"
        (let [store (dbh/create-in-memory-store)
@@ -110,14 +110,10 @@
                                :activity-src-2 {:activity-types ["Disabled"]}
                                :activity-src-3 {:activity-types ["No-preference"]}}]
 
-         (fc/generate-feed-query feed-settings activity-sources) => (just [{:activity-src     "activity-src-1"
-                                                                            (keyword "@type") ["Enabled" "No-preference"]}
-                                                                           {:activity-src     "activity-src-1"
-                                                                            :type ["Enabled" "No-preference"]}
-                                                                           {:activity-src     "activity-src-3"
-                                                                            (keyword "@type") ["No-preference"]}
-                                                                           {:activity-src     "activity-src-3"
-                                                                            :type ["No-preference"]}] :in-any-order)))
+         (fc/generate-feed-query feed-settings activity-sources) => (just [{:activity-src "activity-src-1"
+                                                                            :type         ["Enabled" "No-preference"]}
+                                                                           {:activity-src "activity-src-3"
+                                                                            :type         ["No-preference"]}] :in-any-order)))
 
 (facts "about pagination"
        (let [store (dbh/create-in-memory-store)

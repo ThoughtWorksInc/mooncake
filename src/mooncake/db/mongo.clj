@@ -24,6 +24,8 @@
     "Store the given map using the value of the kw key-param and return it.")
   (upsert! [this coll query key-param value]
     "Update item that corresponds to query by replacing key-param with value, or if none exist insert it.")
+  (update-by-id! [this coll id item]
+    "Change item that corresponds to the id to the provided item.")
   (add-to-set! [this coll query key-param value]
     "Add value to the key-param array in the item found with query, ensuring there are no duplicates."))
 
@@ -109,6 +111,9 @@
 
   (upsert! [this coll query key-param value]
     (mcoll/update mongo-db coll query {mop/$set {key-param value}} {:upsert true}))
+
+  (update-by-id! [this coll id item]
+    (mcoll/update-by-id mongo-db coll id item))
 
   (add-to-set! [this coll query key-param value]
     (mcoll/update mongo-db coll query {mop/$addToSet {key-param value}} {:upsert true}))

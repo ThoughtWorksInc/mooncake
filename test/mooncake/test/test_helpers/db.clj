@@ -162,10 +162,10 @@
 (defn create-dummy-activities [store amount]
   (->> (range amount)
        (map (fn [counter]
-              {:actor            {:displayName (str "TestData" counter)}
-               :published        (f/unparse (f/formatters :date-time) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
-               :activity-src     "test-source"
-               :relInsertTime    counter
-               (keyword "@type") "Create"}))
+              {:actor         {:displayName (str "TestData" counter)}
+               :published     (f/unparse (f/formatters :date-time) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
+               :activity-src  "test-source"
+               :relInsertTime counter
+               :type          "Create"}))
        (map (partial activity/store-activity! store))
        doall))

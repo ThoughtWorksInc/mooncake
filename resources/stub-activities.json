@@ -3,18 +3,18 @@
     "object":{
       "object":{
         "displayName":"CONNETTIVITA' GRATUITA",
-        "@type":"Objective"
+        "type":"Objective"
       },
       "url":"http://objective8.dcentproject.eu/objectives/20/questions/21",
       "displayName":"prendiamo come esempio la legge svedese? o altre leggi simili nel mondo?",
-      "@type":"Objective Question"
+      "type":"Objective Question"
     },
     "actor":{
       "displayName":"fabrisspec",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-22T16:59:54.363Z",
-    "@type":"Question",
+    "type":"Question",
     "@context":"http://www.w3.org/ns/activitystreams"
   },
   {
@@ -22,32 +22,32 @@
       "url":"http://objective8.dcentproject.eu/objectives/20",
       "content":"Test per la proposta di legge per la realizzazione della connettività gratuita a tutti i cittadini italiani",
       "displayName":"CONNETTIVITA' GRATUITA",
-      "@type":"Objective"
+      "type":"Objective"
     },
     "actor":{
       "displayName":"pandeussilvae",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-22T16:23:54.099Z",
-    "@type":"Create",
+    "type":"Create",
     "@context":"http://www.w3.org/ns/activitystreams"
   },
   {
     "object":{
       "object":{
         "displayName":"A test objective for Lisbon 2015",
-        "@type":"Objective"
+        "type":"Objective"
       },
       "url":"http://objective8.dcentproject.eu/objectives/19/questions/20",
       "displayName":"What is this all about?",
-      "@type":"Objective Question"
+      "type":"Objective Question"
     },
     "actor":{
       "displayName":"Jc",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-21T14:26:36.906Z",
-    "@type":"Question",
+    "type":"Question",
     "@context":"http://www.w3.org/ns/activitystreams"
   },
   {
@@ -55,32 +55,32 @@
       "url":"http://objective8.dcentproject.eu/objectives/19",
       "content":"Showing how to create an objective in the objective8 tool.",
       "displayName":"A test objective for Lisbon 2015",
-      "@type":"Objective"
+      "type":"Objective"
     },
     "actor":{
       "displayName":"Jc",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-21T14:26:24.157Z",
-    "@type":"Create",
+    "type":"Create",
     "@context":"http://www.w3.org/ns/activitystreams"
   },
   {
     "object":{
       "object":{
         "displayName":"thing",
-        "@type":"Objective"
+        "type":"Objective"
       },
       "url":"http://objective8.dcentproject.eu/objectives/18/questions/19",
       "displayName":"what timeaaaaaaaaaa",
-      "@type":"Objective Question"
+      "type":"Objective Question"
     },
     "actor":{
       "displayName":"hnasarat",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-21T12:29:28.009Z",
-    "@type":"Question",
+    "type":"Question",
     "@context":"http://www.w3.org/ns/activitystreams"
   },
   {
@@ -88,32 +88,32 @@
       "url":"http://objective8.dcentproject.eu/objectives/18",
       "content":"test",
       "displayName":"thing",
-      "@type":"Objective"
+      "type":"Objective"
     },
     "actor":{
       "displayName":"hnasarat",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-21T12:17:53.007Z",
-    "@type":"Create",
+    "type":"Create",
     "@context":"http://www.w3.org/ns/activitystreams"
   },
   {
     "object":{
       "object":{
         "displayName":"Hello from ICT 2015",
-        "@type":"Objective"
+        "type":"Objective"
       },
       "url":"http://objective8.dcentproject.eu/objectives/17/questions/18",
       "displayName":"Is it any good?",
-      "@type":"Objective Question"
+      "type":"Objective Question"
     },
     "actor":{
       "displayName":"Jc",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-20T15:04:59.872Z",
-    "@type":"Question",
+    "type":"Question",
     "@context":"http://www.w3.org/ns/activitystreams"
   },
   {
@@ -121,14 +121,14 @@
       "url":"http://objective8.dcentproject.eu/objectives/17",
       "content":"This is a message written in the ict conference in lisbon",
       "displayName":"Hello from ICT 2015",
-      "@type":"Objective"
+      "type":"Objective"
     },
     "actor":{
       "displayName":"Jc",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-20T15:04:27.903Z",
-    "@type":"Create",
+    "type":"Create",
     "@context":"http://www.w3.org/ns/activitystreams"
   },
   {
@@ -136,14 +136,14 @@
       "url":"http://objective8.dcentproject.eu/objectives/16",
       "content":"Testing integration between Objective8 and Mooncake.",
       "displayName":"This a test objective.",
-      "@type":"Objective"
+      "type":"Objective"
     },
     "actor":{
       "displayName":"Jc",
-      "@type":"Person"
+      "type":"Person"
     },
     "published":"2015-10-16T16:36:08.220Z",
-    "@type":"Create",
+    "type":"Create",
     "@context":"http://www.w3.org/ns/activitystreams"
   }
 ]

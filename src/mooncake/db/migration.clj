@@ -12,7 +12,7 @@
   (let [store (mongo/create-mongo-store db)
         activities (adb/fetch-activities store)]
     (doseq [activity activities]
-      (adb/update-activity-types-for-activity-source! store (activity/activity->activity-src activity) (activity/activity->type activity))))
+      (adb/update-activity-types-for-activity-source! store (activity/activity->activity-src activity) (get activity (keyword "@type")))))
   (log/info "Finished running migration add-activity-types-of-existing-activities-to-activity-src-metadata!"))
 
 (defn add-signed-false-status-to-activities! [db]

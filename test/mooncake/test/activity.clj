@@ -39,8 +39,8 @@
 (fact "can retrieve total number of activities queried"
       (let [store (dbh/create-in-memory-store)
             _ (dbh/create-dummy-activities store 60)
-            feed-query [{:activity-src     "test-source"
-                         (keyword "@type") ["Create"]}]]
+            feed-query [{:activity-src  "test-source"
+                         :type          ["Create"]}]]
         (a/total-count-by-feed store feed-query) => 60))
 
 (tabular

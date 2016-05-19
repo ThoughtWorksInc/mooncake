@@ -11,8 +11,8 @@
         (fn [db]
           (let [store (mongo/create-mongo-store db)
                 activity {:displayName "KCat"
-                          :published "2015-08-12T10:20:41.000Z"
-                          :signed "verification-failed"}
+                          :published   "2015-08-12T10:20:41.000Z"
+                          :signed      "verification-failed"}
                 insert-time (:relInsertTime (activity/store-activity! store activity))]
 
             (mongo/find-item store activity/activity-collection {:displayName "KCat"}) => (assoc activity :relInsertTime insert-time)))))
@@ -23,18 +23,18 @@
                (fn [db]
                  (let [
                        store (mongo/create-mongo-store db)
-                       activity1 {:displayName      "KCat"
-                                  :published        "2014-08-12T00:00:00.000Z"
-                                  :activity-src     "test-source"
-                                  (keyword "@type") "Create"}
-                       activity2 {:displayName      "JDog"
-                                  :published        "2014-08-12T00:00:00.000Z"
-                                  :activity-src     "test-source"
-                                  (keyword "@type") "Create"}
-                       activity3 {:displayName      "HFish"
-                                  :published        "2014-08-12T00:00:00.000Z"
-                                  :activity-src     "test-source"
-                                  (keyword "@type") "Create"}
+                       activity1 {:displayName  "KCat"
+                                  :published    "2014-08-12T00:00:00.000Z"
+                                  :activity-src "test-source"
+                                  :type         "Create"}
+                       activity2 {:displayName  "JDog"
+                                  :published    "2014-08-12T00:00:00.000Z"
+                                  :activity-src "test-source"
+                                  :type         "Create"}
+                       activity3 {:displayName  "HFish"
+                                  :published    "2014-08-12T00:00:00.000Z"
+                                  :activity-src "test-source"
+                                  :type         "Create"}
                        id1 (str (:relInsertTime (activity/store-activity! store activity1)))
                        id2 (str (:relInsertTime (activity/store-activity! store activity2)))
                        id3 (str (:relInsertTime (activity/store-activity! store activity3)))
@@ -93,11 +93,11 @@
       (dbh/with-mongo-do
         (fn [db]
           (let [store (mongo/create-mongo-store db)
-                event1api1 {:displayName "KCat"
-                            :published "2015-08-12T10:20:41.000Z"
+                event1api1 {:displayName  "KCat"
+                            :published    "2015-08-12T10:20:41.000Z"
                             :activity-src "api1"}
-                event2api2 {:displayName "JDog"
-                            :published "2015-08-12T10:20:41.000Z"
+                event2api2 {:displayName  "JDog"
+                            :published    "2015-08-12T10:20:41.000Z"
                             :activity-src "api2"}]
             (activity/store-activity! store event1api1)
             ;; time passes
@@ -109,30 +109,30 @@
         (dbh/with-mongo-do
           (fn [db]
             (let [store (mongo/create-mongo-store db)
-                  activity1 {:displayName      "KCat"
-                             :published        "2015-08-12T10:20:41.000Z"
-                             :activity-src     "source-1"
-                             (keyword "@type") "Create"}
-                  activity2 {:displayName      "KCat"
-                             :published        "2015-08-12T10:20:42.000Z"
-                             :activity-src     "source-1"
-                             (keyword "@type") "Question"}
-                  activity3 {:displayName      "JDon"
-                             :published        "2015-08-12T11:20:41.000Z"
-                             :activity-src     "source-2"
-                             (keyword "@type") "Create"}
+                  activity1 {:displayName  "KCat"
+                             :published    "2015-08-12T10:20:41.000Z"
+                             :activity-src "source-1"
+                             :type         "Create"}
+                  activity2 {:displayName  "KCat"
+                             :published    "2015-08-12T10:20:42.000Z"
+                             :activity-src "source-1"
+                             :type         "Question"}
+                  activity3 {:displayName  "JDon"
+                             :published    "2015-08-12T11:20:41.000Z"
+                             :activity-src "source-2"
+                             :type         "Create"}
                   id1 (:relInsertTime (activity/store-activity! store activity1))
                   id2 (:relInsertTime (activity/store-activity! store activity2))
                   id3 (:relInsertTime (activity/store-activity! store activity3))]
               (activity/fetch-activities-by-activity-sources-and-types store ?activity-sources-and-types {}) => ?result))))
 
-  ?activity-sources-and-types                                                     ?result
-  [{:activity-src :source-1 (keyword "@type") ["Create"]}]                        [(assoc activity1 :relInsertTime id1)]
-  [{:activity-src :source-1 (keyword "@type") ["Create" "Question"]}]             [(assoc activity2 :relInsertTime id2) (assoc activity1 :relInsertTime id1)]
-  [{:activity-src :source-1 (keyword "@type") ["Create" "Question"]}
-   {:activity-src :source-2 (keyword "@type") ["Create" "Add"]}]                  [(assoc activity3 :relInsertTime id3) (assoc activity2 :relInsertTime id2) (assoc activity1 :relInsertTime id1)]
-  []                                                                              []
-  nil                                                                             [])
+  ?activity-sources-and-types                                         ?result
+  [{:activity-src :source-1 :type ["Create"]}]                        [(assoc activity1 :relInsertTime id1)]
+  [{:activity-src :source-1 :type ["Create" "Question"]}]             [(assoc activity2 :relInsertTime id2) (assoc activity1 :relInsertTime id1)]
+  [{:activity-src :source-1 :type ["Create" "Question"]}
+   {:activity-src :source-2 :type ["Create" "Add"]}]                  [(assoc activity3 :relInsertTime id3) (assoc activity2 :relInsertTime id2) (assoc activity1 :relInsertTime id1)]
+  []                                                                  []
+  nil                                                                 [])
 
 (facts "fetching activities with query"
        (dbh/with-mongo-do
@@ -140,10 +140,10 @@
            (let [store (mongo/create-mongo-store db)]
              (dbh/create-dummy-activities store (+ 1 config/activities-per-page))
              (fact "activities are fetched in batches"
-                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source (keyword "@type") ["Create"]}] {}) => (n-of anything config/activities-per-page))
+                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source :type ["Create"]}] {}) => (n-of anything config/activities-per-page))
 
              (fact "activities are paginated with correct batch amount per page"
-                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source (keyword "@type") ["Create"]}] {:page-number 2}) => (one-of anything))))))
+                   (activity/fetch-activities-by-activity-sources-and-types store [{:activity-src :test-source :type ["Create"]}] {:page-number 2}) => (one-of anything))))))
 
 (let [latest-time "2016-08-12T00:00:02.000Z"
       second-latest-time "2016-08-12T00:00:01.000Z"
@@ -155,19 +155,19 @@
             activity1 {:displayName      "KCat"
                        :published        oldest-time
                        :activity-src     "test-source"
-                       (keyword "@type") "Create"}
+                       :type "Create"}
             activity2 {:displayName      "JDog"
                        :published        second-latest-time
                        :activity-src     "test-source"
-                       (keyword "@type") "Create"}
-            activity3 {:displayName      "HFish"
-                       :published        latest-time
-                       :activity-src     "test-source"
                        :type "Create"}
-            activity4 {:name "GBird"
-                       :published second-oldest-time
+            activity3 {:displayName  "HFish"
+                       :published    latest-time
+                       :activity-src "test-source"
+                       :type         "Create"}
+            activity4 {:name         "GBird"
+                       :published    second-oldest-time
                        :activity-src "test-source-2"
-                       :type "Question"}
+                       :type         "Question"}
             id1 (:relInsertTime (activity/store-activity! store activity1))
             id2 (:relInsertTime (activity/store-activity! store activity2))
             id3 (:relInsertTime (activity/store-activity! store activity3))
@@ -177,7 +177,7 @@
         (tabular
           (fact "fetching activities with timestamp"
                 (count (activity/fetch-activities-by-timestamp-and-id store
-                                                                      [{:activity-src :test-source (keyword "@type") ["Create"]}
+                                                                      [{:activity-src :test-source :type ["Create"]}
                                                                        {:activity-src :test-source :type ["Create"]}
                                                                        {:activity-src :test-source-2 :type ["Question"]}]
                                                                       ?timestamp ?insert-time-id ?older-items-requested)) => ?result)
@@ -199,20 +199,19 @@
                          activity1 {:displayName      "KCat"
                                     :published        oldest-time
                                     :activity-src     "test-source"
-                                    (keyword "@type") "Create"}
+                                    :type "Create"}
                          activity2 {:displayName      "JDog"
                                     :published        oldest-time
                                     :activity-src     "test-source"
-                                    (keyword "@type") "Create"}
+                                    :type "Create"}
                          activity3 {:displayName      "HFish"
                                     :published        oldest-time
                                     :activity-src     "test-source"
-                                    (keyword "@type") "Create"}
-                         id (:relInsertTime (activity/store-activity! store activity1))
-                         ]
+                                    :type "Create"}
+                         id (:relInsertTime (activity/store-activity! store activity1))]
                      (activity/store-activity! store activity2)
                      (activity/store-activity! store activity3)
                      (count
                        (activity/fetch-activities-by-timestamp-and-id store [
-                                                                             {:activity-src :test-source (keyword "@type") ["Create"]}
+                                                                             {:activity-src :test-source :type ["Create"]}
                                                                              ] oldest-time id false)) => 2))))))

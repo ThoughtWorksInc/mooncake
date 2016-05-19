@@ -88,23 +88,23 @@
              (activity/fetch-activity-types store) => {}
              (m/make-activities-indexed-by-timestamp-and-id! db)
              (vec (activity/fetch-activities store)) => [{:displayName      "KCat"
-                                                             :published        "2015-08-12T10:20:41.000Z"
-                                                             :activity-src     "source-1"
-                                                             (keyword "@type") "Create"
-                                                             :id               id1
-                                                             :relInsertTime    id1}
-                                                            {:displayName      "JDog"
-                                                             :published        "2015-08-12T10:20:42.000Z"
-                                                             :activity-src     "source-1"
-                                                             (keyword "@type") "Question"
-                                                             :id               id2
-                                                             :relInsertTime    id2}
-                                                            {:displayName      "LFrog"
-                                                             :published        "2015-08-12T10:20:43.000Z"
-                                                             :activity-src     "source-2"
-                                                             (keyword "@type") "Create"
-                                                             :id               id3
-                                                             :relInsertTime    id3}]
+                                                          :published        "2015-08-12T10:20:41.000Z"
+                                                          :activity-src     "source-1"
+                                                          (keyword "@type") "Create"
+                                                          :id               id1
+                                                          :relInsertTime    id1}
+                                                         {:displayName      "JDog"
+                                                          :published        "2015-08-12T10:20:42.000Z"
+                                                          :activity-src     "source-1"
+                                                          (keyword "@type") "Question"
+                                                          :id               id2
+                                                          :relInsertTime    id2}
+                                                         {:displayName      "LFrog"
+                                                          :published        "2015-08-12T10:20:43.000Z"
+                                                          :activity-src     "source-2"
+                                                          (keyword "@type") "Create"
+                                                          :id               id3
+                                                          :relInsertTime    id3}]
              (count (monger-c/indexes-on db "activity")) => 2))))
 
 (facts "About adding :signed false status to activities that do not have :signed"

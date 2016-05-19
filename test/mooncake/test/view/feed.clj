@@ -56,43 +56,43 @@
                            {:activities
                             [{:activity-src        "an-objective8-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                              (keyword "@type")    "Create"
+                              :type                "Create"
                               :published           ten-minutes-ago-iso
-                              :actor               {(keyword "@type") "Person"
-                                                    :displayName      "JDog"}
-                              :object              {(keyword "@type") "Objective"
-                                                    :displayName      "OBJECTIVE 7 TITLE"
-                                                    :content          "We want to establish Activity Types for Objective8"
-                                                    :url              "http://objective8.dcentproject.eu/objectives/7"}
+                              :actor               {:type        "Person"
+                                                    :displayName "JDog"}
+                              :object              {:type        "Objective"
+                                                    :displayName "OBJECTIVE 7 TITLE"
+                                                    :content     "We want to establish Activity Types for Objective8"
+                                                    :url         "http://objective8.dcentproject.eu/objectives/7"}
                               :relInsertTime       "6"}
                              {:activity-src        "a-helsinki-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                              (keyword "@type")    "Add"
+                              :type                "Add"
                               :published           "2015-09-06T11:05:53.002Z"
-                              :actor               {(keyword "@type") "Group"
-                                                    :displayName      "Kaupunginjohtaja/J"
-                                                    (keyword "@id")   "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
-                              :object              {(keyword "@id")   "http://dev.hel.fi/paatokset/v1/agenda_item/52359/"
-                                                    :displayName      "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
-                                                    (keyword "@type") "Content"
-                                                    :url              "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
-                                                    :content          "some Finnish HTML"}
-                              :target              {:displayName      "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
-                                                    :content          "some Finnish HTML"}
+                              :actor               {:type           "Group"
+                                                    :displayName    "Kaupunginjohtaja/J"
+                                                    (keyword "@id") "http://dev.hel.fi/paatokset/v1/policymaker/50/"}
+                              :object              {(keyword "@id") "http://dev.hel.fi/paatokset/v1/agenda_item/52359/"
+                                                    :displayName    "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
+                                                    :type           "Content"
+                                                    :url            "http://dev.hel.fi/paatokset/asia/hel-2015-005343/11010vh1j-2015-25/"
+                                                    :content        "some Finnish HTML"}
+                              :target              {:displayName "Ymp\u00e4rist\u00f6raportoinnin asiantuntijaty\u00f6ryhm\u00e4n asettaminen toimikaudeksi 2015\u20132020"
+                                                    :content     "some Finnish HTML"}
                               :relInsertTime       "9"}
                              {:activity-src        "another-objective8-activity-src"
                               (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                              :type    "Question"
+                              :type                "Question"
                               :published           "2015-08-04T14:49:38.407Z"
                               :actor               {:type "Person"
-                                                    :name      "Lala"}
-                              :object              {:type "Objective Question"
-                                                    :name      "QUESTION 6 TITLE"
-                                                    :description      "Yes."
-                                                    :url              "http://objective8.dcentproject.eu/objectives/6/questions/23"}
+                                                    :name "Lala"}
+                              :object              {:type        "Objective Question"
+                                                    :name        "QUESTION 6 TITLE"
+                                                    :description "Yes."
+                                                    :url         "http://objective8.dcentproject.eu/objectives/6/questions/23"}
                               :target              {:name "OBJECTIVE 6 TITLE"
                                                     :type "Objective"
-                                                    :url "http://objective8.dcentproject.eu/objectives/6"}
+                                                    :url  "http://objective8.dcentproject.eu/objectives/6"}
                               :relInsertTime       "3"}]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]
 
@@ -128,17 +128,17 @@
 
 (fact "activity action text varies depending on existence of target"
       (let [page (fv/feed {:context {:activities
-                                     [{(keyword "@type")    "Question"
-                                       :object              {(keyword "@type") "Objective Question"
-                                                             :displayName      "QUESTION 6 TITLE"
-                                                             :url              "http://objective8.dcentproject.eu/objectives/6/questions/23"}}
-                                      {(keyword "@type")    "Question"
-                                       :object              {(keyword "@type") "Objective Question"
-                                                             :displayName      "QUESTION 7 TITLE"
-                                                             :url              "http://objective8.dcentproject.eu/objectives/7/questions/23"}
-                                       :target              {(keyword "@type") "Objective"
-                                                             :displayName      "OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE"
-                                                             :url              "http://objective8.dcentproject.eu/objectives/7"}}]}})
+                                     [{:type   "Question"
+                                       :object {:type        "Objective Question"
+                                                :displayName "QUESTION 6 TITLE"
+                                                :url         "http://objective8.dcentproject.eu/objectives/6/questions/23"}}
+                                      {:type   "Question"
+                                       :object {:type        "Objective Question"
+                                                :displayName "QUESTION 7 TITLE"
+                                                :url         "http://objective8.dcentproject.eu/objectives/7/questions/23"}
+                                       :target {:type        "Objective"
+                                                :displayName "OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE"
+                                                :url         "http://objective8.dcentproject.eu/objectives/7"}}]}})
             [activity-without-target activity-with-target] (html/select page [:.clj--activity-item])]
         activity-with-target => (eh/text-is? [:.clj--activity-item__target] "OBJECTIVE 7 TITLE OBJECTIVE 7 TITLE…")
         activity-with-target => (eh/has-attr? [:.activity-item__action__target html/last-child] :href "http://objective8.dcentproject.eu/objectives/7")
@@ -151,14 +151,14 @@
 (fact "activity item avatars are given the initial of the actor (the name of the person)"
       (let [page (fv/feed {:context {:activities
                                      [{:activity-src "an-activity-src"
-                                       :actor        {(keyword "@type") "Person"
-                                                      :displayName      "abby"}}
+                                       :actor        {:type        "Person"
+                                                      :displayName "abby"}}
                                       {:activity-src "an-activity-src"
-                                       :actor        {(keyword "@type") "Person"
-                                                      :displayName      "Bobby"}}
+                                       :actor        {:type        "Person"
+                                                      :displayName "Bobby"}}
                                       {:activity-src "an-activity-src"
-                                       :actor        {(keyword "@type") "Person"
-                                                      :displayName      "2k12carlos"}}]}})
+                                       :actor        {:type        "Person"
+                                                      :displayName "2k12carlos"}}]}})
             initials-elements (-> (html/select page [:.clj--avatar__initials]))]
         (html/text (first initials-elements)) => "A"
         (html/text (second initials-elements)) => "B"
@@ -206,36 +206,36 @@
       (let [page (fv/feed {:context {:activities
                                                                   [{:activity-src        "an-objective8-activity-src"
                                                                     (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "JDog"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      (str "Lorem ipsum dolor sit amet, consectetur "
-                                                                                                                 "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
-                                                                                                                 "amet, tincidunt ac augue. Mauris pellentesque sed.")
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}
+                                                                    :type                "Create"
+                                                                    :actor               {:type        "Person"
+                                                                                          :displayName "JDog"}
+                                                                    :object              {:type        "Objective"
+                                                                                          :displayName (str "Lorem ipsum dolor sit amet, consectetur "
+                                                                                                            "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
+                                                                                                            "amet, tincidunt ac augue. Mauris pellentesque sed.")
+                                                                                          :url         "http://objective8.dcentproject.eu/objectives/7"}
                                                                     :signed              true}
                                                                    {:activity-src        "an-objective8-activity-src"
                                                                     (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "HCat"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      (str "Loremxipsumxdolorxsitxametyxconsecteturx"
-                                                                                                                 "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
-                                                                                                                 "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}
+                                                                    :type                "Create"
+                                                                    :actor               {:type        "Person"
+                                                                                          :displayName "HCat"}
+                                                                    :object              {:type        "Objective"
+                                                                                          :displayName (str "Loremxipsumxdolorxsitxametyxconsecteturx"
+                                                                                                            "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
+                                                                                                            "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
+                                                                                          :url         "http://objective8.dcentproject.eu/objectives/7"}
                                                                     :signed              false}
                                                                    {:activity-src        "an-objective8-activity-src"
                                                                     (keyword "@context") "http://www.w3.org/ns/activitystreams"
-                                                                    (keyword "@type")    "Create"
-                                                                    :actor               {(keyword "@type") "Person"
-                                                                                          :displayName      "QRacoon"}
-                                                                    :object              {(keyword "@type") "Objective"
-                                                                                          :displayName      (str "Loremxipsumxdolorxsitxametyxconsecteturx"
-                                                                                                                 "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
-                                                                                                                 "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
-                                                                                          :url              "http://objective8.dcentproject.eu/objectives/7"}
+                                                                    :type                "Create"
+                                                                    :actor               {:type        "Person"
+                                                                                          :displayName "QRacoon"}
+                                                                    :object              {:type        "Objective"
+                                                                                          :displayName (str "Loremxipsumxdolorxsitxametyxconsecteturx"
+                                                                                                            "adipiscingxelitzxMorbixnuncxtortoryxeleifendxetxegestasxsitx"
+                                                                                                            "ametyxtinciduntxacxauguezxMaurisxpellentgfdogk")
+                                                                                          :url         "http://objective8.dcentproject.eu/objectives/7"}
                                                                     :signed              "verification-failed"}]
                                      :active-activity-source-keys [...active-activity-source-key...]}})
             [first-activity-item second-activity-item third-activity-item] (html/select page [:.clj--activity-item])]

@@ -62,21 +62,21 @@ Activities are expected in the following format:
     {
       @context:       "http://www.w3.org/ns/activitystreams",
       published:      "2015-12-18T14:25:40.240Z",
-      @type:          "Add",  --- used to customise the feed
+      type:          "Add",  --- used to customise the feed
       
       object: {
         url:          "http://objective8.dcentproject.eu/objectives/41/questions/28",  (optional)
-        displayName:  "Why?",
-        @type:        "Question"  --- used to set the action text
+        ame:  "Why?",
+        type:        "Question"  --- used to set the action text
       },
         
       actor: {
-        displayName:  "Jane Doe"
+        name:  "Jane Doe"
       },
       
       target:  (optional) {
         url:          "http://objective8.dcentproject.eu/objectives/41",  (optional)
-        displayName:  "This Objective"
+        name:  "This Objective"
       }
     }
     

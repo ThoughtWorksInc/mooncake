@@ -24,19 +24,18 @@
 (tabular
   (fact "validating incoming activity"
         (v/validate-activity ?activity) => ?validations)
-  ?activity                                             ?validations
+  ?activity                                ?validations
   {:published "2015-08-03T14:49:38.407Z"
-   (keyword "@type") "Add"}                             nil
-  {}                                                    {:published :blank
-                                                         :type :blank}
-  {:published "invalid-timestamp"}                      {:published :invalid
-                                                         :type :blank}
+   :type "Add"}                            nil
+  {}                                       {:published :blank
+                                            :type :blank}
+  {:published "invalid-timestamp"}         {:published :invalid
+                                            :type :blank}
   {:published        "    "
-   (keyword "@type") "    "}                            {:published :blank
-                                                         :type :blank}
+   :type "    "}                           {:published :blank
+                                            :type :blank}
   {:published "\t\t\t\t\t\t\t\t"
-   (keyword "@type") "\t\t\t\t\t"}                      {:published :blank
-                                                         :type :blank}
-
+   :type "\t\t\t\t\t"}                     {:published :blank
+                                            :type :blank}
   {:published "invalid-timestamp"
-   :type "Add"}                                         {:published :invalid})
+   :type "Add"}                            {:published :invalid})

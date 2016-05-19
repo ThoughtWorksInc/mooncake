@@ -65,26 +65,26 @@
 
 (defn populate-db-with-stub-activities! [store activities]
   (doseq [activity activities]
-    (adb/update-activity-types-for-activity-source! store (get activity :activity-src) (get activity (keyword "@type")))
+    (adb/update-activity-types-for-activity-source! store (get activity :activity-src) (get activity :type))
     (mongo/store! store adb/activity-collection activity)))
 
 ; NOTE 16/10/2015 CW: similar fn in test_helpers/db
 (defn create-dummy-activities [store amount]
   (->> (range amount)
        (map (fn [counter]
-              {:actor            {:displayName (str "TestData" counter)}
-               :published        (f/unparse (f/formatters :date-time) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
-               :activity-src     "test-activity-source-1"
-               (keyword "@type") "Create"
-               :relInsertTime    (ObjectId.)}))
+              {:actor         {:displayName (str "TestData" counter)}
+               :published     (f/unparse (f/formatters :date-time) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
+               :activity-src  "test-activity-source-1"
+               :type          "Create"
+               :relInsertTime (ObjectId.)}))
        (populate-db-with-stub-activities! store)))
 
 (defn create-dummy-activity [store timestamp]
-  (->> [{:actor            {:displayName (str "Single Activity")}
-         :published        timestamp
-         :activity-src     "test-activity-source-1"
-         (keyword "@type") "Create"
-         :relInsertTime    (ObjectId.)}]
+  (->> [{:actor         {:displayName (str "Single Activity")}
+         :published     timestamp
+         :activity-src  "test-activity-source-1"
+         :type          "Create"
+         :relInsertTime (ObjectId.)}]
        (populate-db-with-stub-activities! store)))
 
 (defn clean-app! []
@@ -256,18 +256,18 @@
 
 (facts "User can customise feed preferences - activities of disabled types are not shown on the 'feed' page"
        (drop-db!)
-       (populate-db-with-stub-activities! mongo-store [{:object           {:displayName "Activity 1 Title"}
-                                                        :published        ten-oclock
-                                                        :activity-src     "test-activity-source-1"
-                                                        (keyword "@type") "TestActivityType-1-1"}
-                                                       {:object           {:displayName "Activity 2 Title"}
-                                                        :published        ten-oclock
-                                                        :activity-src     "test-activity-source-1"
-                                                        (keyword "@type") "TestActivityType-1-2"}
-                                                       {:object           {:displayName "Activity 3 Title"}
-                                                        :published        eleven-oclock
-                                                        :activity-src     "test-activity-source-2"
-                                                        (keyword "@type") "TestActivityType-2-1"}])
+       (populate-db-with-stub-activities! mongo-store [{:object       {:displayName "Activity 1 Title"}
+                                                        :published    ten-oclock
+                                                        :activity-src "test-activity-source-1"
+                                                        :type         "TestActivityType-1-1"}
+                                                       {:object       {:displayName "Activity 2 Title"}
+                                                        :published    ten-oclock
+                                                        :activity-src "test-activity-source-1"
+                                                        :type         "TestActivityType-1-2"}
+                                                       {:object       {:displayName "Activity 3 Title"}
+                                                        :published    eleven-oclock
+                                                        :activity-src "test-activity-source-2"
+                                                        :type         "TestActivityType-2-1"}])
 
        (-> (k/session app-with-activity-sources-from-yaml)
            sign-in!
@@ -289,10 +289,10 @@
 
 (facts "A message is displayed on feed page if user disables all activity types"
        (drop-db!)
-       (populate-db-with-stub-activities! mongo-store [{:object           {:displayName "Activity 1 Title"}
-                                                        :published        ten-oclock
-                                                        :activity-src     "test-activity-source-1"
-                                                        (keyword "@type") "TestActivityType-1-1"}])
+       (populate-db-with-stub-activities! mongo-store [{:object       {:displayName "Activity 1 Title"}
+                                                        :published    ten-oclock
+                                                        :activity-src "test-activity-source-1"
+                                                        :type         "TestActivityType-1-1"}])
        (-> (k/session app-with-activity-sources-from-yaml)
            sign-in!
            (k/visit (routes/path :show-customise-feed))
@@ -338,22 +338,22 @@
 
 (facts "Displayed content length of activities is limited to 140 characters"
        (drop-db!)
-       (populate-db-with-stub-activities! mongo-store [{(keyword "@type") "Create"
-                                                        :object           {(keyword "@type") "Objective"
-                                                                           :displayName      (str "Lorem ipsum dolor sit amet, consectetur "
-                                                                                                  "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
-                                                                                                  "amet, tincidunt ac augue. Mauris pellentesque sed.")}
-                                                        :actor            {:displayName "John Doe"}
-                                                        :published        eleven-oclock
-                                                        :activity-src     "test-activity-source-3"}
-                                                       {(keyword "@type") "Question"
-                                                        :object           {(keyword "@type") "Objective Question"
-                                                                           :displayName      (str "Nullam fermentum, magna et pellentesque "
-                                                                                                  "ultrices, libero arcu elementum diam, id molestie urna velit "
-                                                                                                  "ultrices quam. Mauris id commodo nequeamat. Fusce posuere.")}
-                                                        :actor            {:displayName "Jane Q Public"}
-                                                        :published        ten-oclock
-                                                        :activity-src     "test-activity-source-3"}])
+       (populate-db-with-stub-activities! mongo-store [{:type         "Create"
+                                                        :object       {:type        "Objective"
+                                                                       :displayName (str "Lorem ipsum dolor sit amet, consectetur "
+                                                                                         "adipiscing elit. Morbi nunc tortor, eleifend et egestas sit "
+                                                                                         "amet, tincidunt ac augue. Mauris pellentesque sed.")}
+                                                        :actor        {:displayName "John Doe"}
+                                                        :published    eleven-oclock
+                                                        :activity-src "test-activity-source-3"}
+                                                       {:type         "Question"
+                                                        :object       {:type        "Objective Question"
+                                                                       :displayName (str "Nullam fermentum, magna et pellentesque "
+                                                                                         "ultrices, libero arcu elementum diam, id molestie urna velit "
+                                                                                         "ultrices quam. Mauris id commodo nequeamat. Fusce posuere.")}
+                                                        :actor        {:displayName "Jane Q Public"}
+                                                        :published    ten-oclock
+                                                        :activity-src "test-activity-source-3"}])
        (let [expected-objective-title (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nunc tortor, "
                                            "eleifend et egestas sit amet, tincidunt ac augue. Mauris\u2026")
              expected-question-title (str "Nullam fermentum, magna et pellentesque ultrices, libero arcu elementum diam, "
