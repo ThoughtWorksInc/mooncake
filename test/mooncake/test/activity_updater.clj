@@ -35,12 +35,16 @@
                    :signed       false}]
               (provided
                 (http/get an-activity-src-url {:accept :json
-                                               :as     :json}) => {:body [{:actor     {:name "JDog"}
-                                                                           :published ten-oclock
-                                                                           :type      "Add"}
-                                                                          {:actor     {:name "KCat"}
-                                                                           :published twelve-oclock
-                                                                           :type      "Add"}]}
+                                               :as     :json}) => {:body {(keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                                                          :type                "Collection"
+                                                                          :name                "Activity stream"
+                                                                          :totalItems          2
+                                                                          :items               [{:actor     {:name "JDog"}
+                                                                                                 :published ten-oclock
+                                                                                                 :type      "Add"}
+                                                                                                {:actor     {:name "KCat"}
+                                                                                                 :published twelve-oclock
+                                                                                                 :type      "Add"}]}}
                 (http/get another-activity-src-url {:accept :json
                                                     :as     :json}) => {:body {(keyword "@context") "http://www.w3.org/ns/activitystreams"
                                                                                :type                "Collection"
@@ -61,13 +65,17 @@
                    :signed       false}]
               (provided
                 (http/get an-activity-src-url {:accept :json
-                                               :as     :json}) => {:body [{:actor     {:name "JDog"}
-                                                                           :published ten-oclock
-                                                                           :type      "Add"}
-                                                                          {:actor            {:name "LSheep"}
-                                                                           :published        ten-oclock
-                                                                           (keyword "@type") "Create"}
-                                                                          {:actor {:name "KCat"}}]}))))
+                                               :as     :json}) => {:body {(keyword "@context") "http://www.w3.org/ns/activitystreams"
+                                                                          :type                "Collection"
+                                                                          :name                "Activity stream"
+                                                                          :totalItems          3
+                                                                          :items               [{:actor     {:name "JDog"}
+                                                                                                 :published ten-oclock
+                                                                                                 :type      "Add"}
+                                                                                                {:actor            {:name "LSheep"}
+                                                                                                 :published        ten-oclock
+                                                                                                 (keyword "@type") "Create"}
+                                                                                                {:actor {:name "KCat"}}]}}))))
 
 (facts "about retrieving signed activity responses"
        (fact "activities can be retrieved from a source that signs its responses using json web signatures and json web keys"
@@ -83,7 +91,7 @@
              (provided
                (http/get "signed-activity-source-url" {:accept :json
                                                        :as     :json}) => {:body {:jku                "json-web-key-set-url"
-                                                                                  :jws-signed-payload "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJAY29udGV4dCI6Imh0dHA6Ly93d3cudzMub3JnL25zL2FjdGl2aXR5c3RyZWFtcyIsInR5cGUiOiJDb2xsZWN0aW9uIiwibmFtZSI6IkFjdGl2aXR5IHN0cmVhbSIsInRvdGFsSXRlbXMiOjEsIml0ZW1zIjpbeyJwdWJsaXNoZWQiOiIyMDE1LTEwLTA2VDExOjIzOjUwLjAwMFoiLCJ0eXBlIjoiQ3JlYXRlIn0seyJwdWJsaXNoZWQiOiIyMDE1LTEwLTA2VDExOjIzOjQ1LjAwMFoiLCJ0eXBlIjoiQWRkIn1dfQ.B4BDkDqcUuUVnz1LYgiVtHAA45i5vNbLkumrOVKHwZpNM-xsz53Hw2u8TYek9ZIRzX7hDktoo-iKKva016a7Wno-_FzVIXxiY9cmiaWKIIG8B71h-QICm197Qf0r2JhOo-y8tPaCu3LXW4BnwvYPF-SwuSvoOtmbhItGskZp2UD0dfTOt_kFnQvQmBdujXpJPxWAGclI83dZXuaIzXn22iynBWua1m7RObQWAqkLMGQ1xRhZdfUorwMsvaiE68wdWT2lTtLtm7TSy5HNCNcdHDZQkBw0NEHeblMAYOTHFWlemJ_HaOvQLVYg-9neOHWcXKwDjHwyXfmoxIIuzkk3Jw"}}
+                                                                                  :jws-signed-payload "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJAY29udGV4dCI6Imh0dHA6Ly93d3cudzMub3JnL25zL2FjdGl2aXR5c3RyZWFtcyIsInR5cGUiOiJDb2xsZWN0aW9uIiwibmFtZSI6IkFjdGl2aXR5IHN0cmVhbSIsInRvdGFsSXRlbXMiOjIsIml0ZW1zIjpbeyJ0eXBlIjoiQ3JlYXRlIiwicHVibGlzaGVkIjoiMjAxNS0xMC0wNlQxMToyMzo1MC4wMDBaIn0seyJ0eXBlIjoiQWRkIiwicHVibGlzaGVkIjoiMjAxNS0xMC0wNlQxMToyMzo0NS4wMDBaIn1dfQ.SsZ8kvPAbZmUO1PGQTkrElPDyoy8JXtSho0w-tFE0PGZzEVnVnRTRA-it86GUtf7kgFKLfGCtEK7sB5k6kS2GvHYqI-ZzioE9KU6uSd_6cjbwM7WYyYYjU7okDmM2eoc27QUV9eNDxDH5SyiiTug2YQ_3Iro64Ycn1WhRBaYBPvrotJ7wcWZDBq9GPncsn1sWrnVfKYyUgpe8YYWc6bCib1-fBtzuPZCh04rWC_H1cIM8rDRrtgaOdS8_G0v8uuBAqPezNNt2_Pu7MZLlcLeOz_45NzCUwh3_PpWfYC5--MoC3LH32hKFOhrbbuCONG48JwqrWPOEuM7BQrrtkd0ow"}}
                (http/get "json-web-key-set-url" {:accept :json}) => {:body "{\"keys\": [{\"kty\": \"RSA\", \"use\": \"sig\", \"n\": \"AMIhK0LBThtw3lGPC9rgyWdD96shgvYmoQRwPl7fiIRXqzzd8sqqIXU4I_mCI7DkccdYVJrbKma-wAoCt6ThfR1s9U5BP6SnZK6iFk3SfcAG4JV4zndBKZtx3dqZqQjzGarL5PbEKsB0xy5tVYb-nvrF-vIaWeY62PSx7cjMZ0YcOmel99omgnwBp6nSyN-gdK7QIooYtsRo3eL0eTf6zJnSa8wu61d1QsH-6yQiMYeV2JaBQj8QoE2KfHq-OwGCWvN5_CvIDFN4Qy5mAWKimU3sfRw4OkQv1kGZ-q52Z3hCJg1KKcSEY5MDZpkLckHqNBNjDcx4NCtuMwjfcrQ_Igk\", \"e\": \"AQAB\", \"d\": \"cshl6dyeMD92VEb-PXa33yUi5b60zpJclmE_n50P_SBREXYyPn6Ftedx7e9y5v7L_5BMxhtcYM_cgI7GwujIr4NjL9gIp3SKZW9VPMJ-s_HdDMQXYA_ZaB3VjZFZjv8eaAyS3w1yMcVamCrxbRZULfatwESwbx7QdS5XaGjjj2HNHWnQvzb0HMY0aMFo_H4AqcIBdpy_m3FoWsQbG7P6wcQpy4y1zkZbnHcDVf8c08NPXbG935mYMUdx9HDirMOiSak-blmXBWk8uNQJgvwKczHS9LyV6r-ON7KfzhXzCKpGbOft2P78WthcahEQLd8H6wMUntMssMER2CC32HmvWQ\", \"p\": \"AO-uB4f1kim19N5i3yAV_jqebVyvMs5d0LqsESgm1TvOle_mfxpjHQE7k3URcs6N-_y3tdMYlwwRryZmKYxkAQWqcOcI_IE463WstyZfaUrpf0xLJwGIsbZzzXydhC6FOc5dJ1gMTz5l6ONbBCSO7A8kAeeIZJHvhIGGzyJzGxO_\", \"q\": \"AM9ZIdM74Q1XzKSa4aAbfotZ82tvYh7xPmj6NhVHpI1BJ8TfvNXPcKXRnDs6sNkKK0ksi5egMhk-Cg_oTH4c7awIXIV86C4NRPM6nngiOWpooFz_NbK345fLks7l5nE-1u6qALz4HOdhbAPGS_FjPrDR3lS5HjGsfQbKGMUZ-xw3\", \"dp\": \"WhCobdO-6AOjD4pR1CnPjdGIwQJo8hlY3TzZeaAWEtJPj4WrD4xdEuCDScOTw8ChB1c1cSzVXcira5-KT2Io7CsfIAJFeH2eJWsQq8_ArlDN8Cpxbuch-LDNb911FVIk5cIljbWadZUwDXdfOCmo1Quv14RuXlSGE3JIFebxLts\", \"dq\": \"AIpeyfLkN9imqfuDHGSzVGx8V7RvfUR265Y0u9jRmZ9mRrrcMHFi4KLX0fG4xgHhBmfroTBLiINN4nshI8LZXUZ7wfqXE35__m5uxQgYlsZLEhFdgqFElE5dXRhTVchnDhnxO1LgJLHIUsPmFhH9j_2B4GQbsWmm2Typq4QFRY1b\", \"qi\": \"AK8_OjKYFcJY358f7FSxvwlPNO22JgycHsNgBQK3G43TFLh44mgEg3_pZlMS4Qlam4aV_zs8hy6rTIccbPhRW9i3f4bI8i9jWp4DZz4XDQBwkTdJDVsABsJJSLd6YUWGsl32hEU-JLX-07KyL3zby0eQl7qn5OPmVloVampCYD7D\" }]}"}))
 
 
@@ -100,7 +108,7 @@
              (provided
                (http/get "signed-activity-source-url" {:accept :json
                                                        :as     :json}) => {:body {:jku                "OOPS_WRONG"
-                                                                                  :jws-signed-payload "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.W3sidHlwZSI6IkNyZWF0ZSIsImFjdGl2aXR5LXNyYyI6IjpzaWduZWQtYWN0aXZpdHktc291cmNlIiwicHVibGlzaGVkIjoiMjAxNS0xMC0wNlQxMToyMzo1MC4wMDBaIiwic2lnbmVkIjoiOnZlcmlmaWNhdGlvbi1mYWlsZWQifSx7InR5cGUiOiJBZGQiLCJhY3Rpdml0eS1zcmMiOiI6c2lnbmVkLWFjdGl2aXR5LXNvdXJjZSIsInB1Ymxpc2hlZCI6IjIwMTUtMTAtMDZUMTE6MjM6NDUuMDAwWiIsInNpZ25lZCI6Ijp2ZXJpZmljYXRpb24tZmFpbGVkIn1d.EtUBqN6UXTvoub1ccpti6jqXt0H54QOWcNTxlkqQPWoZXmQnSJUUA9cvs4GoSpODEyCseMkHRkRnMR2Wm2A3ezd3pAiDdyc7VoHt6mQd90MG1OOdOMZt9pSVZzL-lctdBTA1YCIfKrQ_UlvAPZicPxf5rBNDbDGr_lK4ecVo3g5zwtazogwg9qQuVp51fu8c83awEo21g_5DXLCJmdmHMdZxRBYEAStRqU-tMY4o465zeTYxYYG-Au7zE2OPycA-GC9DtvVr8b8178caqQdSZNOgynKL3wRFkLnYiY0z0UsgooPqpDHXgVDyAUcy2J4vHvlS6ktikuql6mJMVAVXyw"}}
+                                                                                  :jws-signed-payload "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJAY29udGV4dCI6Imh0dHA6Ly93d3cudzMub3JnL25zL2FjdGl2aXR5c3RyZWFtcyIsInR5cGUiOiJDb2xsZWN0aW9uIiwibmFtZSI6IkFjdGl2aXR5IHN0cmVhbSIsInRvdGFsSXRlbXMiOjIsIml0ZW1zIjpbeyJ0eXBlIjoiQ3JlYXRlIiwicHVibGlzaGVkIjoiMjAxNS0xMC0wNlQxMToyMzo1MC4wMDBaIn0seyJ0eXBlIjoiQWRkIiwicHVibGlzaGVkIjoiMjAxNS0xMC0wNlQxMToyMzo0NS4wMDBaIn1dfQ.SsZ8kvPAbZmUO1PGQTkrElPDyoy8JXtSho0w-tFE0PGZzEVnVnRTRA-it86GUtf7kgFKLfGCtEK7sB5k6kS2GvHYqI-ZzioE9KU6uSd_6cjbwM7WYyYYjU7okDmM2eoc27QUV9eNDxDH5SyiiTug2YQ_3Iro64Ycn1WhRBaYBPvrotJ7wcWZDBq9GPncsn1sWrnVfKYyUgpe8YYWc6bCib1-fBtzuPZCh04rWC_H1cIM8rDRrtgaOdS8_G0v8uuBAqPezNNt2_Pu7MZLlcLeOz_45NzCUwh3_PpWfYC5--MoC3LH32hKFOhrbbuCONG48JwqrWPOEuM7BQrrtkd0ow"}}
                (http/get "OOPS_WRONG" anything) =throws=> (ConnectException.)))
 
        (fact "if the signed payload cannot be decoded then no activites are returned"
@@ -140,15 +148,23 @@
 (facts "sync activities retrieves activities from api and stores them"
        (let [an-activity-src-url "https://an-activity.src"
              another-activity-src-url "https://another-activity.src"
-             json-src1 [{:actor     {:name "JDog"}
-                         :published ten-oclock
-                         :type      "a-type"}
-                        {:actor     {:name "KCat"}
-                         :published twelve-oclock
-                         :type      "another-type"}]
-             json-src2 [{:actor     {:name "LSheep"}
-                         :published eleven-oclock
-                         :type      "yet-another-type"}]
+             json-src1 {(keyword "@context") "http://www.w3.org/ns/activitystreams"
+                        :type                "Collection"
+                        :name                "Activity stream"
+                        :totalItems          2
+                        :items               [{:actor     {:name "JDog"}
+                                               :published ten-oclock
+                                               :type      "a-type"}
+                                              {:actor     {:name "KCat"}
+                                               :published twelve-oclock
+                                               :type      "another-type"}]}
+             json-src2 {(keyword "@context") "http://www.w3.org/ns/activitystreams"
+                        :type                "Collection"
+                        :name                "Activity stream"
+                        :totalItems          1
+                        :items               [{:actor     {:name "LSheep"}
+                                               :published eleven-oclock
+                                               :type      "yet-another-type"}]}
              store (dbh/create-in-memory-store)]
          (facts "with stubbed activity retrieval"
                 (against-background

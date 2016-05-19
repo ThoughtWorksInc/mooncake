@@ -17,18 +17,15 @@
         json-payload (.getPayload (doto jws (.setKey (.getKey jwk))))]
     json-payload))
 
-(defn extract-from-collection [activities]
-  (or (:items activities) activities))
-
 (defn verify-and-return-activities [json-web-key-set-url jws]
   (let [json-payload (verify-and-return-payload json-web-key-set-url jws)
-        activities (-> (json/parse-string json-payload true) extract-from-collection)]
+        activities (:items (json/parse-string json-payload true))]
     (map #(assoc % :signed true) activities)))
 
 (defn- handle-unsigned-activity-source-response [unsigned-activity-source-response]
   (->> unsigned-activity-source-response
        :body
-       extract-from-collection
+       :items
        (map #(assoc % :signed false))))
 
 (defn- handle-signed-activity-source-response [signed-activity-source-response]
@@ -39,7 +36,7 @@
       (verify-and-return-activities json-web-key-set-url jws)
       (catch Exception e
         (log/warn (str "Verification of signed activity response failed - attempting to return unsigned activities ----" e))
-        (map #(assoc % :signed :verification-failed) (json/parse-string (.getUnverifiedPayload jws) true))))))
+        (map #(assoc % :signed :verification-failed) (:items (json/parse-string (.getUnverifiedPayload jws) true)))))))
 
 (defn is-signed-response? [activity-source-response]
   (some? (and (get-in activity-source-response [:body :jws-signed-payload])

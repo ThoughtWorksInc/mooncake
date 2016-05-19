@@ -1,149 +1,155 @@
-[
-  {
-    "object":{
-      "object":{
-        "name":"CONNETTIVITA' GRATUITA",
-        "type":"Objective"
+{
+  "@context": "http://www.w3.org/ns/activitystreams",
+  "type": "Collection",
+  "name": "Activity stream",
+  "totalItems": 9,
+  "items": [
+    {
+      "object": {
+        "object": {
+          "name": "CONNETTIVITA' GRATUITA",
+          "type": "Objective"
+        },
+        "url": "http://objective8.dcentproject.eu/objectives/20/questions/21",
+        "name": "prendiamo come esempio la legge svedese? o altre leggi simili nel mondo?",
+        "type": "Objective Question"
       },
-      "url":"http://objective8.dcentproject.eu/objectives/20/questions/21",
-      "name":"prendiamo come esempio la legge svedese? o altre leggi simili nel mondo?",
-      "type":"Objective Question"
-    },
-    "actor":{
-      "name":"fabrisspec",
-      "type":"Person"
-    },
-    "published":"2015-10-22T16:59:54.363Z",
-    "type":"Question",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  },
-  {
-    "object":{
-      "url":"http://objective8.dcentproject.eu/objectives/20",
-      "content":"Test per la proposta di legge per la realizzazione della connettività gratuita a tutti i cittadini italiani",
-      "name":"CONNETTIVITA' GRATUITA",
-      "type":"Objective"
-    },
-    "actor":{
-      "name":"pandeussilvae",
-      "type":"Person"
-    },
-    "published":"2015-10-22T16:23:54.099Z",
-    "type":"Create",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  },
-  {
-    "object":{
-      "object":{
-        "name":"A test objective for Lisbon 2015",
-        "type":"Objective"
+      "actor": {
+        "name": "fabrisspec",
+        "type": "Person"
       },
-      "url":"http://objective8.dcentproject.eu/objectives/19/questions/20",
-      "name":"What is this all about?",
-      "type":"Objective Question"
+      "published": "2015-10-22T16:59:54.363Z",
+      "type": "Question",
+      "@context": "http://www.w3.org/ns/activitystreams"
     },
-    "actor":{
-      "name":"Jc",
-      "type":"Person"
-    },
-    "published":"2015-10-21T14:26:36.906Z",
-    "type":"Question",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  },
-  {
-    "object":{
-      "url":"http://objective8.dcentproject.eu/objectives/19",
-      "content":"Showing how to create an objective in the objective8 tool.",
-      "name":"A test objective for Lisbon 2015",
-      "type":"Objective"
-    },
-    "actor":{
-      "name":"Jc",
-      "type":"Person"
-    },
-    "published":"2015-10-21T14:26:24.157Z",
-    "type":"Create",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  },
-  {
-    "object":{
-      "object":{
-        "name":"thing",
-        "type":"Objective"
+    {
+      "object": {
+        "url": "http://objective8.dcentproject.eu/objectives/20",
+        "content": "Test per la proposta di legge per la realizzazione della connettività gratuita a tutti i cittadini italiani",
+        "name": "CONNETTIVITA' GRATUITA",
+        "type": "Objective"
       },
-      "url":"http://objective8.dcentproject.eu/objectives/18/questions/19",
-      "name":"what timeaaaaaaaaaa",
-      "type":"Objective Question"
-    },
-    "actor":{
-      "name":"hnasarat",
-      "type":"Person"
-    },
-    "published":"2015-10-21T12:29:28.009Z",
-    "type":"Question",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  },
-  {
-    "object":{
-      "url":"http://objective8.dcentproject.eu/objectives/18",
-      "content":"test",
-      "name":"thing",
-      "type":"Objective"
-    },
-    "actor":{
-      "name":"hnasarat",
-      "type":"Person"
-    },
-    "published":"2015-10-21T12:17:53.007Z",
-    "type":"Create",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  },
-  {
-    "object":{
-      "object":{
-        "name":"Hello from ICT 2015",
-        "type":"Objective"
+      "actor": {
+        "name": "pandeussilvae",
+        "type": "Person"
       },
-      "url":"http://objective8.dcentproject.eu/objectives/17/questions/18",
-      "name":"Is it any good?",
-      "type":"Objective Question"
+      "published": "2015-10-22T16:23:54.099Z",
+      "type": "Create",
+      "@context": "http://www.w3.org/ns/activitystreams"
     },
-    "actor":{
-      "name":"Jc",
-      "type":"Person"
+    {
+      "object": {
+        "object": {
+          "name": "A test objective for Lisbon 2015",
+          "type": "Objective"
+        },
+        "url": "http://objective8.dcentproject.eu/objectives/19/questions/20",
+        "name": "What is this all about?",
+        "type": "Objective Question"
+      },
+      "actor": {
+        "name": "Jc",
+        "type": "Person"
+      },
+      "published": "2015-10-21T14:26:36.906Z",
+      "type": "Question",
+      "@context": "http://www.w3.org/ns/activitystreams"
     },
-    "published":"2015-10-20T15:04:59.872Z",
-    "type":"Question",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  },
-  {
-    "object":{
-      "url":"http://objective8.dcentproject.eu/objectives/17",
-      "content":"This is a message written in the ict conference in lisbon",
-      "name":"Hello from ICT 2015",
-      "type":"Objective"
+    {
+      "object": {
+        "url": "http://objective8.dcentproject.eu/objectives/19",
+        "content": "Showing how to create an objective in the objective8 tool.",
+        "name": "A test objective for Lisbon 2015",
+        "type": "Objective"
+      },
+      "actor": {
+        "name": "Jc",
+        "type": "Person"
+      },
+      "published": "2015-10-21T14:26:24.157Z",
+      "type": "Create",
+      "@context": "http://www.w3.org/ns/activitystreams"
     },
-    "actor":{
-      "name":"Jc",
-      "type":"Person"
+    {
+      "object": {
+        "object": {
+          "name": "thing",
+          "type": "Objective"
+        },
+        "url": "http://objective8.dcentproject.eu/objectives/18/questions/19",
+        "name": "what timeaaaaaaaaaa",
+        "type": "Objective Question"
+      },
+      "actor": {
+        "name": "hnasarat",
+        "type": "Person"
+      },
+      "published": "2015-10-21T12:29:28.009Z",
+      "type": "Question",
+      "@context": "http://www.w3.org/ns/activitystreams"
     },
-    "published":"2015-10-20T15:04:27.903Z",
-    "type":"Create",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  },
-  {
-    "object":{
-      "url":"http://objective8.dcentproject.eu/objectives/16",
-      "content":"Testing integration between Objective8 and Mooncake.",
-      "name":"This a test objective.",
-      "type":"Objective"
+    {
+      "object": {
+        "url": "http://objective8.dcentproject.eu/objectives/18",
+        "content": "test",
+        "name": "thing",
+        "type": "Objective"
+      },
+      "actor": {
+        "name": "hnasarat",
+        "type": "Person"
+      },
+      "published": "2015-10-21T12:17:53.007Z",
+      "type": "Create",
+      "@context": "http://www.w3.org/ns/activitystreams"
     },
-    "actor":{
-      "name":"Jc",
-      "type":"Person"
+    {
+      "object": {
+        "object": {
+          "name": "Hello from ICT 2015",
+          "type": "Objective"
+        },
+        "url": "http://objective8.dcentproject.eu/objectives/17/questions/18",
+        "name": "Is it any good?",
+        "type": "Objective Question"
+      },
+      "actor": {
+        "name": "Jc",
+        "type": "Person"
+      },
+      "published": "2015-10-20T15:04:59.872Z",
+      "type": "Question",
+      "@context": "http://www.w3.org/ns/activitystreams"
     },
-    "published":"2015-10-16T16:36:08.220Z",
-    "type":"Create",
-    "@context":"http://www.w3.org/ns/activitystreams"
-  }
-]
+    {
+      "object": {
+        "url": "http://objective8.dcentproject.eu/objectives/17",
+        "content": "This is a message written in the ict conference in lisbon",
+        "name": "Hello from ICT 2015",
+        "type": "Objective"
+      },
+      "actor": {
+        "name": "Jc",
+        "type": "Person"
+      },
+      "published": "2015-10-20T15:04:27.903Z",
+      "type": "Create",
+      "@context": "http://www.w3.org/ns/activitystreams"
+    },
+    {
+      "object": {
+        "url": "http://objective8.dcentproject.eu/objectives/16",
+        "content": "Testing integration between Objective8 and Mooncake.",
+        "name": "This a test objective.",
+        "type": "Objective"
+      },
+      "actor": {
+        "name": "Jc",
+        "type": "Person"
+      },
+      "published": "2015-10-16T16:36:08.220Z",
+      "type": "Create",
+      "@context": "http://www.w3.org/ns/activitystreams"
+    }
+  ]
+}
