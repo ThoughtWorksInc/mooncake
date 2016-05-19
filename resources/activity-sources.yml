@@ -3,8 +3,3 @@
 objective8:
   url: https://objective8-staging.dcentproject.eu/as2/activities?signed=true
   name: Objective8
-
-OpenAhjo:
-  url: http://coracle.herokuapp.com/activities
-  name: Helsinki Decisions
-
