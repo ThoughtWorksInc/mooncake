@@ -10,12 +10,12 @@
       (dbh/with-mongo-do
         (fn [db]
           (let [store (mongo/create-mongo-store db)
-                activity {:displayName "KCat"
+                activity {:name        "KCat"
                           :published   "2015-08-12T10:20:41.000Z"
                           :signed      "verification-failed"}
                 insert-time (:relInsertTime (activity/store-activity! store activity))]
 
-            (mongo/find-item store activity/activity-collection {:displayName "KCat"}) => (assoc activity :relInsertTime insert-time)))))
+            (mongo/find-item store activity/activity-collection {:name "KCat"}) => (assoc activity :relInsertTime insert-time)))))
 
 (facts "about activity relative time generation"
        (fact "creation of an activity generates a relative time id"
@@ -23,15 +23,15 @@
                (fn [db]
                  (let [
                        store (mongo/create-mongo-store db)
-                       activity1 {:displayName  "KCat"
+                       activity1 {:name         "KCat"
                                   :published    "2014-08-12T00:00:00.000Z"
                                   :activity-src "test-source"
                                   :type         "Create"}
-                       activity2 {:displayName  "JDog"
+                       activity2 {:name         "JDog"
                                   :published    "2014-08-12T00:00:00.000Z"
                                   :activity-src "test-source"
                                   :type         "Create"}
-                       activity3 {:displayName  "HFish"
+                       activity3 {:name         "HFish"
                                   :published    "2014-08-12T00:00:00.000Z"
                                   :activity-src "test-source"
                                   :type         "Create"}
@@ -47,7 +47,7 @@
       (dbh/with-mongo-do
         (fn [db]
           (let [store (mongo/create-mongo-store db)
-                activity {:displayName "KCat"
+                activity {:name        "KCat"
                           :published   "2015-08-12T10:20:41.000Z"}
                 insert-time (:relInsertTime (activity/store-activity! store activity))]
             (activity/fetch-activities store) => [(assoc activity :relInsertTime insert-time)]))))
@@ -93,10 +93,10 @@
       (dbh/with-mongo-do
         (fn [db]
           (let [store (mongo/create-mongo-store db)
-                event1api1 {:displayName  "KCat"
+                event1api1 {:name         "KCat"
                             :published    "2015-08-12T10:20:41.000Z"
                             :activity-src "api1"}
-                event2api2 {:displayName  "JDog"
+                event2api2 {:name         "JDog"
                             :published    "2015-08-12T10:20:41.000Z"
                             :activity-src "api2"}]
             (activity/store-activity! store event1api1)
@@ -109,15 +109,15 @@
         (dbh/with-mongo-do
           (fn [db]
             (let [store (mongo/create-mongo-store db)
-                  activity1 {:displayName  "KCat"
+                  activity1 {:name         "KCat"
                              :published    "2015-08-12T10:20:41.000Z"
                              :activity-src "source-1"
                              :type         "Create"}
-                  activity2 {:displayName  "KCat"
+                  activity2 {:name         "KCat"
                              :published    "2015-08-12T10:20:42.000Z"
                              :activity-src "source-1"
                              :type         "Question"}
-                  activity3 {:displayName  "JDon"
+                  activity3 {:name         "JDon"
                              :published    "2015-08-12T11:20:41.000Z"
                              :activity-src "source-2"
                              :type         "Create"}
@@ -152,15 +152,15 @@
   (dbh/with-mongo-do
     (fn [db]
       (let [store (mongo/create-mongo-store db)
-            activity1 {:displayName      "KCat"
+            activity1 {:name             "KCat"
                        :published        oldest-time
                        :activity-src     "test-source"
                        :type "Create"}
-            activity2 {:displayName      "JDog"
+            activity2 {:name             "JDog"
                        :published        second-latest-time
                        :activity-src     "test-source"
                        :type "Create"}
-            activity3 {:displayName  "HFish"
+            activity3 {:name         "HFish"
                        :published    latest-time
                        :activity-src "test-source"
                        :type         "Create"}
@@ -196,15 +196,15 @@
                  (fn [db]
                    (let [
                          store (mongo/create-mongo-store db)
-                         activity1 {:displayName      "KCat"
+                         activity1 {:name             "KCat"
                                     :published        oldest-time
                                     :activity-src     "test-source"
                                     :type "Create"}
-                         activity2 {:displayName      "JDog"
+                         activity2 {:name             "JDog"
                                     :published        oldest-time
                                     :activity-src     "test-source"
                                     :type "Create"}
-                         activity3 {:displayName      "HFish"
+                         activity3 {:name             "HFish"
                                     :published        oldest-time
                                     :activity-src     "test-source"
                                     :type "Create"}

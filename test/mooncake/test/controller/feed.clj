@@ -19,13 +19,13 @@
 
 (fact "feed handler displays activities retrieved from activity sources"
       (let [store (dbh/create-in-memory-store)]
-        (mongo/store! store adb/activity-collection {:actor        {:type         "Person"
-                                                                    :displayName  "JDog"}
+        (mongo/store! store adb/activity-collection {:actor        {:type "Person"
+                                                                    :name "JDog"}
                                                      :published    ten-oclock
                                                      :activity-src "OpenAhjo"
                                                      :type         "Activity"})
-        (mongo/store! store adb/activity-collection {:actor        {:type         "Person"
-                                                                    :displayName  "KCat"}
+        (mongo/store! store adb/activity-collection {:actor        {:type "Person"
+                                                                    :name "KCat"}
                                                      :published    twelve-oclock
                                                      :activity-src "objective8"
                                                      :type         "Activity"})
@@ -41,26 +41,26 @@
       (fc/feed (dbh/create-in-memory-store) {:t       (constantly "")
                                              :session {:username "Barry"}}) => (contains {:body (contains "Barry")}))
 
-(def activity-src-1--enabled-type {:actor         {:type        "Person"
-                                                   :displayName "Activity source 1: enabled type"}
+(def activity-src-1--enabled-type {:actor         {:type "Person"
+                                                   :name "Activity source 1: enabled type"}
                                    :published     ten-oclock
                                    :activity-src  "activity-src-1"
                                    :type          "Enabled"
                                    :relInsertTime (ObjectId. (str base-insert-time 1))})
-(def activity-src-1--previous-day {:actor         {:type        "Person"
-                                                   :displayName "Activity source 1: previous day"}
+(def activity-src-1--previous-day {:actor         {:type "Person"
+                                                   :name "Activity source 1: previous day"}
                                    :published     previous-day
                                    :activity-src  "activity-src-1"
                                    :type          "Enabled"
                                    :relInsertTime (ObjectId. (str base-insert-time 2))})
-(def activity-src-1--disabled-type {:actor         {:type        "Person"
-                                                    :displayName "Activity source 1: disabled type"}
+(def activity-src-1--disabled-type {:actor         {:type "Person"
+                                                    :name "Activity source 1: disabled type"}
                                     :published     eleven-oclock
                                     :activity-src  "activity-src-1"
                                     :type          "Disabled"
                                     :relInsertTime (ObjectId. (str base-insert-time 3))})
-(def activity-src-2--no-preference-type {:actor         {:type        "Person"
-                                                         :displayName "Activity source 2: no preference expressed"}
+(def activity-src-2--no-preference-type {:actor         {:type "Person"
+                                                         :name "Activity source 2: no preference expressed"}
                                          :published     twelve-oclock
                                          :activity-src  "activity-src-2"
                                          :type          "No-preference"
@@ -124,59 +124,59 @@
              too-tiny-of-a-page-number "0"
              too-big-of-a-page-number "3"]
 
-             (fact "page number is passed in get request"
-                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
-                                  :t       (constantly "")
-                                  :session {:username ...username...}
-                                  :params  {:page-number valid-page-number}}
-                         response (fc/feed store request)]
+         (fact "page number is passed in get request"
+               (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                              :t       (constantly "")
+                              :session {:username ...username...}
+                              :params  {:page-number valid-page-number}}
+                     response (fc/feed store request)]
 
-                     (:body response) => (contains "TestData0")
-                     (:body response) =not=> (contains (str "TestData" config/activities-per-page))))
+                 (:body response) => (contains "TestData0")
+                 (:body response) =not=> (contains (str "TestData" config/activities-per-page))))
 
-             (fact "empty page number params is passed in get request and defaults to 1"
-                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
-                                  :t       (constantly "")
-                                  :session {:username ...username...}
-                                  :params  {}}
-                         response (fc/feed store request)]
+         (fact "empty page number params is passed in get request and defaults to 1"
+               (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                              :t       (constantly "")
+                              :session {:username ...username...}
+                              :params  {}}
+                     response (fc/feed store request)]
 
-                     (:body response) =not=> (contains "TestData0")
-                     (:body response) => (contains (str "TestData" config/activities-per-page))))
+                 (:body response) =not=> (contains "TestData0")
+                 (:body response) => (contains (str "TestData" config/activities-per-page))))
 
-             (fact "page number cannot be non-numbers"
-                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
-                                  :t       (constantly "")
-                                  :session {:username ...username...}
-                                  :params  {:page-number invalid-page-number}}
-                         response (fc/feed store request)]
+         (fact "page number cannot be non-numbers"
+               (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                              :t       (constantly "")
+                              :session {:username ...username...}
+                              :params  {:page-number invalid-page-number}}
+                     response (fc/feed store request)]
 
-                     (:status response) => nil))
+                 (:status response) => nil))
 
-             (fact "page number cannot be too small"
-                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
-                                  :t       (constantly "")
-                                  :session {:username ...username...}
-                                  :params  {:page-number too-tiny-of-a-page-number}}
-                         response (fc/feed store request)]
+         (fact "page number cannot be too small"
+               (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                              :t       (constantly "")
+                              :session {:username ...username...}
+                              :params  {:page-number too-tiny-of-a-page-number}}
+                     response (fc/feed store request)]
 
-                     (:status response) => nil))
+                 (:status response) => nil))
 
-             (fact "page number cannot be too big"
-                   (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
-                                  :t       (constantly "")
-                                  :session {:username ...username...}
-                                  :params  {:page-number too-big-of-a-page-number}}
-                         response (fc/feed store request)]
+         (fact "page number cannot be too big"
+               (let [request {:context {:activity-sources {:test-source {:activity-types ["Create"]}}}
+                              :t       (constantly "")
+                              :session {:username ...username...}
+                              :params  {:page-number too-big-of-a-page-number}}
+                     response (fc/feed store request)]
 
-                     (:status response) => nil))))
+                 (:status response) => nil))))
 
 (defn request-with-timestamp [timestamp-params]
   {:context {:activity-sources {:activity-src-1 {:activity-types ["Enabled" "Disabled"]}
                                 :activity-src-2 {:activity-types ["No-preference"]}}}
    :t       (constantly "")
    :session {:username ...username...}
-   :params timestamp-params})
+   :params  timestamp-params})
 
 (facts "about which activities are retrieved and updated"
        (let [store (dbh/create-in-memory-store)

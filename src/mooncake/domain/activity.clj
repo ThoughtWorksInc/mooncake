@@ -10,8 +10,7 @@
   (str (:relInsertTime activity)))
 
 (defn activity->actor-display-name [activity]
-  (or (get-in activity [:actor :displayName])
-      (get-in activity [:actor :name])))
+  (get-in activity [:actor :name]))
 
 (defn activity->object-url [activity]
   (get-in activity [:object :url]))
@@ -20,8 +19,7 @@
   (get-in activity [:object :type]))
 
 (defn activity->object-display-name [activity]
-  (or (get-in activity [:object :displayName])
-      (get-in activity [:object :name])))
+  (get-in activity [:object :name]))
 
 (defn activity->type [activity]
   (:type activity))
@@ -33,8 +31,7 @@
   (:signed activity))
 
 (defn activity->target [activity]
-  (or (get-in activity [:target :displayName])
-      (get-in activity [:target :name])))
+  (get-in activity [:target :name]))
 
 (defn activity->target-url [activity]
   (get-in activity [:target :url]))

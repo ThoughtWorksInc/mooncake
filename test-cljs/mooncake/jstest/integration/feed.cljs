@@ -12,44 +12,44 @@
 (defonce feed-page-template (load-template "public/feed.html"))
 
 (defn html-response []
-  (generate-test-html-data [{:actor     {:displayName "Bob"}
+  (generate-test-html-data [{:actor     {:name "Bob"}
                              :published "2012-12-12T01:24:45.192Z"
                              :type      "Question"
-                             :object    {:url         "http://activity-src.co.uk/bob"
-                                         :displayName "Save more trees?"
-                                         :type        "Something"}
+                             :object    {:url  "http://activity-src.co.uk/bob"
+                                         :name "Save more trees?"
+                                         :type "Something"}
                              :signed    false}
-                            {:actor     {:displayName "Margaret"}
+                            {:actor     {:name "Margaret"}
                              :published "2012-12-12T01:24:45.192Z"
                              :type      "Shut Down"
-                             :object    {:url         "http://activity-src.co.uk/margaret"
-                                         :displayName "Save fewer mines!"
-                                         :type        "Coal Mine"}
+                             :object    {:url  "http://activity-src.co.uk/margaret"
+                                         :name "Save fewer mines!"
+                                         :type "Coal Mine"}
                              :signed    "verification-failed"}]))
 
 (defn html-response-hidden []
-  (generate-test-html-data-hidden [{:actor     {:displayName "Bob"}
+  (generate-test-html-data-hidden [{:actor     {:name "Bob"}
                                     :published "2012-12-12T01:24:45.192Z"
                                     :type      "Question"
-                                    :object    {:url         "http://activity-src.co.uk/bob"
-                                                :displayName "Save more trees?"
-                                                :type        "Something"}
+                                    :object    {:url  "http://activity-src.co.uk/bob"
+                                                :name "Save more trees?"
+                                                :type "Something"}
                                     :signed    false}
-                                   {:actor     {:displayName "Margaret"}
+                                   {:actor     {:name "Margaret"}
                                     :published "2012-12-12T01:24:45.192Z"
                                     :type      "Shut Down"
-                                    :object    {:url         "http://activity-src.co.uk/margaret"
-                                                :displayName "Save fewer mines!"
-                                                :type        "Coal Mine"}
+                                    :object    {:url  "http://activity-src.co.uk/margaret"
+                                                :name "Save fewer mines!"
+                                                :type "Coal Mine"}
                                     :signed    "verification-failed"}]))
 
 (defn html-single-activity-response-hidden []
-  (generate-test-html-data-hidden [{:actor     {:displayName "Bob"}
+  (generate-test-html-data-hidden [{:actor     {:name "Bob"}
                                     :published "2012-12-12T01:24:45.192Z"
                                     :type      "Question"
-                                    :object    {:url         "http://activity-src.co.uk/bob"
-                                                :displayName "Save more trees?"
-                                                :type        "Something"}
+                                    :object    {:url  "http://activity-src.co.uk/bob"
+                                                :name "Save more trees?"
+                                                :type "Something"}
                                     :signed    false}]))
 
 (def invalid-html-response "<a></a><a></a>")

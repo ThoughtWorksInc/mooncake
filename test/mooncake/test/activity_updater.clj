@@ -19,26 +19,26 @@
               (au/poll-activity-sources store {:an-activity-src      {:url an-activity-src-url}
                                                :another-activity-src {:url another-activity-src-url}})
               => [{:activity-src :an-activity-src
-                   :actor        {:displayName "KCat"}
+                   :actor        {:name "KCat"}
                    :published    twelve-oclock
                    :type         "Add"
                    :signed       false}
                   {:activity-src :another-activity-src
-                   :actor        {:displayName "LSheep"}
+                   :actor        {:name "LSheep"}
                    :published    eleven-oclock
                    :type         "Create"
                    :signed       false}
                   {:activity-src :an-activity-src
-                   :actor        {:displayName "JDog"}
+                   :actor        {:name "JDog"}
                    :published    ten-oclock
                    :type         "Add"
                    :signed       false}]
               (provided
                 (http/get an-activity-src-url {:accept :json
-                                               :as     :json}) => {:body [{:actor     {:displayName "JDog"}
+                                               :as     :json}) => {:body [{:actor     {:name "JDog"}
                                                                            :published ten-oclock
                                                                            :type      "Add"}
-                                                                          {:actor     {:displayName "KCat"}
+                                                                          {:actor     {:name "KCat"}
                                                                            :published twelve-oclock
                                                                            :type      "Add"}]}
                 (http/get another-activity-src-url {:accept :json
@@ -46,7 +46,7 @@
                                                                                :type                "Collection"
                                                                                :name                "Activity stream"
                                                                                :totalItems          1
-                                                                               :items               [{:actor     {:displayName "LSheep"}
+                                                                               :items               [{:actor     {:name "LSheep"}
                                                                                                       :published eleven-oclock
                                                                                                       :type      "Create"}]}})))
 
@@ -55,19 +55,19 @@
                   store (dbh/create-in-memory-store)]
               (au/poll-activity-sources store {:an-activity-src {:url an-activity-src-url}})
               => [{:activity-src :an-activity-src
-                   :actor        {:displayName "JDog"}
+                   :actor        {:name "JDog"}
                    :published    ten-oclock
                    :type         "Add"
                    :signed       false}]
               (provided
                 (http/get an-activity-src-url {:accept :json
-                                               :as     :json}) => {:body [{:actor     {:displayName "JDog"}
+                                               :as     :json}) => {:body [{:actor     {:name "JDog"}
                                                                            :published ten-oclock
                                                                            :type      "Add"}
-                                                                          {:actor            {:displayName "LSheep"}
+                                                                          {:actor            {:name "LSheep"}
                                                                            :published        ten-oclock
                                                                            (keyword "@type") "Create"}
-                                                                          {:actor {:displayName "KCat"}}]}))))
+                                                                          {:actor {:name "KCat"}}]}))))
 
 (facts "about retrieving signed activity responses"
        (fact "activities can be retrieved from a source that signs its responses using json web signatures and json web keys"
@@ -120,12 +120,12 @@
              (let [invalid-activity {(keyword "@context") "http://www.w3.org/ns/activitystreams"
                                      :type                "Create"
                                      :actor               {:type "Person"
-                                                           :displayName "Barry"}}
+                                                           :name "Barry"}}
                    valid-activity {(keyword "@context") "http://www.w3.org/ns/activitystreams"
                                    :type                "Add"
                                    :published           "2015-08-03T14:49:38.407Z"
                                    :actor               {:type "Person"
-                                                         :displayName "Joshua"}}
+                                                         :name "Joshua"}}
                    activities [invalid-activity valid-activity]]
                (au/remove-invalid-activities activities) => [valid-activity]
                (provided
@@ -140,13 +140,13 @@
 (facts "sync activities retrieves activities from api and stores them"
        (let [an-activity-src-url "https://an-activity.src"
              another-activity-src-url "https://another-activity.src"
-             json-src1 [{:actor     {:displayName "JDog"}
+             json-src1 [{:actor     {:name "JDog"}
                          :published ten-oclock
                          :type      "a-type"}
-                        {:actor     {:displayName "KCat"}
+                        {:actor     {:name "KCat"}
                          :published twelve-oclock
                          :type      "another-type"}]
-             json-src2 [{:actor     {:displayName "LSheep"}
+             json-src2 [{:actor     {:name "LSheep"}
                          :published eleven-oclock
                          :type      "yet-another-type"}]
              store (dbh/create-in-memory-store)]

@@ -162,7 +162,7 @@
 (defn create-dummy-activities [store amount]
   (->> (range amount)
        (map (fn [counter]
-              {:actor         {:displayName (str "TestData" counter)}
+              {:actor         {:name (str "TestData" counter)}
                :published     (f/unparse (f/formatters :date-time) (t/plus (t/date-time 2015 8 12) (t/seconds counter)))
                :activity-src  "test-source"
                :relInsertTime counter
