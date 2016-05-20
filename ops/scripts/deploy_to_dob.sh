@@ -8,6 +8,7 @@ ssh $REMOTE_USER@$SERVER_IP <<EOF
   sudo mv ~/activity-sources.yml /var/mooncake/config/activity-sources.yml
   sudo docker stop mooncake || echo 'Failed to stop mooncake container'
   sudo docker rm mooncake || echo 'Failed to remove mooncake container'
+  sudo docker rmi dcent/mooncake || echo 'Failed to remove mooncake image'
   sudo docker run -d -v /var/mooncake/config:/var/mooncake/config \
                   --env-file=/var/mooncake/config/mooncake.env \
                   -p 127.0.0.1:5000:3000 \
