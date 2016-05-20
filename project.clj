@@ -54,15 +54,16 @@
                                         [lein-shell "0.4.1"]
                                         [com.cemerick/clojurescript.test "0.3.3"]]
                        :resource-paths ["resources" "test-resources"]
-                       :env            {:secure        "false"
-                                        :client-id     "fake stonecutter client id"
-                                        :client-secret "fake stonecutter client secret"
-                                        :auth-url      "fake stonecutter auth url"
-                                        :mongo-uri     "mongodb://localhost:27017/mooncake-dev"
-                                        :polling-interval "1000"}
+                       :env            {:secure           "false"
+                                        :client-id        "fake stonecutter client id"
+                                        :client-secret    "fake stonecutter client secret"
+                                        :auth-url         "fake stonecutter auth url"
+                                        :mongo-uri        "mongodb://localhost:27017/mooncake-dev"
+                                        :polling-interval "1000"
+                                        :host             "0.0.0.0"}
                        :aliases        {"cljs-build"      ["cljsbuild" "once" "prod"]
                                         "cljs-test"       ["cljsbuild" "test"]
-                                        "test"            ["do" "test-cljs," "test-clj" ]
+                                        "test"            ["do" "test-cljs," "test-clj"]
                                         "test-clj"        ["shell" "test/mooncake/run_all_tests.sh"]
                                         "browser"         ["shell" "test/mooncake/run_browser_tests.sh"]
                                         "auto-no-browser" ["test" ":autotest" "src/" "test/mooncake/test/" "test/mooncake/integration/"]
@@ -71,17 +72,17 @@
                                         "gulp"            ["shell" "npm" "run" "gulp" "--" "build"]
                                         "stub"            ["do" "gulp," "cljs-build," "with-profile" "dev,stub" "run"]}
                        :auto           {"cljsbuild" {:paths ["src-cljs" "test-cljs"]}}
-                       :cljsbuild      {:builds [{:id           "prod"
-                                                  :source-paths ["src-cljs"]
-                                                  :compiler     {:output-to     "resources/public/js/main.js"
-                                                                 :asset-path    "js/out"
-                                                                 :optimizations :advanced
-                                                                 :pretty-print  false}}
-                                                 {:id             "test"
-                                                  :source-paths   ["src" "src-cljs" "test-cljs"]
-                                                  :compiler       {:output-to     "target/cljs/testable.js"
-                                                                   :optimizations :whitespace
-                                                                   :pretty-print  true}}]
+                       :cljsbuild      {:builds        [{:id           "prod"
+                                                         :source-paths ["src-cljs"]
+                                                         :compiler     {:output-to     "resources/public/js/main.js"
+                                                                        :asset-path    "js/out"
+                                                                        :optimizations :advanced
+                                                                        :pretty-print  false}}
+                                                        {:id           "test"
+                                                         :source-paths ["src" "src-cljs" "test-cljs"]
+                                                         :compiler     {:output-to     "target/cljs/testable.js"
+                                                                        :optimizations :whitespace
+                                                                        :pretty-print  true}}]
                                         :test-commands {"phantom" ["phantomjs" :runner "target/cljs/testable.js"]}}}
              :stub    {:env {:stub-user "MRS STUBBY"}}
              :uberjar {:hooks       [leiningen.cljsbuild]

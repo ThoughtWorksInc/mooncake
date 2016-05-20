@@ -41,8 +41,3 @@
        - /data/db:/data/db
        - /data/backup:/data/backup
 # Mongo ^^
-
- - name: docker java
-   docker:
-     image: java:8
-     state: present
