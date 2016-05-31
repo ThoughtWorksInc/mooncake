@@ -38,4 +38,5 @@
      volumes:
        - /data/db:/data/db
        - /data/backup:/data/backup
+     api_version: 1.21
 # Mongo ^^
