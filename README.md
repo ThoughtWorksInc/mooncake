@@ -60,27 +60,39 @@ gulp server
 Activities are expected in the following format:
 
     {
-      @context:       "http://www.w3.org/ns/activitystreams",
-      published:      "2015-12-18T14:25:40.240Z",
-      type:          "Add",  --- used to customise the feed
+      @context:  "http://www.w3.org/ns/activitystreams",
+      published: "2015-12-18T14:25:40.240Z",
+      type:      "Add",  --- used to customise the feed
       
       object: {
-        url:          "http://objective8.dcentproject.eu/objectives/41/questions/28",  (optional)
-        ame:  "Why?",
-        type:        "Question"  --- used to set the action text
+        url:     "http://objective8.dcentproject.eu/objectives/41/questions/28",  (optional)
+        name:    "Why?",
+        type:    "Question"  --- used to set the action text
       },
         
       actor: {
-        name:  "Jane Doe"
+        name:    "Jane Doe"
       },
       
       target:  (optional) {
-        url:          "http://objective8.dcentproject.eu/objectives/41",  (optional)
+        url:   "http://objective8.dcentproject.eu/objectives/41",  (optional)
         name:  "This Objective"
       }
     }
     
 The timestamp uses the format YYYY-MM-DDThh:mm:ss.sZ as specified in the international standard ISO 8601.
+
+They should be presented inside a collection:
+
+    {
+      @context:   "http://www.w3.org/ns/activitystreams",
+      type:       "Collection",
+      name:       "Activity stream",
+      totalItems: 23,
+      items: [
+        <activities go here>
+      ]
+    }
 
 The activity source must support the ```to``` and ```from``` query parameters, returning activities with a 
 published time less than or greater than the provided timestamp respectively. For example, 
