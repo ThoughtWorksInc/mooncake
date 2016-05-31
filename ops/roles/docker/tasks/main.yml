@@ -34,7 +34,7 @@
    file: path=/data/backup state=directory
 
  - name: docker mongo
-   docker:
+   docker_container:
      name: mongo
      image: mongo:3
      volumes:
